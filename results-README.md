@@ -61,7 +61,7 @@ Contains 91 evaluation runs across 15 model-agent combinations.
 ## Data Source
 - **Website**: https://ibm-research-ai.github.io/exgentic-website/
 - **GitHub Repository**: https://github.com/IBM/exgentic
-- **Last Updated**: January 29, 2026
+- **Last Updated**: February 25, 2026
 
 ## Data Collection Methodology
 [TODO: Add methodology details when available]
@@ -98,5 +98,5 @@ We thank the creators of these benchmarks for their contributions to the AI agen
 ---
 
 **License**: CDLA-Permissive-2.0  
-**Version**: 1.0  
-**Date**: January 29, 2026
+**Version**: 1.0
+**Date**: February 25, 2026

@@ -56,7 +56,7 @@ DATA ATTRIBUTION
 Source: Exgentic - Open Leaderboard for General-Purpose AI Agents
 Website: https://ibm-research-ai.github.io/exgentic-website/
 GitHub: https://github.com/IBM/exgentic
-Date: January 29, 2026
+Date: February 25, 2026
 
 Citation:
 [TODO: Add paper citation when available]
