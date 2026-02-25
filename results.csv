@@ -1,91 +1,91 @@
-benchmark,model,agent,score,num_tasks,avg_steps,avg_cost,total_cost,model_normalized,agent_normalized,finished_pct
-SWE-bench,claude,claudecode,0.73,100.0,31.6,5.56114,544.991,claude-opus-4.5,claude-code,
-SWE-bench,claude,litellm,0.606061,99.0,43.4,3.97129,393.158,claude-opus-4.5,litellm-react,
-SWE-bench,claude,openaimcp,0.807229,83.0,34.1,2.96126,245.785,claude-opus-4.5,openai-mcp,
-SWE-bench,claude,smolagent,0.65,100.0,39.1,4.85218,485.218,claude-opus-4.5,smolagents,
-SWE-bench,gemini,claudecode,0.67,100.0,43.7,3.67967,367.967,gemini-3-pro,claude-code,
-SWE-bench,gemini,litellm,0.71,100.0,32.5,0.695613,69.5613,gemini-3-pro,litellm-react,
-SWE-bench,gemini,openaimcp,0.715789,95.0,32.3,1.56256,148.443,gemini-3-pro,openai-mcp,
-SWE-bench,gemini,smolagent,0.75,100.0,38.1,2.20966,218.757,gemini-3-pro,smolagents,
-SWE-bench,gpt52,claudecode,0.58,100.0,24.0,0.939755,93.9755,gpt-5.2,claude-code,
-SWE-bench,gpt52,litellm,0.58,100.0,20.5,0.247621,24.7621,gpt-5.2,litellm-react,
-SWE-bench,gpt52,openaimcp,0.545455,99.0,20.4,0.259018,25.6428,gpt-5.2,openai-mcp,
-SWE-bench,gpt52,smolagent,0.525253,99.0,20.0,0.450318,44.5815,gpt-5.2,smolagents,
-BrowseComp+,gpt-5.2-2025-12-11,Claude Code,0.43,,,0.43107288,43.107288,gpt-5.2,claude-code,
-BrowseComp+,gpt-5.2-2025-12-11,LiteLLM Tool Calling,0.46,,,0.297838625,29.7838625,gpt-5.2,litellm-react,
-BrowseComp+,gpt-5.2-2025-12-11,OpenAI MCP Agent,0.48,,,0.3821119,38.21119,gpt-5.2,openai-mcp,
-BrowseComp+,gpt-5.2-2025-12-11,SmolAgents Code Agent,0.26,,,0.17311503,17.311503,gpt-5.2,smolagents,
-BrowseComp+,gemini-3-pro-preview,Claude Code,0.51,,,2.84675788,284.675788,gemini-3-pro,claude-code,
-BrowseComp+,gemini-3-pro-preview,LiteLLM Tool Calling,0.48,,,0.44179078,44.179078,gemini-3-pro,litellm-react,
-BrowseComp+,gemini-3-pro-preview,OpenAI MCP Agent,0.34,,,0.63866176,63.866176,gemini-3-pro,openai-mcp,
-BrowseComp+,gemini-3-pro-preview,SmolAgents Code Agent,0.57,,,2.3899896,238.99896,gemini-3-pro,smolagents,
-BrowseComp+,claude-opus-4-5,LiteLLM Tool Calling,0.49,,,7.09539529,709.539529,claude-opus-4.5,litellm-react,
-BrowseComp+,claude-opus-4-5,Claude Code,0.53,,,12.249,1224.997,claude-opus-4.5,claude-code,
-BrowseComp+,claude-opus-4-5,OpenAI MCP Agent,0.61,,,7.59437511,759.437511,claude-opus-4.5,openai-mcp,
-BrowseComp+,claude-opus-4-5,SmolAgents Code Agent,0.61,,,6.30555531,630.555531,claude-opus-4.5,smolagents,
-TauBench-Airline,Azure/gpt-5.2-2025-12-11,Litellm Tool Calling,0.54,50.0,11.2,0.139,6.9643,gpt-5.2,litellm-react,
-TauBench-Airline,Azure/gpt-5.2-2025-12-11,Smolagents Code,0.6,50.0,10.7,0.306,15.3143,gpt-5.2,smolagents,
-TauBench-Airline,Azure/gpt-5.2-2025-12-11,Claude Code,0.5333,30.0,10.1,0.356,10.6691,gpt-5.2,claude-code,
-TauBench-Airline,Azure/gpt-5.2-2025-12-11,OpenAI SDK,0.5,50.0,11.4,0.115,5.7566,gpt-5.2,openai-mcp,
-TauBench-Airline,aws/claude-opus-4-5,Litellm Tool Calling,0.66,50.0,9.98,0.4687,23.4326,claude-opus-4.5,litellm-react,
-TauBench-Airline,aws/claude-opus-4-5,Smolagents Code,0.72,50.0,11.86,0.7793,38.9646,claude-opus-4.5,smolagents,
-TauBench-Airline,aws/claude-opus-4-5,Claude Code,0.66,50.0,11.5,1.2994,64.9677,claude-opus-4.5,claude-code,
-TauBench-Airline,aws/claude-opus-4-5,OpenAI MCP Agent,0.74,50.0,12.2,0.7158,35.7903,claude-opus-4.5,openai-mcp,
-TauBench-Airline,gcp/gemini-3-pro-preview,Litellm Tool Calling,0.7,50.0,10.14,0.1586,7.9304,gemini-3-pro,litellm-react,
-TauBench-Airline,gcp/gemini-3-pro-preview,Smolagents Code,0.68,50.0,12.3,0.206,10.2752,gemini-3-pro,smolagents,
-TauBench-Airline,gcp/gemini-3-pro-preview,Claude Code,0.7333,30.0,12.3,0.5657,16.9721,gemini-3-pro,claude-code,
-TauBench-Airline,gcp/gemini-3-pro-preview,OpenAI SDK,0.64,50.0,10.9,0.219,10.9482,gemini-3-pro,openai-mcp,
-TauBench-Retail,Azure/gpt-5.2-2025-12-11,LiteLLM Tool Calling,0.73,100.0,10.3,0.123,12.2727,gpt-5.2,litellm-react,
-TauBench-Retail,Azure/gpt-5.2-2025-12-11,Smolagents Code,0.68,100.0,11.1,0.263,26.2701,gpt-5.2,smolagents,
-TauBench-Retail,Azure/gpt-5.2-2025-12-11,Claude Code,0.766,30.0,13.166,0.499,15.4478,gpt-5.2,claude-code,
-TauBench-Retail,Azure/gpt-5.2-2025-12-11,OpenAI SDK,0.5354,100.0,9.6,0.116,11.5739,gpt-5.2,openai-mcp,
-TauBench-Retail,aws/claude-opus-4-5,Litellm Tool Calling,0.78,100.0,11.27,0.4648,46.4835,claude-opus-4.5,litellm-react,
-TauBench-Retail,aws/claude-opus-4-5,Smolagents Code,0.78,100.0,11.67,0.6688,66.8784,claude-opus-4.5,smolagents,
-TauBench-Retail,aws/claude-opus-4-5,Claude Code,0.83,100.0,12.54,1.5985,159.8523,claude-opus-4.5,claude-code,
-TauBench-Retail,aws/claude-opus-4-5,OpenAI MCP Agent,0.85,100.0,12.52,0.5487,54.8689,claude-opus-4.5,openai-mcp,
-TauBench-Retail,gcp/gemini-3-pro-preview,Litellm Tool Calling,0.82,100.0,11.24,0.1564,15.6367,gemini-3-pro,litellm-react,
-TauBench-Retail,gcp/gemini-3-pro-preview,Smolagents Code,0.7576,100.0,11.2,0.213,21.3302,gemini-3-pro,smolagents,
-TauBench-Retail,gcp/gemini-3-pro-preview,Claude Code,0.7667,30.0,12.1,0.6167,18.5021,gemini-3-pro,claude-code,
-TauBench-Retail,gcp/gemini-3-pro-preview,OpenAI MCP Agent,0.73,100.0,10.6,0.276,27.5971,gemini-3-pro,openai-mcp,
-TauBench-Telecom,Azure/gpt-5.2-2025-12-11,LiteLLM Tool Calling,0.53,100.0,10.2,0.201,20.0687,gpt-5.2,litellm-react,
-TauBench-Telecom,Azure/gpt-5.2-2025-12-11,Smolagents Code,0.71,100.0,10.1,0.353,35.3346,gpt-5.2,smolagents,
-TauBench-Telecom,Azure/gpt-5.2-2025-12-11,Claude Code,0.5666,30.0,9.3,0.3627,11.5198,gpt-5.2,claude-code,
-TauBench-Telecom,Azure/gpt-5.2-2025-12-11,OpenAI SDK,0.54,100.0,10.0,0.19,18.9908,gpt-5.2,openai-mcp,
-TauBench-Telecom,aws/claude-opus-4-5,LiteLLM Tool Calling,0.73,100.0,17.04,0.9032,90.3205,claude-opus-4.5,litellm-react,
-TauBench-Telecom,aws/claude-opus-4-5,Smolagents Code,0.58,100.0,13.73,1.0608,106.0769,claude-opus-4.5,smolagents,
-TauBench-Telecom,aws/claude-opus-4-5,Claude Code,0.75,100.0,18.7,2.4678,246.7753,claude-opus-4.5,claude-code,
-TauBench-Telecom,aws/claude-opus-4-5,OpenAI MCP Agent,0.84,100.0,17.1,1.2425,124.2493,claude-opus-4.5,openai-mcp,
-TauBench-Telecom,gcp/gemini-3-pro-preview,LiteLLM Tool Calling,0.71,100.0,14.78,0.2889,28.8879,gemini-3-pro,litellm-react,
-TauBench-Telecom,gcp/gemini-3-pro-preview,Smolagents Code,0.88,100.0,12.6,0.402,40.2463,gemini-3-pro,smolagents,
-TauBench-Telecom,gcp/gemini-3-pro-preview,Claude Code,0.6667,30.0,9.1,0.743,22.2875,gemini-3-pro,claude-code,
-TauBench-Telecom,gcp/gemini-3-pro-preview,OpenAI SDK,0.79,100.0,11.3,0.583,58.2732,gemini-3-pro,openai-mcp,
-AppWorld,Azure/gpt-5.2-2025-12-11,LiteLLM Tool Calling,0.0,30.0,,,,gpt-5.2,litellm-react,0.0
-AppWorld,aws/claude-opus-4-5,LiteLLM Tool Calling,0.667,30.0,16.67,8.425,252.7498,claude-opus-4.5,litellm-react,80.0
-AppWorld,gcp/gemini-3-pro-preview,LiteLLM Tool Calling,0.7629,100.0,21.47,2.0236,202.3552,gemini-3-pro,litellm-react,81.0
-AppWorld,gcp/gemini-3-pro-preview,LiteLLM Tool Calling (with shortlisting),0.567,30.0,21.17,1.8583,55.7476,gemini-3-pro,litellm-shortlist,80.0
-AppWorld,Azure/gpt-5.2-2025-12-11,LiteLLM Tool Calling (with shortlisting),0.333,30.0,9.73,0.3528,10.5826,gpt-5.2,litellm-shortlist,100.0
-AppWorld,aws/claude-opus-4-5,LiteLLM Tool Calling (with shortlisting),0.7821,100.0,20.06,3.4332,343.3202,claude-opus-4.5,litellm-shortlist,82.0
-AppWorld,aws/claude-opus-4-5,Claude Code,0.65,100.0,49.69,13.0838,1308.3792,claude-opus-4.5,claude-code,74.0
-AppWorld,gcp/gemini-3-pro-preview,Claude Code,0.48,100.0,38.01,3.1055,310.5508,gemini-3-pro,claude-code,86.0
-AppWorld,Azure/gpt-5.2-2025-12-11,Claude Code,0.0,30.0,,,,gpt-5.2,claude-code,0.0
-AppWorld,aws/claude-opus-4-5,OpenAI MCP Agent,0.7367,83.0,45.98,13.311,1104.8165,claude-opus-4.5,openai-mcp,74.7
-AppWorld,gcp/gemini-3-pro-preview,OpenAI MCP Agent,0.5,30.0,33.9,5.1023,153.0703,gemini-3-pro,openai-mcp,90.0
-AppWorld,Azure/gpt-5.2-2025-12-11,OpenAI MCP Agent,0.0,30.0,,,,gpt-5.2,openai-mcp,0.0
-AppWorld,aws/claude-opus-4-5,Smolagents Code,0.8233,100.0,41.07,5.5851,558.5109,claude-opus-4.5,smolagents,82.0
-AppWorld,gcp/gemini-3-pro-preview,Smolagents Code,0.526,100.0,49.13,2.5425,254.2546,gemini-3-pro,smolagents,71.0
-AppWorld,Azure/gpt-5.2-2025-12-11,Smolagents Code,0.0,30.0,65.2,0.5268,15.8033,gpt-5.2,smolagents,50.0
-SWE-bench,claude,litellm,0.606061,99.0,43.4,3.97129,393.158,claude-opus-4.5,litellm-shortlist,
-SWE-bench,gemini,litellm,0.71,100.0,32.5,0.695613,69.5613,gemini-3-pro,litellm-shortlist,
-SWE-bench,gpt52,litellm,0.58,100.0,20.5,0.247621,24.7621,gpt-5.2,litellm-shortlist,
-BrowseComp+,gpt-5.2-2025-12-11,LiteLLM Tool Calling,0.46,,,0.297838625,29.7838625,gpt-5.2,litellm-shortlist,
-BrowseComp+,gemini-3-pro-preview,LiteLLM Tool Calling,0.48,,,0.44179078,44.179078,gemini-3-pro,litellm-shortlist,
-BrowseComp+,claude-opus-4-5,LiteLLM Tool Calling,0.49,,,7.09539529,709.539529,claude-opus-4.5,litellm-shortlist,
-TauBench-Airline,Azure/gpt-5.2-2025-12-11,Litellm Tool Calling,0.54,50.0,11.2,0.139,6.9643,gpt-5.2,litellm-shortlist,
-TauBench-Airline,aws/claude-opus-4-5,Litellm Tool Calling,0.66,50.0,9.98,0.4687,23.4326,claude-opus-4.5,litellm-shortlist,
-TauBench-Airline,gcp/gemini-3-pro-preview,Litellm Tool Calling,0.7,50.0,10.14,0.1586,7.9304,gemini-3-pro,litellm-shortlist,
-TauBench-Retail,Azure/gpt-5.2-2025-12-11,LiteLLM Tool Calling,0.73,100.0,10.3,0.123,12.2727,gpt-5.2,litellm-shortlist,
-TauBench-Retail,aws/claude-opus-4-5,Litellm Tool Calling,0.78,100.0,11.27,0.4648,46.4835,claude-opus-4.5,litellm-shortlist,
-TauBench-Retail,gcp/gemini-3-pro-preview,Litellm Tool Calling,0.82,100.0,11.24,0.1564,15.6367,gemini-3-pro,litellm-shortlist,
-TauBench-Telecom,Azure/gpt-5.2-2025-12-11,LiteLLM Tool Calling,0.53,100.0,10.2,0.201,20.0687,gpt-5.2,litellm-shortlist,
-TauBench-Telecom,aws/claude-opus-4-5,LiteLLM Tool Calling,0.73,100.0,17.04,0.9032,90.3205,claude-opus-4.5,litellm-shortlist,
-TauBench-Telecom,gcp/gemini-3-pro-preview,LiteLLM Tool Calling,0.71,100.0,14.78,0.2889,28.8879,gemini-3-pro,litellm-shortlist,
+agent,agent_normalized,avg_cost,avg_steps,benchmark,finished_pct,model,model_normalized,num_tasks,score,total_cost
+claudecode,claude-code,13.08379215,49.69,AppWorld,0.74,claude,claude-opus-4.5,100,0.66,1308.3792150000002
+claudecode,claude-code,0.0,0.0,AppWorld,0.0,gpt52,gpt-5.2,100,0.0,0.0
+claudecode,claude-code,3.10550762,38.01,AppWorld,0.86,gemini,gemini-3-pro,100,0.36,310.550762
+openaimcp,openai-mcp,22.764767600000006,47.65,AppWorld,0.77,claude,claude-opus-4.5,100,0.68,2276.4767600000005
+openaimcp,openai-mcp,0.0,0.0,AppWorld,0.0,gpt52,gpt-5.2,100,0.0,0.0
+openaimcp,openai-mcp,8.695528419999997,33.49,AppWorld,0.98,gemini,gemini-3-pro,100,0.5820000000000001,869.5528419999997
+smolagent,smolagents,5.585109100000002,41.07,AppWorld,0.82,claude,claude-opus-4.5,100,0.7,558.5109100000002
+smolagent,smolagents,0.5503114225,51.59,AppWorld,0.61,gpt52,gpt-5.2,100,0.071,55.03114225
+smolagent,smolagents,2.542546020000001,49.13,AppWorld,0.71,gemini,gemini-3-pro,100,0.13,254.2546020000001
+litellm,litellm-react,11.324659950000004,21.99,AppWorld,0.83,claude,claude-opus-4.5,100,0.61,1132.4659950000005
+litellm,litellm-react,0.0,0.0,AppWorld,0.0,gpt52,gpt-5.2,100,0.0,0.0
+litellm,litellm-react,1.8818770200000003,21.76,AppWorld,0.99,gemini,gemini-3-pro,100,0.505,188.18770200000003
+litellm-shortlist,litellm-shortlist,3.4332017499999994,20.06,AppWorld,0.82,claude,claude-opus-4.5,100,0.64,343.32017499999995
+litellm-shortlist,litellm-shortlist,0.36371315749999994,10.05,AppWorld,1.0,gpt52,gpt-5.2,100,0.22,36.371315749999994
+litellm-shortlist,litellm-shortlist,1.30485292,22.59,AppWorld,1.0,gemini,gemini-3-pro,100,0.55,130.48529200000002
+claudecode,claude-code,11.658796372549022,31.03921568627451,BrowseComp+,0.8431372549019608,claude,claude-opus-4.5,51,0.5294117647058824,594.5986150000001
+claudecode,claude-code,0.4293807000000001,8.97,BrowseComp+,1.0,gpt52,gpt-5.2,100,0.43,42.93807000000001
+claudecode,claude-code,2.8452944199999997,22.88,BrowseComp+,0.7,gemini,gemini-3-pro,100,0.51,284.52944199999996
+openaimcp,openai-mcp,7.592457349999998,27.18,BrowseComp+,1.0,claude,claude-opus-4.5,100,0.61,759.2457349999999
+openaimcp,openai-mcp,0.3804372600000001,14.27,BrowseComp+,1.0,gpt52,gpt-5.2,100,0.48,38.043726000000014
+openaimcp,openai-mcp,0.6433071111111112,8.454545454545455,BrowseComp+,0.6060606060606061,gemini,gemini-3-pro,99,0.3333333333333333,63.687404
+smolagent,smolagents,6.303725049999997,24.16,BrowseComp+,1.0,claude,claude-opus-4.5,100,0.61,630.3725049999997
+smolagent,smolagents,0.17156755,6.57,BrowseComp+,0.99,gpt52,gpt-5.2,100,0.26,17.156755
+smolagent,smolagents,2.388851260000001,29.63,BrowseComp+,0.69,gemini,gemini-3-pro,100,0.57,238.88512600000007
+litellm,litellm-react,7.093632849999999,21.66,BrowseComp+,0.93,claude,claude-opus-4.5,100,0.49,709.3632849999999
+litellm,litellm-react,0.2961726250000001,8.14,BrowseComp+,0.99,gpt52,gpt-5.2,100,0.46,29.617262500000006
+litellm,litellm-react,0.4394335600000001,7.85,BrowseComp+,0.99,gemini,gemini-3-pro,100,0.48,43.94335600000001
+litellm-shortlist,litellm-shortlist,7.093632849999999,21.66,BrowseComp+,0.93,claude,claude-opus-4.5,100,0.49,709.3632849999999
+litellm-shortlist,litellm-shortlist,0.2961726250000001,8.14,BrowseComp+,0.99,gpt52,gpt-5.2,100,0.46,29.617262500000006
+litellm-shortlist,litellm-shortlist,0.4394335600000001,7.85,BrowseComp+,0.99,gemini,gemini-3-pro,100,0.48,43.94335600000001
+claudecode,claude-code,5.604360979381441,31.762886597938145,SWE-bench,1.0,claude,claude-opus-4.5,97,0.7422680412371134,543.6230149999998
+claudecode,claude-code,0.9397547250000001,23.99,SWE-bench,1.0,gpt52,gpt-5.2,100,0.58,93.97547250000001
+claudecode,claude-code,3.679668759999999,43.72,SWE-bench,1.0,gemini,gemini-3-pro,100,0.67,367.9668759999999
+openaimcp,openai-mcp,2.9612612048192783,34.096385542168676,SWE-bench,1.0,claude,claude-opus-4.5,83,0.8072289156626506,245.7846800000001
+openaimcp,openai-mcp,0.259017835858586,20.444444444444443,SWE-bench,1.0,gpt52,gpt-5.2,99,0.5454545454545454,25.642765750000013
+openaimcp,openai-mcp,1.5791779787234044,32.361702127659576,SWE-bench,1.0,gemini,gemini-3-pro,94,0.723404255319149,148.44273
+smolagent,smolagents,4.8521832499999995,39.13,SWE-bench,1.0,claude,claude-opus-4.5,100,0.65,485.218325
+smolagent,smolagents,0.45031795454545454,19.97979797979798,SWE-bench,1.0,gpt52,gpt-5.2,99,0.5252525252525253,44.5814775
+smolagent,smolagents,2.209661838383839,38.101010101010104,SWE-bench,1.0,gemini,gemini-3-pro,99,0.7575757575757576,218.75652200000005
+litellm,litellm-react,3.971294949494951,43.44444444444444,SWE-bench,1.0,claude,claude-opus-4.5,99,0.6060606060606061,393.15820000000014
+litellm,litellm-react,0.247620555,20.47,SWE-bench,1.0,gpt52,gpt-5.2,100,0.57,24.7620555
+litellm,litellm-react,0.6956134199999998,32.55,SWE-bench,1.0,gemini,gemini-3-pro,100,0.71,69.56134199999998
+litellm-shortlist,litellm-shortlist,3.971294949494951,43.44444444444444,SWE-bench,1.0,claude,claude-opus-4.5,99,0.6060606060606061,393.15820000000014
+litellm-shortlist,litellm-shortlist,0.247620555,20.47,SWE-bench,1.0,gpt52,gpt-5.2,100,0.57,24.7620555
+litellm-shortlist,litellm-shortlist,0.6956134199999998,32.55,SWE-bench,1.0,gemini,gemini-3-pro,100,0.71,69.56134199999998
+claudecode,claude-code,1.2993549000000004,11.5,TauBench-Airline,1.0,claude,claude-opus-4.5,50,0.66,64.96774500000002
+claudecode,claude-code,0.21338296,10.18,TauBench-Airline,1.0,gpt52,gpt-5.2,50,0.48,10.669148
+claudecode,claude-code,0.3394426000000001,12.62,TauBench-Airline,1.0,gemini,gemini-3-pro,50,0.7,16.972130000000003
+openaimcp,openai-mcp,0.7165842000000003,12.22,TauBench-Airline,1.0,claude,claude-opus-4.5,50,0.74,35.82921000000002
+openaimcp,openai-mcp,0.10711806000000001,11.4,TauBench-Airline,1.0,gpt52,gpt-5.2,50,0.5,5.3559030000000005
+openaimcp,openai-mcp,0.21380211999999996,10.9,TauBench-Airline,1.0,gemini,gemini-3-pro,50,0.62,10.690105999999998
+smolagent,smolagents,0.7801527999999999,11.88,TauBench-Airline,1.0,claude,claude-opus-4.5,50,0.72,39.007639999999995
+smolagent,smolagents,0.2932717550000001,10.68,TauBench-Airline,1.0,gpt52,gpt-5.2,50,0.6,14.663587750000003
+smolagent,smolagents,0.19590487999999995,12.28,TauBench-Airline,1.0,gemini,gemini-3-pro,50,0.68,9.795243999999997
+litellm,litellm-react,0.46923760000000003,10.0,TauBench-Airline,1.0,claude,claude-opus-4.5,50,0.66,23.46188
+litellm,litellm-react,0.12510473500000002,11.22,TauBench-Airline,1.0,gpt52,gpt-5.2,50,0.54,6.255236750000001
+litellm,litellm-react,0.15854967999999997,10.14,TauBench-Airline,1.0,gemini,gemini-3-pro,50,0.7,7.927483999999998
+litellm-shortlist,litellm-shortlist,0.46923760000000003,10.0,TauBench-Airline,1.0,claude,claude-opus-4.5,50,0.66,23.46188
+litellm-shortlist,litellm-shortlist,0.12510473500000002,11.22,TauBench-Airline,1.0,gpt52,gpt-5.2,50,0.54,6.255236750000001
+litellm-shortlist,litellm-shortlist,0.15854967999999997,10.14,TauBench-Airline,1.0,gemini,gemini-3-pro,50,0.7,7.927483999999998
+claudecode,claude-code,1.5985232500000006,12.54,TauBench-Retail,1.0,claude,claude-opus-4.5,100,0.83,159.85232500000006
+claudecode,claude-code,0.1200643675,9.92,TauBench-Retail,0.98,gpt52,gpt-5.2,100,0.51,12.00643675
+claudecode,claude-code,0.18525811999999994,11.18,TauBench-Retail,1.0,gemini,gemini-3-pro,100,0.7804878048780488,18.525811999999995
+openaimcp,openai-mcp,0.5495812000000001,12.54,TauBench-Retail,1.0,claude,claude-opus-4.5,100,0.85,54.958120000000015
+openaimcp,openai-mcp,0.10778330499999997,9.55,TauBench-Retail,0.99,gpt52,gpt-5.2,100,0.5353535353535354,10.778330499999997
+openaimcp,openai-mcp,0.26648499999999986,10.62,TauBench-Retail,1.0,gemini,gemini-3-pro,100,0.73,26.648499999999988
+smolagent,smolagents,0.6711861,11.71,TauBench-Retail,1.0,claude,claude-opus-4.5,100,0.78,67.11861
+smolagent,smolagents,0.25194685249999993,11.08,TauBench-Retail,1.0,gpt52,gpt-5.2,100,0.68,25.194685249999992
+smolagent,smolagents,0.2056864,11.3,TauBench-Retail,1.0,gemini,gemini-3-pro,100,0.7575757575757576,20.56864
+litellm,litellm-react,0.46742524999999985,11.33,TauBench-Retail,1.0,claude,claude-opus-4.5,100,0.78,46.742524999999986
+litellm,litellm-react,0.11093171249999992,10.33,TauBench-Retail,1.0,gpt52,gpt-5.2,100,0.73,11.093171249999992
+litellm,litellm-react,0.15649691999999996,11.25,TauBench-Retail,1.0,gemini,gemini-3-pro,100,0.82,15.649691999999995
+litellm-shortlist,litellm-shortlist,0.46742524999999985,11.33,TauBench-Retail,1.0,claude,claude-opus-4.5,100,0.78,46.742524999999986
+litellm-shortlist,litellm-shortlist,0.11093171249999992,10.33,TauBench-Retail,1.0,gpt52,gpt-5.2,100,0.73,11.093171249999992
+litellm-shortlist,litellm-shortlist,0.15649691999999996,11.25,TauBench-Retail,1.0,gemini,gemini-3-pro,100,0.82,15.649691999999995
+claudecode,claude-code,2.448864600000001,18.71,TauBench-Telecom,1.0,claude,claude-opus-4.5,100,0.76,244.8864600000001
+claudecode,claude-code,0.0980149625,9.36,TauBench-Telecom,1.0,gpt52,gpt-5.2,100,0.55,9.80149625
+claudecode,claude-code,0.21064223999999993,9.9,TauBench-Telecom,1.0,gemini,gemini-3-pro,100,0.6851851851851852,21.064223999999992
+openaimcp,openai-mcp,1.2459395,17.15,TauBench-Telecom,1.0,claude,claude-opus-4.5,100,0.84,124.59395
+openaimcp,openai-mcp,0.14717545500000007,9.92,TauBench-Telecom,1.0,gpt52,gpt-5.2,100,0.53,14.717545500000005
+openaimcp,openai-mcp,0.5351315199999997,10.82,TauBench-Telecom,0.89,gemini,gemini-3-pro,100,0.8876404494382022,53.51315199999998
+smolagent,smolagents,1.0643879000000003,13.77,TauBench-Telecom,1.0,claude,claude-opus-4.5,100,0.58,106.43879000000003
+smolagent,smolagents,0.30355347749999995,10.11,TauBench-Telecom,1.0,gpt52,gpt-5.2,100,0.71,30.355347749999993
+smolagent,smolagents,0.3461698999999998,12.71,TauBench-Telecom,1.0,gemini,gemini-3-pro,100,0.88,34.61698999999998
+litellm,litellm-react,0.9157812500000004,17.22,TauBench-Telecom,1.0,claude,claude-opus-4.5,100,0.76,91.57812500000004
+litellm,litellm-react,0.14089510749999992,10.18,TauBench-Telecom,0.99,gpt52,gpt-5.2,100,0.5353535353535354,14.089510749999993
+litellm,litellm-react,0.29797836000000005,14.84,TauBench-Telecom,1.0,gemini,gemini-3-pro,100,0.73,29.797836000000004
+litellm-shortlist,litellm-shortlist,0.9157812500000004,17.22,TauBench-Telecom,1.0,claude,claude-opus-4.5,100,0.76,91.57812500000004
+litellm-shortlist,litellm-shortlist,0.14089510749999992,10.18,TauBench-Telecom,0.99,gpt52,gpt-5.2,100,0.5353535353535354,14.089510749999993
+litellm-shortlist,litellm-shortlist,0.29797836000000005,14.84,TauBench-Telecom,1.0,gemini,gemini-3-pro,100,0.73,29.797836000000004
