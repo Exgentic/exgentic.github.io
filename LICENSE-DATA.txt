@@ -1,0 +1,69 @@
+Community Data License Agreement – Permissive – Version 2.0
+
+This is the Community Data License Agreement – Permissive, Version 2.0 ("Agreement"). 
+Data Provider and Data Recipient each agree as follows:
+
+1. Provision of the Data
+
+   1.1. A Data Provider may provide Data to Data Recipients under this Agreement.
+
+   1.2. A Data Recipient may receive Data under this Agreement.
+
+2. License Grant
+
+   2.1. Subject to the terms and conditions of this Agreement, Data Provider grants to 
+        Data Recipient a worldwide, non-exclusive, royalty-free, perpetual (subject to 
+        termination under Section 5) license to:
+
+        (a) use, reproduce, extract, copy, modify, and create derivative works of the Data;
+        (b) publicly perform, publicly display, and distribute the Data and derivative works; and
+        (c) sublicense rights in the Data and derivative works.
+
+3. Data Provider Obligations
+
+   3.1. Data Provider will make available to Data Recipient the Data in a machine-readable 
+        format under the terms of this Agreement.
+
+4. Data Recipient Obligations
+
+   4.1. Data Recipient will comply with all applicable laws and regulations in its use of 
+        the Data.
+
+5. Termination
+
+   5.1. This Agreement will terminate automatically if Data Recipient materially breaches 
+        the terms of this Agreement.
+
+6. Disclaimer of Warranties and Limitation of Liability
+
+   6.1. Except as expressly set forth in this Agreement, the Data is provided on an "AS IS" 
+        basis, without warranties or conditions of any kind, either express or implied.
+
+   6.2. Neither Data Provider nor Data Recipient will be liable for any damages arising out 
+        of or related to this Agreement.
+
+7. Miscellaneous
+
+   7.1. This Agreement constitutes the entire agreement between Data Provider and Data 
+        Recipient with respect to the Data.
+
+Full license text available at: https://cdla.dev/permissive-2-0/
+
+================================================================================
+
+DATA ATTRIBUTION
+
+Source: Exgentic - Open Leaderboard for General-Purpose AI Agents
+Website: https://ibm-research-ai.github.io/exgentic-website/
+GitHub: https://github.com/IBM/exgentic
+Date: February 25, 2026
+
+Citation:
+[TODO: Add paper citation when available]
+For now, please cite the Exgentic project and website.
+
+Description:
+This dataset contains benchmark results for various AI agent frameworks evaluated 
+across multiple tasks including WebArena, AssistantBench, GAIA, and OSWorld. The 
+data includes success rates, costs, and performance metrics for different 
+model-agent combinations.
