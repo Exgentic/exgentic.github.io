@@ -1085,13 +1085,16 @@ let lastScrollY=0;
 window.addEventListener('scroll',()=>{
   const y=window.scrollY;
   header.classList.toggle('scrolled',y>50);
-  // Hide on scroll down, show on scroll up (only after scrolling past header)
   if(y>100){
     header.classList.toggle('header-hidden',y>lastScrollY);
   } else {
     header.classList.remove('header-hidden');
   }
   lastScrollY=y;
+});
+// Show header when mouse reaches top of screen
+document.addEventListener('mousemove',e=>{
+  if(e.clientY<60) header.classList.remove('header-hidden');
 });
 document.getElementById('mobileToggle').addEventListener('click',()=>{document.getElementById('headerNav').classList.toggle('open')});
 
