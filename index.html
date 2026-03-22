@@ -248,12 +248,13 @@ body.light-mode .blob{display:none!important}
   --font:'JetBrains Mono',monospace;
   --mono:'JetBrains Mono',monospace;
 }
-html{scroll-behavior:auto;background:var(--bg-primary)}
+html{scroll-behavior:auto;background:var(--bg-primary);font-size:20px}
 body{font-family:var(--font);color:var(--text-primary);background:var(--bg-primary);line-height:1.6;overflow-x:hidden;padding-top:64px}
 a{color:var(--cyan);text-decoration:none;transition:all .3s}
 a:hover{color:#fff;text-shadow:0 0 8px var(--cyan-glow)}
 img{max-width:100%;height:auto}
-.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.container{max-width:1600px;margin:0 auto;padding:0 48px}
+.container-narrow{max-width:1300px}
 
 /* ===== CONSTELLATION CANVAS ===== */
 #constellation{width:100%;height:700px;pointer-events:none;display:block;margin:0 auto}
@@ -271,7 +272,7 @@ img{max-width:100%;height:auto}
 .site-header{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,11,20,0.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s,transform .3s}
 .site-header.header-hidden{transform:translateY(-100%)}
 .site-header.scrolled{background:rgba(8,11,20,0.95);box-shadow:0 4px 30px rgba(0,0,0,0.5)}
-.header-inner{display:flex;justify-content:space-between;align-items:center;height:64px;padding:0 24px;max-width:1200px;margin:0 auto}
+.header-inner{display:flex;justify-content:space-between;align-items:center;height:64px;padding:0 40px}
 .logo-img{height:36px;filter:invert(1) brightness(2);transition:all .3s}
 .logo-img:hover{filter:invert(1) brightness(2) drop-shadow(0 0 8px var(--cyan))}
 .nav-logo-link{display:flex;align-items:center;gap:4px;text-decoration:none!important}
@@ -293,7 +294,7 @@ img{max-width:100%;height:auto}
   position:relative;padding:80px 24px 60px;
   background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(255,255,255,0.06),transparent),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(255,255,255,0.04),transparent),var(--bg-primary);
 }
-.hero-content{position:relative;z-index:2;text-align:center;max-width:900px}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:1100px}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;border:1px solid var(--border);background:var(--bg-glass);color:var(--text-secondary);font-size:.8rem;font-weight:500;margin-bottom:24px;opacity:0}
 .hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
@@ -343,10 +344,13 @@ img{max-width:100%;height:auto}
   text-align:center;flex:1;min-width:0;
 }
 .hero-card:hover{border-color:var(--cyan);background:var(--cyan-dim);color:var(--text-primary)}
-.hero-card .hero-icon{width:20px;height:20px;color:var(--cyan);flex-shrink:0}
-.hero-card .domain{font-weight:600;color:var(--text-primary);font-size:.75rem;white-space:nowrap}
-.hero-card .cite{font-size:.6rem;color:var(--text-muted);font-style:italic;white-space:nowrap}
+.hero-card .hero-icon{width:24px;height:24px;color:var(--cyan);flex-shrink:0}
+.hero-card .domain{font-weight:600;color:var(--text-primary);font-size:.85rem;white-space:nowrap}
+.hero-card .cite{font-size:.68rem;color:var(--text-muted);font-style:italic;white-space:nowrap}
 .hero-cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;opacity:0}
+.scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);color:var(--text-primary);opacity:.7;animation:scrollBounce 2s ease-in-out infinite;transition:opacity .5s}
+.scroll-hint.hidden{opacity:0;pointer-events:none}
+@keyframes scrollBounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:8px;font-weight:600;font-size:.95rem;transition:all .3s;cursor:pointer;border:none;text-decoration:none!important}
 .btn-primary{background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--bg-primary);box-shadow:0 0 20px var(--cyan-dim)}
 .btn-primary:hover{background:rgba(255,255,255,.15);box-shadow:none}
@@ -452,7 +456,7 @@ section{position:relative;z-index:1;padding:80px 0}
 .lb-table tbody tr:hover{background:rgba(255,255,255,0.06);box-shadow:inset 0 0 30px rgba(255,255,255,0.03)}
 .lb-table .agent-name{font-weight:600;color:var(--text-primary);white-space:nowrap}
 .agent-version{display:block;font-weight:400;font-size:.55rem;color:var(--text-muted);letter-spacing:.02em;margin-top:2px;white-space:nowrap}
-.lb-table .model-name{font-family:var(--mono);font-size:.72rem;color:var(--text-muted)}
+.lb-table .model-name{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);white-space:nowrap}
 
 /* Score cells with inline bars */
 .score-cell{position:relative;font-weight:600;font-family:var(--mono);font-size:.75rem;overflow:hidden}
@@ -639,11 +643,14 @@ section{position:relative;z-index:1;padding:80px 0}
       </a></span>
     </div>
   </div>
+  <div class="scroll-hint" id="scrollHint">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
 </section>
 
 <!-- Leaderboard (lead with the product) -->
 <section class="section-alt" id="leaderboard">
-  <div class="container">
+  <div class="container container-narrow">
     <span class="section-label">Live Rankings</span>
     <h2 class="section-title">The Leaderboard</h2>
     <p class="section-subtitle">Head-to-head performance across diverse benchmarks.</p>
@@ -658,7 +665,7 @@ section{position:relative;z-index:1;padding:80px 0}
 
 <!-- Cost vs Performance -->
 <section id="pareto">
-  <div class="container">
+  <div class="container container-narrow">
     <span class="section-label">Efficiency</span>
     <h2 class="section-title">What Does Performance Cost?</h2>
     <p class="section-subtitle">Which agents deliver the most for the least?</p>
@@ -671,7 +678,7 @@ section{position:relative;z-index:1;padding:80px 0}
 
 <!-- Key Findings -->
 <section class="section-alt" id="findings">
-  <div class="container">
+  <div class="container container-narrow">
     <span class="section-label">Results</span>
     <h2 class="section-title">What the Data Shows</h2>
     <p class="section-subtitle">Three findings that challenge conventional assumptions about AI agents.</p>
@@ -685,8 +692,8 @@ section{position:relative;z-index:1;padding:80px 0}
 </section>
 
 <!-- Force-Directed Data Graph -->
-<section class="graph-section" style="padding:20px 0 0;overflow:hidden">
-  <div class="container" style="text-align:center">
+<section class="graph-section" style="padding:0;overflow:hidden">
+  <div style="text-align:center;padding:0">
     <span class="section-label">Network Map</span>
     <h2 class="section-title">The Evaluation Graph</h2>
     <p class="section-subtitle">Every agent. Every benchmark. Every connection.</p>
@@ -713,7 +720,7 @@ section{position:relative;z-index:1;padding:80px 0}
 
 <!-- Get Involved -->
 <section class="get-started" id="start">
-  <div class="container">
+  <div class="container container-narrow">
     <span class="section-label">Get Involved</span>
     <h2 class="section-title">Open Source. Open Data. Open Leaderboard.</h2>
     <p class="section-subtitle">Everything is open. Jump in.</p>
@@ -944,7 +951,7 @@ section{position:relative;z-index:1;padding:80px 0}
     });
     Object.values(agents).forEach(a=>{
       const avg=a.scores.reduce((x,y)=>x+y,0)/a.scores.length;
-      a.r=Math.max(14,avg*45);
+      a.r=Math.max(18,avg*55);
       a.color=MODEL_COLORS[a.models.values().next().value]||'91,168,160';
       a.avg=avg;a.type='agent';
       agentNodes.push(a);
@@ -991,15 +998,15 @@ section{position:relative;z-index:1;padding:80px 0}
         b.vx-=dx/dist*f;b.vy-=dy/dist*f;
       }
     });
-    // Gravity center shifted up to sit closer to the title
-    const cx=W/2,cy=H*.45;
+    // Weak gravity — lets nodes spread to edges
+    const cx=W/2,cy=H*.48;
     benchNodes.forEach(n=>{
-      n.vx+=(cx-n.x)*.001;
-      n.vy+=(cy-n.y)*.001;
+      n.vx+=(cx-n.x)*.0006;
+      n.vy+=(cy-n.y)*.0006;
     });
     agentNodes.forEach(n=>{
-      n.vx+=(cx-n.x)*.0002;
-      n.vy+=(cy-n.y)*.0002;
+      n.vx+=(cx-n.x)*.0001;
+      n.vy+=(cy-n.y)*.0001;
     });
     all.forEach(n=>{
       // mouse repulsion (gentle)
@@ -1039,10 +1046,10 @@ section{position:relative;z-index:1;padding:80px 0}
 
     // Draw benchmark nodes
     benchNodes.forEach(n=>{
-      ctx.beginPath();ctx.arc(n.x,n.y,8,0,Math.PI*2);
+      ctx.beginPath();ctx.arc(n.x,n.y,10,0,Math.PI*2);
       ctx.fillStyle=benchFill;ctx.fill();
-      ctx.fillStyle=benchText;ctx.font='500 13px Inter';ctx.textAlign='center';
-      ctx.fillText(n.name,n.x,n.y-16);
+      ctx.fillStyle=benchText;ctx.font='500 15px Inter';ctx.textAlign='center';
+      ctx.fillText(n.name,n.x,n.y-18);
     });
 
     // Draw agent nodes
@@ -1058,11 +1065,11 @@ section{position:relative;z-index:1;padding:80px 0}
       ctx.strokeStyle=`rgba(${n.color},${isLight?0.5:0.6})`;ctx.lineWidth=1.5;ctx.stroke();
       // Label
       ctx.fillStyle=isLight?`rgba(0,0,0,0.7)`:`rgba(${n.color},0.85)`;
-      ctx.font='600 15px Inter';ctx.textAlign='center';
-      ctx.fillText(n.name.replace(/_/g,' '),n.x,n.y+n.r+22);
+      ctx.font='600 17px Inter';ctx.textAlign='center';
+      ctx.fillText(n.name.replace(/_/g,' '),n.x,n.y+n.r+26);
       // Score
-      ctx.fillStyle=scoreText;ctx.font='500 13px JetBrains Mono';
-      ctx.fillText((n.avg*100).toFixed(1)+'%',n.x,n.y+5);
+      ctx.fillStyle=scoreText;ctx.font='500 15px JetBrains Mono';
+      ctx.fillText((n.avg*100).toFixed(1)+'%',n.x,n.y+6);
 
       // Mouse glow boost
       const d=Math.sqrt((n.x-mouse.x)**2+(n.y-mouse.y)**2);
@@ -1090,6 +1097,10 @@ window.addEventListener('scroll',()=>{
     header.classList.remove('header-hidden');
   }
   lastScrollY=y;
+  // Fade scroll hint after scrolling
+  const hint=document.getElementById('scrollHint');
+  if(hint && y>100) hint.classList.add('hidden');
+  else if(hint && y<50) hint.classList.remove('hidden');
 });
 // Show header when mouse reaches top of screen
 document.addEventListener('mousemove',e=>{
