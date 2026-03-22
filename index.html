@@ -692,11 +692,11 @@ section{position:relative;z-index:1;padding:80px 0}
 </section>
 
 <!-- Force-Directed Data Graph -->
-<section class="graph-section" style="padding:0;overflow:hidden">
-  <div style="text-align:center;padding:0">
+<section class="graph-section" style="overflow:hidden">
+  <div style="text-align:center;padding:0 0">
     <span class="section-label">Network Map</span>
     <h2 class="section-title">The Evaluation Graph</h2>
-    <p class="section-subtitle">Every agent. Every benchmark. Every connection.</p>
+    <p class="section-subtitle" style="margin-bottom:0">Every agent. Every benchmark. Every connection.</p>
     <canvas id="constellation"></canvas>
   </div>
 </section>
@@ -945,7 +945,7 @@ section{position:relative;z-index:1;padding:80px 0}
         const bCount=Object.keys(benchs).length;
         const angle=bCount*Math.PI*2/6+Math.random()*.2;
         const radius=Math.min(W,H)*.08;
-        benchs[b]={name:b,x:W/2+Math.cos(angle)*radius,y:H*.45+Math.sin(angle)*radius,vx:0,vy:0,r:8,type:'bench'};
+        benchs[b]={name:b,x:W/2+Math.cos(angle)*radius,y:H*.35+Math.sin(angle)*radius,vx:0,vy:0,r:8,type:'bench'};
       }
       edges.push({from:a,to:b,score,model:m});
     });
@@ -998,8 +998,8 @@ section{position:relative;z-index:1;padding:80px 0}
         b.vx-=dx/dist*f;b.vy-=dy/dist*f;
       }
     });
-    // Weak gravity — lets nodes spread to edges
-    const cx=W/2,cy=H*.48;
+    // Weak gravity — center shifted up so nodes fill canvas
+    const cx=W/2,cy=H*.4;
     benchNodes.forEach(n=>{
       n.vx+=(cx-n.x)*.0006;
       n.vy+=(cy-n.y)*.0006;
