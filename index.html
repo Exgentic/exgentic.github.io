@@ -257,7 +257,7 @@ img{max-width:100%;height:auto}
 .container-narrow{max-width:1300px}
 
 /* ===== CONSTELLATION CANVAS ===== */
-#constellation{width:100%;height:700px;pointer-events:none;display:block;margin:0 auto}
+#constellation{width:100%;height:550px;pointer-events:none;display:block;margin:0 auto}
 
 /* ===== MESH GRADIENT BLOBS ===== */
 .blob{position:fixed;border-radius:50%;filter:blur(100px);opacity:.12;pointer-events:none;z-index:0}
@@ -762,11 +762,13 @@ section{position:relative;z-index:1;padding:80px 0}
   const container=document.getElementById('floatingLabels');
 
   const fillBar=document.getElementById('loadingFill');
-  // Smooth continuous fill
-  fillBar.style.width='40%';
+  // Smooth continuous fill — reaches 100% right at explosion
+  const totalTime=dur+400;
+  fillBar.style.width='5%';
   setTimeout(()=>{
-    fillBar.style.transition='width '+dur+'ms linear';
-    fillBar.style.width='80%';
+    fillBar.style.transition='width '+totalTime+'ms linear';
+    fillBar.style.width='100%';
+    fillBar.style.borderRadius='28px';
   },50);
 
   const labels=[
@@ -907,7 +909,7 @@ section{position:relative;z-index:1;padding:80px 0}
 
   function resize(){
     const rect=canvas.parentElement.getBoundingClientRect();
-    W=rect.width;H=700;
+    W=rect.width;H=550;
     canvas.width=W*dpr;canvas.height=H*dpr;
     canvas.style.width=W+'px';canvas.style.height=H+'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -945,7 +947,7 @@ section{position:relative;z-index:1;padding:80px 0}
         const bCount=Object.keys(benchs).length;
         const angle=bCount*Math.PI*2/6+Math.random()*.2;
         const radius=Math.min(W,H)*.08;
-        benchs[b]={name:b,x:W/2+Math.cos(angle)*radius,y:H*.35+Math.sin(angle)*radius,vx:0,vy:0,r:8,type:'bench'};
+        benchs[b]={name:b,x:W/2+Math.cos(angle)*radius,y:H*.4+Math.sin(angle)*radius,vx:0,vy:0,r:8,type:'bench'};
       }
       edges.push({from:a,to:b,score,model:m});
     });
@@ -998,8 +1000,8 @@ section{position:relative;z-index:1;padding:80px 0}
         b.vx-=dx/dist*f;b.vy-=dy/dist*f;
       }
     });
-    // Weak gravity — center shifted up so nodes fill canvas
-    const cx=W/2,cy=H*.4;
+    // Weak gravity — center in middle of shorter canvas
+    const cx=W/2,cy=H*.45;
     benchNodes.forEach(n=>{
       n.vx+=(cx-n.x)*.0006;
       n.vy+=(cy-n.y)*.0006;
