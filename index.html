@@ -282,7 +282,7 @@ img{max-width:100%;height:auto}
 .header-nav a::after{content:'';position:absolute;bottom:-4px;left:50%;width:0;height:1px;background:var(--cyan);box-shadow:0 0 6px var(--cyan);transition:all .3s;transform:translateX(-50%)}
 .header-nav a:hover::after{width:100%}
 .btn-nav{padding:8px 20px;border:1px solid var(--cyan);border-radius:8px;color:var(--cyan)!important;font-weight:600;font-size:.85rem;transition:all .3s}
-.btn-nav:hover{background:var(--cyan);color:var(--bg-primary);box-shadow:0 0 20px var(--cyan-dim);text-shadow:none}
+.btn-nav:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3)}
 .btn-nav::after{display:none!important}
 .mobile-toggle{display:none;background:none;border:none;color:var(--text-primary);font-size:1.5rem;cursor:pointer}
 
@@ -348,9 +348,9 @@ img{max-width:100%;height:auto}
 .hero-cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;opacity:0}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:8px;font-weight:600;font-size:.95rem;transition:all .3s;cursor:pointer;border:none;text-decoration:none!important}
 .btn-primary{background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--bg-primary);box-shadow:0 0 20px var(--cyan-dim)}
-.btn-primary:hover{box-shadow:0 0 40px var(--cyan-glow);transform:translateY(-2px);text-shadow:none}
+.btn-primary:hover{background:rgba(255,255,255,.15);box-shadow:none}
 .btn-secondary{background:linear-gradient(90deg,rgba(91,168,160,.15),rgba(106,140,190,.15));color:var(--text-primary)!important;border:1px solid rgba(91,168,160,.2)}
-.btn-secondary:hover{background:linear-gradient(90deg,rgba(91,168,160,.25),rgba(106,140,190,.25));border-color:rgba(91,168,160,.4)}
+.btn-secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3)}
 
 /* ===== SECTIONS ===== */
 section{position:relative;z-index:1;padding:80px 0}
@@ -511,7 +511,7 @@ section{position:relative;z-index:1;padding:80px 0}
   border:1px solid var(--cyan);color:var(--cyan);font-weight:600;font-size:.9rem;
   transition:all .3s;background:transparent;cursor:pointer;
 }
-.btn-outline:hover{background:var(--cyan);color:var(--bg-primary);box-shadow:0 0 20px var(--cyan-dim);text-decoration:none;text-shadow:none}
+.btn-outline:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);text-decoration:none}
 
 /* ===== FOOTER ===== */
 .site-footer{background:var(--bg-secondary);border-top:1px solid var(--border);padding:48px 0 24px;position:relative;z-index:1}
