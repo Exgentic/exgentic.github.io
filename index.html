@@ -227,7 +227,7 @@ body.light-mode #constellation{opacity:1!important}
 body.light-mode .blob{display:none!important}
 
 /* ===== RESET & BASE ===== */
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:inherit}
 :root{
   --bg-primary:#000000;
   --bg-secondary:#050505;
@@ -281,7 +281,7 @@ img{max-width:100%;height:auto}
 .header-nav a:hover{color:var(--cyan);text-shadow:0 0 8px var(--cyan-glow);text-decoration:none}
 .header-nav a::after{content:'';position:absolute;bottom:-4px;left:50%;width:0;height:1px;background:var(--cyan);box-shadow:0 0 6px var(--cyan);transition:all .3s;transform:translateX(-50%)}
 .header-nav a:hover::after{width:100%}
-.btn-nav{padding:8px 20px;border:1px solid var(--cyan);border-radius:6px;color:var(--cyan)!important;font-weight:600;font-size:.85rem;transition:all .3s}
+.btn-nav{padding:8px 20px;border:1px solid var(--cyan);border-radius:8px;color:var(--cyan)!important;font-weight:600;font-size:.85rem;transition:all .3s}
 .btn-nav:hover{background:var(--cyan);color:var(--bg-primary)!important;box-shadow:0 0 20px var(--cyan-dim);text-shadow:none!important}
 .btn-nav::after{display:none!important}
 .mobile-toggle{display:none;background:none;border:none;color:var(--text-primary);font-size:1.5rem;cursor:pointer}
@@ -414,8 +414,7 @@ section{position:relative;z-index:1;padding:80px 0}
 /* ===== FINDINGS ===== */
 .findings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:40px}
 .finding-card{padding:32px;border-left:2px solid rgba(255,255,255,0.2);perspective:600px}
-.finding-card:nth-child(3){border-left-color:var(--blue)}
-.finding-card h3{font-size:1.15rem;font-weight:700;margin-bottom:10px}
+.finding-card h3{font-size:1.15rem;font-weight:700;margin-bottom:12px}
 .finding-card p{color:var(--text-secondary);line-height:1.7;font-size:.93rem}
 .findings-cta{text-align:center}
 
@@ -425,7 +424,7 @@ section{position:relative;z-index:1;padding:80px 0}
 .leaderboard-controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px}
 .leaderboard-controls h3{font-size:1.1rem;font-weight:600}
 .filter-select{
-  padding:8px 16px;border-radius:6px;background:var(--bg-card);border:1px solid var(--border);
+  padding:8px 16px;border-radius:8px;background:var(--bg-card);border:1px solid var(--border);
   color:var(--text-primary);font-family:var(--font);font-size:.85rem;cursor:pointer;transition:all .3s;
   -webkit-appearance:none;appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.5)' viewBox='0 0 16 16'%3E%3Cpath d='M8 12L2 6h12z'/%3E%3C/svg%3E");
