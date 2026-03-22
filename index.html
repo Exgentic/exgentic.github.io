@@ -26,7 +26,11 @@ Copyright (C) 2025, The Exgentic organization and its contributors.
     gtag('config', 'G-XKC51P054L');
   </script>
   <!-- Apply theme before render to prevent flash -->
-  <script>if(localStorage.getItem('exgentic-theme')==='light')document.documentElement.classList.add('light-mode-early');</script>
+  <script>
+    var t=localStorage.getItem('exgentic-theme');
+    if(t==='light'||(t===null&&window.matchMedia('(prefers-color-scheme:light)').matches))
+      document.documentElement.classList.add('light-mode-early');
+  </script>
 
 <style>
 /* Early light mode (applied to <html> before body exists) */
@@ -1352,7 +1356,8 @@ fetch('/results.csv.timestamp').then(r=>r.text()).then(t=>{
 (function(){
   const btn=document.getElementById('themeToggle');
   const saved=localStorage.getItem('exgentic-theme');
-  if(saved==='light') document.body.classList.add('light-mode');
+  const preferLight=saved==='light'||(saved===null&&window.matchMedia('(prefers-color-scheme:light)').matches);
+  if(preferLight) document.body.classList.add('light-mode');
   document.documentElement.classList.remove('light-mode-early');
   function update(){
     const isLight=document.body.classList.contains('light-mode');
