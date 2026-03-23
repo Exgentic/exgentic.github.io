@@ -1,0 +1,38 @@
+name: Deploy to HuggingFace Dataset
+
+on:
+  push:
+    branches: [gh-pages]
+    paths:
+      - 'data/results.csv'
+      - 'scripts/build_data.py'
+      - 'hf-dataset/README.md'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build parquet from source
+        run: |
+          pip install pyarrow
+          python3 scripts/build_data.py
+
+      - name: Push to HuggingFace
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          pip install huggingface_hub
+          python3 -c "
+          from huggingface_hub import HfApi
+          api = HfApi(token='$HF_TOKEN')
+          api.upload_folder(
+              folder_path='hf-dataset',
+              repo_id='Exgentic/open-agent-leaderboard-results',
+              repo_type='dataset',
+              commit_message='Auto-deploy from GitHub',
+              delete_patterns=['*'],
+          )
+          print('Deployed to HuggingFace Dataset')
+          "
