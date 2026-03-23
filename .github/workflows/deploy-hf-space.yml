@@ -1,0 +1,55 @@
+name: Deploy to HuggingFace Space
+
+on:
+  push:
+    branches: [gh-pages]
+    paths:
+      - 'hf-space/**'
+      - 'data/results.csv'
+      - 'scripts/build_data.py'
+      - 'styles.css'
+      - 'scripts/leaderboard.js'
+      - 'results-README.md'
+      - 'LICENSE-DATA.txt'
+      - 'favicon.png'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build data from source
+        run: |
+          pip install pyarrow
+          python3 scripts/build_data.py
+
+      - name: Assemble HF space files
+        run: |
+          mkdir -p staging/scripts
+          cp hf-space/index.html staging/index.html
+          cp hf-space/README.md staging/README.md
+          cp styles.css staging/styles.css
+          cp scripts/leaderboard.js staging/scripts/leaderboard.js
+          cp results.csv staging/results.csv
+          cp results-README.md staging/results-README.md
+          cp LICENSE-DATA.txt staging/LICENSE-DATA.txt
+          cp favicon.png staging/favicon.png
+
+      - name: Push to HuggingFace
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          pip install huggingface_hub
+          python3 -c "
+          from huggingface_hub import HfApi
+          api = HfApi(token='$HF_TOKEN')
+          api.upload_folder(
+              folder_path='staging',
+              repo_id='Exgentic/leaderboard',
+              repo_type='space',
+              commit_message='Auto-deploy from GitHub',
+              delete_patterns=['*'],
+          )
+          print('Deployed to HuggingFace Space')
+          "
