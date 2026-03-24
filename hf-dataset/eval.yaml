@@ -1,0 +1,32 @@
+name: Exgentic Open General Agent Leaderboard
+description: >
+  Cross-benchmark evaluation of general-purpose AI agents across diverse
+  real-world environments without domain-specific tuning. Covers app control,
+  web browsing, software engineering, and customer service domains.
+evaluation_framework: exgentic
+license: cdla-permissive-2.0
+
+tasks:
+  - id: appworld
+    name: AppWorld
+    description: App-based task completion in simulated smartphone environments
+
+  - id: browsecomp_plus
+    name: BrowseComp+
+    description: Web browsing and complex multi-hop information retrieval
+
+  - id: swebench
+    name: SWE-bench
+    description: Software engineering issue resolution on real GitHub repositories
+
+  - id: taubench_airline
+    name: TauBench-Airline
+    description: Customer service agent evaluation in the airline domain
+
+  - id: taubench_retail
+    name: TauBench-Retail
+    description: Customer service agent evaluation in the retail domain
+
+  - id: taubench_telecom
+    name: TauBench-Telecom
+    description: Customer service agent evaluation in the telecom domain

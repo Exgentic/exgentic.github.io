@@ -2,7 +2,9 @@
 const BENCHMARKS=['AppWorld','BrowseComp+','SWE-bench','TauBench-Airline','TauBench-Retail','TauBench-Telecom'];
 const BENCH_SHORT={'AppWorld':'App','BrowseComp+':'Browse','SWE-bench':'SWE','TauBench-Airline':'Tau-Air','TauBench-Retail':'Tau-Ret','TauBench-Telecom':'Tau-Tel'};
 const MODEL_DISPLAY={'claude-opus-4.5':'Claude Opus 4.5','gpt-5.2':'GPT 5.2','gemini-3-pro':'Gemini Pro 3'};
+const MODEL_URLS={'claude-opus-4.5':'https://www.anthropic.com/claude','gpt-5.2':'https://openai.com/','gemini-3-pro':'https://deepmind.google/technologies/gemini/'};
 const AGENT_DISPLAY={'Claude_Code':'Claude Code','OpenAI_Solo':'OpenAI Solo','Smolagent':'Smolagent','React':'React','React_+_Shortlisting':'React + Shortlist'};
+const AGENT_URLS={'Claude_Code':'https://github.com/anthropics/claude-code','OpenAI_Solo':'https://github.com/openai/openai-agents-python','Smolagent':'https://github.com/huggingface/smolagents','React':'https://github.com/BerriAI/litellm','React_+_Shortlisting':'https://github.com/BerriAI/litellm'};
 
 let sortCol='avg',sortDir=-1;
 
@@ -70,8 +72,12 @@ function renderTable(data){
     let html=`<tr>`;
     html+=`<td>${rankHtml}</td>`;
     const ver=row.version?row.version.replace(/_/g,' ').replace(/\s*�\s*/g,' · '):'';
-    html+=`<td class="agent-name">${name}${ver?`<span class="agent-version">${ver}</span>`:''}</td>`;
-    html+=`<td class="model-name">${model}</td>`;
+    const agentUrl=AGENT_URLS[row.agent];
+    const agentLink=agentUrl?`<a href="${agentUrl}" target="_blank" rel="noopener">${name}</a>`:name;
+    html+=`<td class="agent-name">${agentLink}${ver?`<span class="agent-version">${ver}</span>`:''}</td>`;
+    const modelUrl=MODEL_URLS[row.model];
+    const modelLink=modelUrl?`<a href="${modelUrl}" target="_blank" rel="noopener">${model}</a>`:model;
+    html+=`<td class="model-name">${modelLink}</td>`;
     html+=`<td class="score-cell ${scoreClass(row.avg)}"><div class="bar bar-cyan" style="width:${row.avg*100}%"></div><span class="val">${fmtPct(row.avg)}</span></td>`;
     html+=`<td class="cost-cell">$${row.avgCost.toFixed(2)}</td>`;
     row.benchScores.forEach(s=>{

@@ -2,7 +2,7 @@ name: Deploy to HuggingFace Space
 
 on:
   push:
-    branches: [gh-pages]
+    branches: [main]
     paths:
       - 'hf-space/**'
       - 'data/results.csv'
@@ -32,6 +32,7 @@ jobs:
           cp styles.css staging/styles.css
           cp scripts/leaderboard.js staging/scripts/leaderboard.js
           cp results.csv staging/results.csv
+          cp results.csv.timestamp staging/results.csv.timestamp
           cp results-README.md staging/results-README.md
           cp LICENSE-DATA.txt staging/LICENSE-DATA.txt
           cp favicon.png staging/favicon.png
