@@ -1,0 +1,206 @@
+<style>
+  .ogl-gs-chart {
+    --clr-general: #5ba8a0;
+    --clr-specialized: rgba(128,128,128,0.35);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-primary);
+  }
+
+  .ogl-gs-chart * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .ogl-gs-chart .container { max-width: 780px; width: 100%; }
+
+  .ogl-gs-chart .fig-header { margin-bottom: 1rem; }
+
+  .ogl-gs-chart .fig-title {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25rem;
+  }
+
+  .ogl-gs-chart .fig-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  .ogl-gs-chart .chart-card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem 1.25rem 1rem;
+  }
+
+  .ogl-gs-chart .legend {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .ogl-gs-chart .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .ogl-gs-chart .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .ogl-gs-chart .legend-dot.general { background: var(--clr-general); }
+  .ogl-gs-chart .legend-dot.specialized { background: var(--clr-specialized); }
+
+  .ogl-gs-chart .benchmark-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: center;
+    margin-bottom: 0.85rem;
+    transition: opacity 160ms ease;
+  }
+
+  .ogl-gs-chart .benchmark-row:last-child { margin-bottom: 0; }
+
+  .ogl-gs-chart .benchmark-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-align: right;
+    padding-right: 1.1rem;
+  }
+
+  .ogl-gs-chart .bars-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .ogl-gs-chart .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ogl-gs-chart .bar {
+    height: 20px;
+    border-radius: 3px;
+    min-width: 2px;
+    transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 160ms ease;
+  }
+
+  .ogl-gs-chart .bar-general { background: linear-gradient(90deg, #5ba8a0, #6a8cbe); }
+  .ogl-gs-chart .bar-specialized { background: var(--clr-specialized); }
+
+  .ogl-gs-chart .bar-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .ogl-gs-chart .chart-root.is-hovering .benchmark-row { opacity: 0.25; }
+  .ogl-gs-chart .chart-root.is-hovering .benchmark-row.is-active { opacity: 1; }
+
+  .ogl-gs-chart .fig-caption {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-top: 0.85rem;
+  }
+
+  @media (max-width: 600px) {
+    .ogl-gs-chart .chart-card { padding: 1rem 0.85rem 0.85rem; }
+    .ogl-gs-chart .benchmark-row { grid-template-columns: 1fr; gap: 0.3rem; }
+    .ogl-gs-chart .benchmark-label { text-align: left; padding-right: 0; }
+  }
+</style>
+
+<div class="ogl-gs-chart">
+  <div class="container">
+    <div class="fig-header">
+      <div class="fig-title">General-purpose agents vs. specialized systems</div>
+      <div class="fig-subtitle">Best general agent score compared to the top score on each benchmark's original leaderboard.</div>
+    </div>
+
+    <div class="chart-card">
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot general"></div>General agent</div>
+        <div class="legend-item"><div class="legend-dot specialized"></div>Best specialized</div>
+      </div>
+
+      <div class="chart-root" id="chartRoot"></div>
+    </div>
+
+    <div class="fig-caption">
+      Specialized scores are the top results from each benchmark's original leaderboard.
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const root = document.getElementById('chartRoot');
+  const data = [
+    { label: 'SWE-Bench Verified', general: 0.81, specialized: 0.79 },
+    { label: 'Tau2 Retail',        general: 0.85, specialized: 0.86 },
+    { label: 'Tau2 Telecom',       general: 0.89, specialized: 0.98 },
+    { label: 'Tau2 Airline',       general: 0.74, specialized: 0.73 },
+    { label: 'AppWorld',           general: 0.70, specialized: 0.73 },
+    { label: 'BrowseComp+',        general: 0.61, specialized: 0.80 },
+  ];
+
+  const maxVal = 1.0;
+
+  data.forEach((d) => {
+    const row = document.createElement('div');
+    row.className = 'benchmark-row';
+
+    const generalW = (d.general / maxVal) * 100;
+    const specializedW = (d.specialized / maxVal) * 100;
+
+    row.innerHTML = `
+      <div class="benchmark-label">${d.label}</div>
+      <div class="bars-wrapper">
+        <div class="bar-row">
+          <div class="bar bar-general" style="width: 0%" data-width="${generalW}%"></div>
+          <span class="bar-score">${d.general.toFixed(2)}</span>
+        </div>
+        <div class="bar-row">
+          <div class="bar bar-specialized" style="width: 0%" data-width="${specializedW}%"></div>
+          <span class="bar-score">${d.specialized.toFixed(2)}</span>
+        </div>
+      </div>
+    `;
+    root.appendChild(row);
+  });
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      root.querySelectorAll('.bar').forEach((bar) => {
+        bar.style.width = bar.dataset.width;
+      });
+    }, 100);
+  });
+
+  const rows = [...root.querySelectorAll('.benchmark-row')];
+
+  rows.forEach((row) => {
+    row.addEventListener('mouseenter', () => {
+      root.classList.add('is-hovering');
+      rows.forEach((r) => r.classList.remove('is-active'));
+      row.classList.add('is-active');
+    });
+    row.addEventListener('mouseleave', () => {
+      root.classList.remove('is-hovering');
+      row.classList.remove('is-active');
+    });
+  });
+})();
+</script>

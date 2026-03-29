@@ -234,7 +234,7 @@ document.querySelectorAll('.faq-question').forEach(btn=>{
     document.body.classList.toggle('light-mode');
     update();
     // Re-render chart with new theme colors
-    if(window._chartData) renderChart(window._chartData);
+    if(window._chartData && window.renderParetoChart) window.renderParetoChart(window._chartData);
   });
 })();
 

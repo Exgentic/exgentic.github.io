@@ -1,0 +1,296 @@
+<style>
+  .protocol-embed .diagram-wrap {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-glass);
+    padding: 20px 16px 14px;
+  }
+
+  .protocol-embed .protocol-figure {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .protocol-embed .protocol-figure .pf-node,
+  .protocol-embed .protocol-figure .pf-core-card {
+    cursor: default;
+  }
+
+  .protocol-embed .protocol-figure .pf-link {
+    opacity: 0.7;
+    transition: all 160ms ease;
+  }
+
+  .protocol-embed .protocol-figure .pf-junction {
+    transition: all 160ms ease;
+  }
+
+  .protocol-embed .protocol-figure .pf-node rect,
+  .protocol-embed .protocol-figure .pf-core rect,
+  .protocol-embed .protocol-figure .pf-core-card rect {
+    transition: all 160ms ease;
+  }
+
+  .protocol-embed .protocol-figure .pf-node.is-active rect,
+  .protocol-embed .protocol-figure .pf-core-card.is-active rect {
+    stroke: var(--text-muted);
+    stroke-width: 1.8;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.10));
+  }
+
+  .protocol-embed .protocol-figure .pf-link.is-active {
+    stroke: var(--text-muted);
+    stroke-width: 2.2;
+    opacity: 1;
+  }
+
+  .protocol-embed .protocol-figure .pf-junction.is-active {
+    fill: var(--text-muted);
+    opacity: 1;
+  }
+
+  .protocol-embed .protocol-figure .pf-dim {
+    opacity: 0.18;
+  }
+
+  .protocol-embed figcaption {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-top: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .protocol-embed figcaption code {
+    font-size: 0.74rem;
+    background: var(--bg-glass);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+
+  /* SVG text fills — explicit colors for dark/light mode */
+  .protocol-embed .protocol-figure .pf-section-label {
+    fill: var(--text-primary);
+    opacity: 0.85;
+  }
+  .protocol-embed .protocol-figure .pf-section-title {
+    fill: var(--text-primary);
+  }
+  .protocol-embed .protocol-figure .pf-node text {
+    fill: var(--text-primary);
+  }
+  .protocol-embed .protocol-figure .pf-core-card-bg {
+    fill: var(--text-primary);
+    stroke: var(--border);
+  }
+  .protocol-embed .protocol-figure .pf-core-card .pf-card-label {
+    fill: var(--text-primary);
+  }
+  .protocol-embed .protocol-figure .pf-core-card .pf-card-desc {
+    fill: var(--text-secondary);
+  }
+
+  /* Links & junctions use themed stroke/fill */
+  .protocol-embed .protocol-figure .pf-link {
+    stroke: var(--text-muted);
+  }
+  .protocol-embed .protocol-figure .pf-junction {
+    fill: var(--text-muted);
+  }
+</style>
+
+<figure class="protocol-embed">
+  <div class="diagram-wrap">
+    <svg class="protocol-figure" viewBox="0 0 920 280" role="img" aria-label="Unified protocol diagram connecting agent implementations through native interfaces into task, context, and actions">
+      <defs>
+        <marker id="arrowHead" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto">
+          <path d="M0,0.5 L6,3 L0,5.5" fill="none" stroke="var(--text-muted)" stroke-width="1.2" stroke-linejoin="round"/>
+        </marker>
+        <marker id="arrowHeadActive" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto">
+          <path d="M0,0.5 L6,3 L0,5.5" fill="none" stroke="var(--text-secondary)" stroke-width="1.2" stroke-linejoin="round"/>
+        </marker>
+        <linearGradient id="protocol-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#5ba8a0"/>
+          <stop offset="100%" stop-color="#6a8cbe"/>
+        </linearGradient>
+      </defs>
+
+      <text class="pf-section-label" x="108" y="30" text-anchor="middle" font-size="11" font-weight="500" letter-spacing="0.04em" style="font-family: 'Inter', system-ui; text-transform: uppercase;">Agents</text>
+      <text class="pf-section-label" x="316" y="30" text-anchor="middle" font-size="11" font-weight="500" letter-spacing="0.04em" style="font-family: 'Inter', system-ui; text-transform: uppercase;">Interfaces</text>
+      <text class="pf-section-title" x="548" y="30" text-anchor="middle" font-size="17" font-weight="600" style="font-family: 'Inter', system-ui; letter-spacing: -0.01em;">Unified Protocol</text>
+      <text class="pf-section-label" x="780" y="30" text-anchor="middle" font-size="11" font-weight="500" letter-spacing="0.04em" style="font-family: 'Inter', system-ui; text-transform: uppercase;">Benchmarks</text>
+
+      <g class="pf-core">
+        <foreignObject x="436" y="62" width="224" height="206">
+          <div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;border-radius:16px;background:linear-gradient(90deg,#5ba8a0,#6a8cbe);"></div>
+        </foreignObject>
+      </g>
+
+      <g class="pf-core-card" data-focus="task">
+        <rect x="460" y="76" width="176" height="40" rx="10" class="pf-core-card-bg" stroke-width="1" style="fill:var(--bg-primary);stroke:var(--border)"/>
+        <text class="pf-card-label" x="548" y="93" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">task</text>
+        <text class="pf-card-desc" x="548" y="109" text-anchor="middle" font-size="10" style="font-family: 'Inter', system-ui;">what the agent should do</text>
+      </g>
+
+      <g class="pf-core-card" data-focus="context">
+        <rect x="460" y="146" width="176" height="40" rx="10" class="pf-core-card-bg" stroke-width="1" style="fill:var(--bg-primary);stroke:var(--border)"/>
+        <text class="pf-card-label" x="548" y="163" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">context</text>
+        <text class="pf-card-desc" x="548" y="179" text-anchor="middle" font-size="10" style="font-family: 'Inter', system-ui;">what the agent should know</text>
+      </g>
+
+      <g class="pf-core-card" data-focus="actions">
+        <rect x="460" y="216" width="176" height="40" rx="10" class="pf-core-card-bg" stroke-width="1" style="fill:var(--bg-primary);stroke:var(--border)"/>
+        <text class="pf-card-label" x="548" y="233" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">actions</text>
+        <text class="pf-card-desc" x="548" y="249" text-anchor="middle" font-size="10" style="font-family: 'Inter', system-ui;">what the agent is allowed to do</text>
+      </g>
+
+      <g class="pf-node" data-focus="agent-claude">
+        <rect x="20" y="76" width="176" height="40" rx="10" fill="var(--bg-glass)" stroke="var(--border)" stroke-width="1"/>
+        <text x="108" y="101" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">Claude Code</text>
+      </g>
+
+      <g class="pf-node" data-focus="agent-smol">
+        <rect x="20" y="146" width="176" height="40" rx="10" fill="var(--bg-glass)" stroke="var(--border)" stroke-width="1"/>
+        <text x="108" y="171" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">Smolagent</text>
+      </g>
+
+      <g class="pf-node" data-focus="agent-react">
+        <rect x="20" y="216" width="176" height="40" rx="10" fill="var(--bg-glass)" stroke="var(--border)" stroke-width="1"/>
+        <text x="108" y="241" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">ReAct</text>
+      </g>
+
+      <g class="pf-node" data-focus="iface-mcp">
+        <rect x="228" y="76" width="176" height="40" rx="10" fill="var(--bg-glass)" stroke="var(--border)" stroke-width="1"/>
+        <text x="316" y="101" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">MCP</text>
+      </g>
+
+      <g class="pf-node" data-focus="iface-python">
+        <rect x="228" y="146" width="176" height="40" rx="10" fill="var(--bg-glass)" stroke="var(--border)" stroke-width="1"/>
+        <text x="316" y="171" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">Python</text>
+      </g>
+
+      <g class="pf-node" data-focus="iface-tools">
+        <rect x="228" y="216" width="176" height="40" rx="10" fill="var(--bg-glass)" stroke="var(--border)" stroke-width="1"/>
+        <text x="316" y="241" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">Tool calling</text>
+      </g>
+
+      <g class="pf-node" data-focus="env-swe">
+        <rect x="692" y="76" width="176" height="40" rx="10" fill="var(--bg-glass)" stroke="var(--border)" stroke-width="1"/>
+        <text x="780" y="101" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">SWE-Bench Verified</text>
+      </g>
+
+      <g class="pf-node" data-focus="env-appworld">
+        <rect x="692" y="146" width="176" height="40" rx="10" fill="var(--bg-glass)" stroke="var(--border)" stroke-width="1"/>
+        <text x="780" y="171" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">AppWorld</text>
+      </g>
+
+      <g class="pf-node" data-focus="env-tau">
+        <rect x="692" y="216" width="176" height="40" rx="10" fill="var(--bg-glass)" stroke="var(--border)" stroke-width="1"/>
+        <text x="780" y="241" text-anchor="middle" font-size="14" font-weight="500" style="font-family: 'Inter', system-ui;">Tau2-Bench</text>
+      </g>
+
+      <circle class="pf-junction" data-side="left" cx="436" cy="166" r="4" opacity="0.35"/>
+      <circle class="pf-junction" data-side="right" cx="660" cy="166" r="4" opacity="0.35"/>
+
+      <line class="pf-link" data-focus="agent-claude iface-mcp" x1="196" y1="96" x2="228" y2="96" stroke-opacity="0.35" stroke-width="1.3" marker-end="url(#arrowHead)"/>
+      <line class="pf-link" data-focus="agent-smol iface-python" x1="196" y1="166" x2="228" y2="166" stroke-opacity="0.35" stroke-width="1.3" marker-end="url(#arrowHead)"/>
+      <line class="pf-link" data-focus="agent-react iface-tools" x1="196" y1="236" x2="228" y2="236" stroke-opacity="0.35" stroke-width="1.3" marker-end="url(#arrowHead)"/>
+
+      <path class="pf-link" data-focus="link-mcp" d="M404,96 C418,96 428,124 436,166" fill="none" stroke-opacity="0.35" stroke-width="1.4" marker-end="url(#arrowHead)"/>
+      <line class="pf-link" data-focus="link-python" x1="404" y1="166" x2="436" y2="166" stroke-opacity="0.35" stroke-width="1.4" marker-end="url(#arrowHead)"/>
+      <path class="pf-link" data-focus="link-tools" d="M404,236 C418,236 428,208 436,166" fill="none" stroke-opacity="0.35" stroke-width="1.4" marker-end="url(#arrowHead)"/>
+
+      <line class="pf-link" data-focus="core-internal" x1="436" y1="166" x2="460" y2="166" stroke-opacity="0.35" stroke-width="1.5"/>
+      <line class="pf-link" data-focus="core-internal" x1="636" y1="166" x2="660" y2="166" stroke-opacity="0.35" stroke-width="1.5" marker-end="url(#arrowHead)"/>
+
+      <path class="pf-link" data-focus="link-swe" d="M660,166 C674,166 680,124 692,96" fill="none" stroke-opacity="0.35" stroke-width="1.3" marker-end="url(#arrowHead)"/>
+      <line class="pf-link" data-focus="link-appworld" x1="660" y1="166" x2="692" y2="166" stroke-opacity="0.35" stroke-width="1.3" marker-end="url(#arrowHead)"/>
+      <path class="pf-link" data-focus="link-tau" d="M660,166 C674,166 680,208 692,236" fill="none" stroke-opacity="0.35" stroke-width="1.3" marker-end="url(#arrowHead)"/>
+    </svg>
+  </div>
+
+  <figcaption>
+    The unified protocol turns diverse environments into a shared evaluation surface. Agents keep their native interaction styles, benchmarks keep their native semantics, and the protocol makes the connection explicit through a common representation of <code>task</code>, <code>context</code>, and <code>actions</code>.
+  </figcaption>
+</figure>
+
+<script>
+(() => {
+  const root = document.querySelector('.protocol-embed');
+  const svg = root.querySelector('.protocol-figure');
+  const nodes = [...svg.querySelectorAll('.pf-node, .pf-core-card')];
+  const links = [...svg.querySelectorAll('.pf-link')];
+  const junctions = [...svg.querySelectorAll('.pf-junction')];
+
+  const highlightMap = {
+    'agent-claude':  ['agent-claude', 'iface-mcp', 'link-mcp', 'core-internal', 'task', 'context', 'actions'],
+    'agent-smol':    ['agent-smol', 'iface-python', 'link-python', 'core-internal', 'task', 'context', 'actions'],
+    'agent-react':   ['agent-react', 'iface-tools', 'link-tools', 'core-internal', 'task', 'context', 'actions'],
+    'iface-mcp':     ['agent-claude', 'iface-mcp', 'link-mcp', 'core-internal', 'task', 'context', 'actions'],
+    'iface-python':  ['agent-smol', 'iface-python', 'link-python', 'core-internal', 'task', 'context', 'actions'],
+    'iface-tools':   ['agent-react', 'iface-tools', 'link-tools', 'core-internal', 'task', 'context', 'actions'],
+    'env-swe':       ['env-swe', 'link-swe', 'core-internal', 'task', 'context', 'actions'],
+    'env-appworld':  ['env-appworld', 'link-appworld', 'core-internal', 'task', 'context', 'actions'],
+    'env-tau':       ['env-tau', 'link-tau', 'core-internal', 'task', 'context', 'actions'],
+    'task':          ['core-internal', 'task', 'context', 'actions'],
+    'context':       ['core-internal', 'task', 'context', 'actions'],
+    'actions':       ['core-internal', 'task', 'context', 'actions'],
+  };
+
+  function clear() {
+    [...nodes, ...links, ...junctions].forEach(el => {
+      el.classList.remove('is-active', 'pf-dim');
+    });
+    links.forEach(l => {
+      if (l.getAttribute('marker-end')) {
+        l.setAttribute('marker-end', 'url(#arrowHead)');
+      }
+    });
+  }
+
+  function activate(focus) {
+    const wanted = new Set(highlightMap[focus] || [focus]);
+    const all = [...nodes, ...links, ...junctions];
+    all.forEach(el => el.classList.add('pf-dim'));
+
+    nodes.forEach(el => {
+      const key = el.getAttribute('data-focus');
+      if (wanted.has(key)) {
+        el.classList.remove('pf-dim');
+        el.classList.add('is-active');
+      }
+    });
+
+    links.forEach(el => {
+      const keys = (el.getAttribute('data-focus') || '').split(/\s+/);
+      if (keys.some(k => wanted.has(k))) {
+        el.classList.remove('pf-dim');
+        el.classList.add('is-active');
+        if (el.getAttribute('marker-end')) {
+          el.setAttribute('marker-end', 'url(#arrowHeadActive)');
+        }
+      }
+    });
+
+    const hasLeft = ['link-mcp', 'link-python', 'link-tools', 'core-internal'].some(k => wanted.has(k));
+    const hasRight = ['link-swe', 'link-appworld', 'link-tau', 'core-internal'].some(k => wanted.has(k));
+
+    junctions.forEach(j => {
+      const side = j.getAttribute('data-side');
+      if ((side === 'left' && hasLeft) || (side === 'right' && hasRight)) {
+        j.classList.remove('pf-dim');
+        j.classList.add('is-active');
+      }
+    });
+  }
+
+  nodes.forEach(node => {
+    const focus = node.getAttribute('data-focus');
+    node.addEventListener('mouseenter', () => activate(focus));
+    node.addEventListener('mouseleave', clear);
+  });
+})();
+</script>
