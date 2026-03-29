@@ -555,3 +555,23 @@ body.light-mode .blog-card-home h3{color:#111!important}
   /* Blobs too heavy on mobile */
   .blob{display:none}
 }
+
+/* ===== SVG PARETO CHART ===== */
+.pareto-embed{position:relative}
+.pareto-embed .chart-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:var(--bg-glass);padding:16px 12px 8px;overflow:hidden}
+.pareto-embed .chart{display:block;width:100%;height:auto}
+.pareto-embed .tooltip{position:absolute;pointer-events:none;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;line-height:1.5;opacity:0;transition:opacity .15s;z-index:10;min-width:140px;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+.pareto-embed .tooltip.visible{opacity:1}
+.pareto-embed .tooltip-agent{font-weight:600;font-size:13px;color:var(--text-primary)}
+.pareto-embed .tooltip-model{font-size:11px;color:var(--text-muted);margin-bottom:6px}
+.pareto-embed .tooltip-stats{display:flex;gap:16px}
+.pareto-embed .tooltip-stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted)}
+.pareto-embed .tooltip-stat-value{font-size:14px;font-weight:600;color:var(--text-primary)}
+.pareto-embed .legend-row{display:flex;gap:24px;padding:12px 4px 4px;flex-wrap:wrap}
+.pareto-embed .legend-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--bg-glass);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+.pareto-embed .legend-group-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-right:4px}
+.pareto-embed .legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary);cursor:pointer;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg-glass);transition:background .2s,opacity .2s,border-color .2s;user-select:none}
+.pareto-embed .legend-item:hover{color:var(--text-primary);background:var(--bg-card);border-color:var(--text-muted)}
+.pareto-embed .legend-item.active{background:var(--bg-card);border-color:var(--text-muted);font-weight:500}
+.pareto-embed .legend-item.dimmed{opacity:0.25}
+.pareto-embed .chart-point{cursor:pointer;transition:opacity .2s,filter .2s}
