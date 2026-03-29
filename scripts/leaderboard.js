@@ -101,72 +101,8 @@ function renderTable(data){
 }
 
 // ===== CHART =====
-const MODEL_COLORS={'claude-opus-4.5':'#5ba8a0','gpt-5.2':'#9b8ec4','gemini-3-pro':'#6a8cbe'};
-const AGENT_SHAPES={'Claude_Code':'circle','OpenAI_Solo':'rectRot','Smolagent':'triangle','React':'rect','React_+_Shortlisting':'cross'};
-
-let cpChartInstance=null;
 function renderChart(data){
-  if(cpChartInstance){cpChartInstance.destroy();cpChartInstance=null;}
-  const ctx=document.getElementById('cpChart').getContext('2d');
-  const isLight=document.body.classList.contains('light-mode');
-  const textCol=isLight?'rgba(0,0,0,0.6)':'rgba(255,255,255,0.6)';
-  const textDim=isLight?'rgba(0,0,0,0.35)':'rgba(255,255,255,0.3)';
-  const gridCol=isLight?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.05)';
-  const borderCol=isLight?'rgba(0,0,0,0.1)':'rgba(255,255,255,0.1)';
-  const paretoCol=isLight?'rgba(0,0,0,0.2)':'rgba(255,255,255,0.3)';
-  const tipBg=isLight?'rgba(255,255,255,0.95)':'rgba(8,11,20,0.95)';
-  const tipBorder=isLight?'rgba(0,0,0,0.15)':'rgba(255,255,255,0.2)';
-  const tipTitle=isLight?'#111':'#fff';
-  const tipBody=isLight?'rgba(0,0,0,0.65)':'rgba(255,255,255,0.7)';
-
-  const agents=[...new Set(data.map(d=>d.agent))];
-  const datasets=agents.map(agent=>{
-    const rows=data.filter(d=>d.agent===agent);
-    return{
-      label:(AGENT_DISPLAY[agent]||agent.replace(/_/g,' ')),
-      data:rows.map(r=>({x:r.avgCost,y:r.avg,model:r.model})),
-      backgroundColor:rows.map(r=>MODEL_COLORS[r.model]||'#666'),
-      borderColor:rows.map(r=>(MODEL_COLORS[r.model]||'#666')+'88'),
-      borderWidth:2,pointStyle:AGENT_SHAPES[agent]||'circle',pointRadius:9,pointHoverRadius:13,
-    };
-  });
-  // Pareto frontier: step through left-to-right, keep running max of score
-  const allPts=[];
-  datasets.forEach(ds=>{if(ds.type!=='line')ds.data.forEach(d=>allPts.push({x:d.x,y:d.y}))});
-  allPts.sort((a,b)=>a.x-b.x);
-  const pareto=[];let runMax=-1;
-  allPts.forEach(p=>{
-    if(p.y>runMax){runMax=p.y;pareto.push(p)}
-  });
-  datasets.push({label:'Pareto Frontier',data:pareto,type:'line',borderColor:paretoCol,borderDash:[6,4],borderWidth:2,pointRadius:0,fill:false,tension:.1});
-
-  // Model color legend
-  const legendEl=document.getElementById('modelLegend');
-  if(legendEl){
-    legendEl.innerHTML=Object.entries(MODEL_DISPLAY).map(([k,v])=>`<span style="margin:0 8px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${MODEL_COLORS[k]||'#666'};vertical-align:middle;margin-right:4px"></span>${v}</span>`).join('');
-  }
-
-  cpChartInstance=new Chart(ctx,{
-    type:'scatter',data:{datasets},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:true,position:'bottom',labels:{color:textCol,font:{family:'Inter',size:11},usePointStyle:true,padding:12,pointStyleWidth:12,generateLabels:chart=>{
-          return chart.data.datasets.map((ds,i)=>({text:ds.label,pointStyle:ds.pointStyle||'line',fillStyle:ds.type==='line'?'transparent':(isLight?'rgba(0,0,0,0.3)':'rgba(255,255,255,0.4)'),strokeStyle:ds.type==='line'?paretoCol:(isLight?'rgba(0,0,0,0.3)':'rgba(255,255,255,0.4)'),lineWidth:ds.type==='line'?2:1,lineDash:ds.borderDash||[],datasetIndex:i,hidden:!chart.isDatasetVisible(i)}));
-        }}},
-        tooltip:{
-          backgroundColor:tipBg,borderColor:tipBorder,borderWidth:1,
-          titleColor:tipTitle,bodyColor:tipBody,
-          titleFont:{family:'Inter',weight:'600'},bodyFont:{family:'JetBrains Mono',size:11},
-          callbacks:{label:ctx=>{const d=ctx.raw;return[`${ctx.dataset.label}`,`Model: ${MODEL_DISPLAY[d.model]||d.model}`,`Success: ${Math.round(d.y*100)}%`,`Cost: $${d.x.toFixed(2)}/task`]}}
-        }
-      },
-      scales:{
-        x:{title:{display:true,text:'Average Task Cost in USD',color:textCol,font:{size:12}},ticks:{color:textDim,font:{family:'JetBrains Mono',size:10}},grid:{color:gridCol},border:{color:borderCol}},
-        y:{title:{display:true,text:'Avg Success',color:textCol,font:{size:12}},ticks:{color:textDim,font:{family:'JetBrains Mono',size:10},callback:v=>Math.round(v*100)+'%',stepSize:0.05},grid:{color:gridCol},border:{color:borderCol},min:0.4,max:0.8}
-      }
-    }
-  });
+  if(window.renderParetoChart) window.renderParetoChart(data);
 }
 
 // ===== INIT =====

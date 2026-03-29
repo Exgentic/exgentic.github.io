@@ -1,0 +1,28 @@
+name: Deploy Blog to HuggingFace Space
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'blogs/**'
+      - 'blog/**'
+      - 'scripts/build_blog.py'
+      - 'scripts/push_to_hf.py'
+      - 'styles.css'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Build blog from markdown
+        run: uv run scripts/build_blog.py
+
+      - name: Push blog to HuggingFace Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: uv run scripts/push_to_hf.py

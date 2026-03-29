@@ -1,0 +1,268 @@
+/* ===== BLOG POST STYLES ===== */
+/* Professional blog typography layered on the Exgentic design system */
+
+/* Override the terminal font for blog content */
+.blog-post,
+.blog-post *{
+  font-family:'Inter',sans-serif;
+}
+
+/* ===== BLOG POST ===== */
+.blog-post{padding-bottom:100px}
+
+.blog-post-header{
+  padding:120px 0 0;
+  text-align:left;
+  margin-bottom:56px;
+  max-width:680px;
+  margin-left:auto;margin-right:auto;
+  padding-left:24px;padding-right:24px;
+}
+.blog-post-title{
+  font-size:clamp(2.2rem,5vw,3.2rem);font-weight:800;
+  letter-spacing:-.04em;line-height:1.1;
+  margin-bottom:20px;color:var(--text-primary);
+}
+.blog-post-subtitle{
+  font-size:1.2rem;color:var(--text-secondary);
+  max-width:640px;line-height:1.7;
+  font-weight:400;margin-bottom:0;
+}
+.blog-post-meta{
+  display:flex;align-items:center;
+  gap:16px;margin-top:24px;font-size:.85rem;
+  color:var(--text-muted);font-weight:500;
+  padding:16px 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+
+/* ===== POST BODY (article typography) ===== */
+.blog-post-body{
+  max-width:680px;margin:0 auto;
+  padding:0 24px;
+}
+.blog-post-body h2{
+  font-size:1.65rem;font-weight:700;
+  margin:56px 0 20px;letter-spacing:-.03em;
+  color:var(--text-primary);line-height:1.2;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.blog-post-body h2:first-child{margin-top:0}
+.blog-post-body h3{
+  font-size:1.2rem;font-weight:600;
+  margin:36px 0 12px;
+  color:var(--text-primary);line-height:1.3;
+}
+.blog-post-body p{
+  font-size:1.05rem;line-height:1.85;
+  color:var(--text-secondary);margin-bottom:24px;
+}
+.blog-post-body ul,.blog-post-body ol{
+  margin:0 0 24px 28px;
+  color:var(--text-secondary);
+}
+.blog-post-body li{
+  font-size:1.05rem;line-height:1.85;
+  margin-bottom:10px;
+}
+.blog-post-body li::marker{color:var(--text-muted)}
+.blog-post-body strong{color:var(--text-primary);font-weight:600}
+.blog-post-body a{
+  color:var(--cyan);text-decoration:underline;
+  text-underline-offset:3px;
+  text-decoration-color:var(--border);
+  transition:text-decoration-color .3s;
+}
+.blog-post-body a:hover{text-decoration-color:var(--cyan)}
+
+/* Horizontal rule */
+.blog-post-body hr{
+  border:none;height:1px;
+  background:var(--border);margin:48px 0;
+}
+
+/* Blockquote */
+.blog-post-body blockquote{
+  margin:36px 0;padding:24px 28px;
+  border-left:3px solid var(--cyan);
+  background:var(--bg-glass);
+  border-radius:0 8px 8px 0;
+}
+.blog-post-body blockquote p{
+  font-size:1.1rem;font-style:italic;
+  color:var(--text-primary);margin-bottom:0;line-height:1.7;
+}
+
+/* Code */
+.blog-post-body code{
+  font-family:'JetBrains Mono',monospace;font-size:.85em;
+  padding:2px 8px;border-radius:4px;
+  background:var(--bg-glass);border:1px solid var(--border);
+  color:var(--cyan);
+}
+.blog-post-body pre{
+  margin:24px 0;padding:24px;
+  border-radius:10px;overflow-x:auto;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+}
+.blog-post-body pre code{
+  padding:0;background:none;border:none;
+  font-size:.85rem;line-height:1.7;
+  color:var(--text-primary);
+}
+
+/* Figures */
+.blog-figure{margin:40px 0}
+.blog-figure img{
+  width:100%;border-radius:10px;
+  border:1px solid var(--border);
+}
+.blog-figure figcaption{
+  margin-top:14px;text-align:center;
+  font-size:.82rem;color:var(--text-muted);
+  font-style:italic;line-height:1.6;
+}
+
+/* CTA at end of post */
+.blog-cta{
+  display:flex;gap:16px;flex-wrap:wrap;
+  justify-content:center;
+  margin-top:56px;padding-top:40px;
+  border-top:1px solid var(--border);
+}
+
+/* ===== SHARE BUTTON ===== */
+.blog-share-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-left:auto;
+  background:none;border:1px solid var(--border);
+  color:var(--text-muted);font-size:.8rem;font-weight:500;
+  font-family:'Inter',sans-serif;
+  padding:4px 12px;border-radius:6px;
+  cursor:pointer;transition:all .3s;
+}
+.blog-share-btn:hover{color:var(--text-primary);border-color:var(--text-secondary)}
+.blog-share-btn.copied{color:var(--cyan);border-color:var(--cyan)}
+.blog-share-btn.copied .blog-share-label::after{content:' \2713'}
+
+/* ===== NAV ACTIVE STATE ===== */
+/* !important needed here to override the :hover and ::after base styles in styles.css */
+.nav-active{color:var(--text-primary) !important}
+.nav-active::after{width:100% !important}
+
+/* ===== EMBEDDED FIGURE LAYOUT ===== */
+/* Allow interactive figures to expand beyond the 680px body */
+.blog-post-body .protocol-embed,
+.blog-post-body .top5-embed,
+.blog-post-body .pareto-embed,
+.blog-post-body .ogl-gs-chart,
+.blog-post-body .artifact-switcher-embed{
+  max-width:780px;
+  margin-left:-50px;margin-right:-50px;
+  width:calc(100% + 100px);
+}
+@media(max-width:880px){
+  .blog-post-body .protocol-embed,
+  .blog-post-body .top5-embed,
+  .blog-post-body .pareto-embed,
+  .blog-post-body .ogl-gs-chart,
+  .blog-post-body .artifact-switcher-embed{
+    margin-left:0;margin-right:0;width:100%;
+  }
+}
+
+/* ===== BLOG TABLE (markdown-generated, styled to match main page leaderboard) ===== */
+.blog-post-body table{
+  width:100%;border-collapse:collapse;font-size:.78rem;
+  margin:32px 0;
+  border-radius:12px;border:1px solid var(--border);
+  background:var(--bg-card);
+  overflow:hidden;
+  box-shadow:0 2px 16px rgba(0,0,0,0.3);
+}
+.blog-post-body thead{
+  background:var(--bg-glass);
+}
+.blog-post-body th{
+  padding:10px 8px;text-align:left;font-weight:600;font-size:.7rem;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.blog-post-body td{
+  padding:8px;border-bottom:1px solid var(--border);
+  transition:all .2s;
+}
+.blog-post-body tbody tr{transition:all .3s}
+.blog-post-body tbody tr:hover{
+  background:var(--bg-glass);
+}
+.blog-post-body tbody tr:last-child td{border-bottom:none}
+
+/* Rank badges */
+.blog-post-body .rank-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:50%;
+  font-weight:800;font-size:.7rem;
+}
+.blog-post-body .rank-1{background:#c4a35a;color:#fff}
+.blog-post-body .rank-2{background:#9a9a9a;color:#fff}
+.blog-post-body .rank-3{background:#a07858;color:#fff}
+.blog-post-body .rank-default{color:var(--text-muted);font-weight:700;font-size:.8rem}
+.blog-post-body .rank-cell{text-align:center;width:40px}
+
+/* Agent cell */
+.blog-post-body .agent-cell{white-space:nowrap}
+.blog-post-body .agent-cell .agent-name{
+  display:block;font-family:'Inter',sans-serif;
+  font-weight:600;color:var(--text-primary);
+}
+.blog-post-body .agent-cell .agent-version{
+  display:block;font-family:'Inter',sans-serif;
+  font-weight:400;font-size:.55rem;color:var(--text-muted);
+  letter-spacing:.02em;margin-top:2px;white-space:nowrap;
+}
+
+/* Model cell */
+.blog-post-body .model-cell .model-name{
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;
+  color:var(--text-muted);white-space:nowrap;
+}
+
+/* Score cells with inline bars */
+.blog-post-body .score-cell{
+  position:relative;font-weight:600;
+  font-family:'JetBrains Mono',monospace;font-size:.75rem;
+  overflow:hidden;
+}
+.blog-post-body .score-cell .bar{
+  position:absolute;left:0;top:0;bottom:0;
+  opacity:.15;border-radius:2px;
+}
+.blog-post-body .score-cell .val{position:relative;z-index:1}
+.blog-post-body .bar-cyan{background:linear-gradient(90deg,#5ba8a0,#6a8cbe)}
+.blog-post-body .score-high .val{color:#5ba8a0}
+.blog-post-body .score-mid .val{color:#6a8cbe}
+.blog-post-body .score-low .val{color:var(--text-muted)}
+
+/* Cost cell */
+.blog-post-body .cost-cell{
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;
+  color:var(--text-muted);
+}
+
+/* Light mode table score colors */
+body.light-mode .blog-post-body .score-high .val{color:#3d877e}
+body.light-mode .blog-post-body .score-mid .val{color:#5577a8}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .blog-post-header{padding:90px 20px 0;margin-bottom:40px}
+  .blog-post-body{padding:0 20px}
+  .blog-post-body h2{font-size:1.35rem;margin-top:40px}
+  .blog-post-body h3{font-size:1.1rem}
+  .blog-cta{flex-direction:column;align-items:center}
+  .blog-share-btn .blog-share-label{display:none}
+}

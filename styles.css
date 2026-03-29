@@ -95,8 +95,8 @@ body.light-mode .floating-icon,.light-mode-early .floating-icon{color:rgba(0,0,0
 
 
 /* ===== TERMINAL AESTHETIC (default) ===== */
-/* CRT scanline overlay */
-body::after{
+/* CRT scanline overlay — opt-in via .page-landing class */
+.page-landing::after{
   content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);
   pointer-events:none;z-index:9990;
@@ -129,7 +129,7 @@ body.light-mode{
   --text-muted:rgba(80,80,80,0.5);
   --border:rgba(0,0,0,0.1);
 }
-body.light-mode::after{
+body.light-mode.page-landing::after{
   background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.02) 2px,rgba(0,0,0,.02) 4px);
 }
 body.light-mode .hero-title{color:#111!important;-webkit-text-fill-color:#111!important;text-shadow:none!important}
@@ -168,9 +168,6 @@ body.light-mode .score-mid .val{color:#5a7da8!important}
 body.light-mode .rank-1{background:#b89545!important;color:#fff!important}
 body.light-mode .rank-2{background:#8a8a8a!important;color:#fff!important}
 body.light-mode .rank-3{background:#906848!important;color:#fff!important}
-body.light-mode .chart-container{background:rgba(255,255,255,.9)!important;border-color:rgba(0,0,0,.1)!important}
-body.light-mode .chart-container h3{color:#111!important}
-body.light-mode .chart-container .chart-desc{color:#555!important}
 body.light-mode .step-num{background:#1a1a1a!important;color:#fff!important;box-shadow:0 4px 15px rgba(0,0,0,.15)!important}
 body.light-mode .feature-card::before{background:#333!important}
 body.light-mode .finding-card{border-left-color:#333!important}
@@ -449,12 +446,6 @@ section{position:relative;z-index:1;padding:80px 0}
 .lb-footer{margin-top:16px;display:flex;flex-wrap:wrap;justify-content:center;gap:16px;font-size:.8rem;color:var(--text-muted)}
 .lb-footer a{color:var(--cyan);font-weight:500}
 
-.chart-container{padding:20px;border-radius:12px;border:1px solid var(--border);background:var(--bg-card);box-shadow:0 2px 16px rgba(0,0,0,0.3)}
-.chart-container h3{font-size:1rem;font-weight:600;margin-bottom:4px}
-.chart-container .chart-desc{font-size:.78rem;color:var(--text-muted);margin-bottom:16px;line-height:1.5}
-.chart-canvas-wrap{position:relative;width:100%;aspect-ratio:16/9;min-height:300px}
-.chart-canvas-wrap canvas{width:100%!important;height:100%!important}
-
 /* ===== FAQ ===== */
 .faq-container{max-width:800px;margin:0 auto}
 .faq-item{margin-bottom:12px;border-radius:12px;overflow:hidden}
@@ -471,6 +462,20 @@ section{position:relative;z-index:1;padding:80px 0}
 .faq-item.open .faq-answer{max-height:600px;padding:0 24px 20px}
 .faq-answer p{color:var(--text-secondary);line-height:1.7;margin-bottom:12px;font-size:.92rem}
 .faq-answer p:last-child{margin-bottom:0}
+
+/* ===== BLOG CARDS (main page) ===== */
+.blog-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.blog-card-home{padding:36px;perspective:600px}
+.blog-card-placeholder{visibility:hidden;height:0;padding:0;border:none;margin:0}
+.blog-card-home:hover{border-color:rgba(255,255,255,.35);box-shadow:0 0 30px var(--cyan-dim),0 8px 32px rgba(0,0,0,.4);background:var(--bg-card-hover)}
+.blog-card-home h3{font-size:1.25rem;font-weight:700;margin-bottom:12px}
+.blog-card-home h3 a{color:var(--text-primary);text-decoration:none;transition:color .3s}
+.blog-card-home:hover h3 a{color:var(--cyan);text-shadow:none}
+.blog-card-home p{font-size:.93rem;color:var(--text-secondary);line-height:1.7;margin-bottom:16px;flex:1}
+.blog-card-home-meta{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:.78rem;color:var(--text-muted);font-weight:500}
+.blog-card-home-link{font-size:.85rem;font-weight:600;color:var(--cyan);text-decoration:none}
+body.light-mode .blog-card-home:hover{border-color:rgba(0,0,0,.2)!important;box-shadow:0 8px 30px rgba(0,0,0,.08)!important;background:rgba(255,255,255,1)!important}
+body.light-mode .blog-card-home h3{color:#111!important}
 
 /* ===== GET STARTED ===== */
 .get-started{

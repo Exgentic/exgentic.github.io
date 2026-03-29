@@ -1,0 +1,173 @@
+<style>
+  .artifact-switcher-embed {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-primary);
+  }
+
+  .artifact-switcher-embed * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .artifact-switcher-embed .container { max-width: 780px; width: 100%; }
+
+  .artifact-switcher-embed .switcher-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding: 0 0 0.75rem 0;
+    margin-bottom: 0.75rem;
+    border-bottom: none;
+  }
+
+  .artifact-switcher-embed .switcher-controls-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-right: 4px;
+  }
+
+  .artifact-switcher-embed .switcher-btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 160ms ease;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .artifact-switcher-embed .switcher-btn:hover {
+    background: var(--bg-card);
+    border-color: var(--text-muted);
+  }
+
+  .artifact-switcher-embed .switcher-btn.is-active {
+    background: var(--bg-card);
+    border-color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .artifact-switcher-embed .switcher-frame {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .artifact-switcher-embed .switcher-frame img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+    transition: opacity 160ms ease;
+  }
+
+  .artifact-switcher-embed .switcher-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--bg-glass);
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .artifact-switcher-embed .switcher-caption-wrap {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .artifact-switcher-embed .switcher-frame { padding: 8px; }
+  }
+</style>
+
+<div class="artifact-switcher-embed">
+  <div class="container">
+    <div class="switcher-frame">
+      <div class="switcher-controls">
+        <span class="switcher-controls-label">View</span>
+        <button class="switcher-btn is-active" data-view="leaderboard" type="button"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="3" height="7" rx="0.5"/><rect x="5.5" y="2" width="3" height="11" rx="0.5"/><rect x="10" y="4" width="3" height="9" rx="0.5"/></svg> Leaderboard</button>
+        <button class="switcher-btn" data-view="dashboard" type="button"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="12" height="12" rx="2"/><line x1="1" y1="4.5" x2="13" y2="4.5"/><line x1="5" y1="4.5" x2="5" y2="13"/></svg> Dashboard</button>
+        <button class="switcher-btn" data-view="cli" type="button"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="12" height="12" rx="2"/><polyline points="4,6 6.5,8.5 4,11"/><line x1="8" y1="11" x2="10.5" y2="11"/></svg> Framework</button>
+      </div>
+
+      <img
+        class="switcher-image"
+        src="figures/artifact-leaderboard.png"
+        alt="Screenshot of the Open General Agent Leaderboard user interface"
+      />
+      <div class="switcher-placeholder" style="display:none;">Image placeholder</div>
+      <div class="switcher-caption-wrap">
+        <span class="switcher-caption">The public interface lets readers inspect leaderboard results directly.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const root = document.querySelector('.artifact-switcher-embed');
+  const buttons = [...root.querySelectorAll('.switcher-btn')];
+  const image = root.querySelector('.switcher-image');
+  const placeholder = root.querySelector('.switcher-placeholder');
+  const caption = root.querySelector('.switcher-caption');
+
+  const views = {
+    leaderboard: {
+      src: 'figures/artifact-leaderboard.png',
+      alt: 'Screenshot of the Open General Agent Leaderboard user interface',
+      caption: 'The public interface lets readers inspect leaderboard results directly.'
+    },
+    dashboard: {
+      src: 'figures/artifact-dashboard.png',
+      alt: 'Screenshot of the Exgentic experiment running dashboard',
+      caption: 'The experiment dashboard shows evaluations while they are running and makes the execution side of the system visible.'
+    },
+    cli: {
+      src: 'figures/artifact-cli.png',
+      alt: 'Screenshot of the Exgentic command-line interface and framework workflow',
+      caption: 'The framework makes it possible to run, inspect, and reproduce evaluations behind the leaderboard.'
+    }
+  };
+
+  const setView = (view) => {
+    image.onerror = () => {
+      image.style.display = 'none';
+      placeholder.style.display = 'flex';
+      placeholder.textContent = `Image placeholder - replace ${view.src} with actual URL`;
+    };
+    image.src = view.src;
+    image.alt = view.alt;
+    image.style.display = 'block';
+    placeholder.style.display = 'none';
+    caption.textContent = view.caption;
+  };
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = views[btn.dataset.view];
+      if (!view) return;
+      buttons.forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      setView(view);
+    });
+  });
+})();
+</script>

@@ -1,0 +1,423 @@
+<style>
+  .pareto-embed {
+    --clr-opus: #5ba8a0;
+    --clr-gemini: #6a8cbe;
+    --clr-gpt: #9b8ec4;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-primary);
+  }
+
+  .pareto-embed * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .pareto-embed .container {
+    max-width: 780px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .pareto-embed .fig-header { margin-bottom: 1rem; }
+
+  .pareto-embed .fig-title {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25rem;
+  }
+
+  .pareto-embed .fig-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  .pareto-embed .legend-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+
+  .pareto-embed .legend-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: flex-start;
+    align-content: flex-start;
+    padding: 0.65rem 0.85rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .pareto-embed .legend-group-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    width: 100%;
+    margin-bottom: 0.15rem;
+  }
+
+  .pareto-embed .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg-glass);
+    transition: background 200ms ease, opacity 200ms ease, border-color 200ms ease;
+    user-select: none;
+  }
+
+  .pareto-embed .legend-item:hover {
+    background: var(--bg-card);
+    border-color: var(--text-muted);
+  }
+
+  .pareto-embed .legend-item.active {
+    background: var(--bg-card);
+    border-color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .pareto-embed .legend-item.dimmed { opacity: 0.25; }
+
+  .pareto-embed .chart-wrap {
+    position: relative;
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem 0.75rem 0.75rem 0.75rem;
+  }
+
+  .pareto-embed svg.chart {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .pareto-embed .chart-point {
+    transition: opacity 200ms ease, filter 200ms ease;
+  }
+
+  .pareto-embed .chart-point:hover {
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+  }
+
+  .pareto-embed .tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: opacity 120ms ease;
+    z-index: 10;
+    white-space: nowrap;
+  }
+
+  .pareto-embed .tooltip.visible { opacity: 1; }
+  .pareto-embed .tooltip-agent { font-weight: 600; font-size: 0.85rem; margin-bottom: 1px; color: var(--text-primary); }
+  .pareto-embed .tooltip-model { color: var(--text-muted); font-size: 0.76rem; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .pareto-embed .tooltip-stats { display: flex; gap: 1.25rem; }
+  .pareto-embed .tooltip-stat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 1px; }
+  .pareto-embed .tooltip-stat-value { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); }
+
+  @media (max-width: 600px) {
+    .pareto-embed .legend-row { gap: 1rem; }
+    .pareto-embed .fig-title { font-size: 1rem; }
+  }
+</style>
+
+<div class="pareto-embed">
+  <div class="container">
+    <div class="chart-wrap">
+      <svg class="chart" viewBox="0 0 740 420" aria-label="Pareto frontier: cost vs success rate for agent configurations">
+        <defs>
+          <linearGradient id="pareto-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#5ba8a0" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#5ba8a0" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="tooltip"></div>
+    </div>
+
+    <div class="legend-row">
+      <div class="legend-group">
+        <span class="legend-group-label">Agents</span>
+        <div class="legend-item" data-filter="agent" data-value="OpenAI Solo"><svg width="14" height="14" viewBox="0 0 14 14"><polygon points="7,1 11,7 7,13 3,7" fill="var(--text-muted)" fill-opacity="0.5" stroke="var(--text-muted)" stroke-width="0.8"/></svg><span>OpenAI Solo</span></div>
+        <div class="legend-item" data-filter="agent" data-value="Claude Code"><svg width="14" height="14" viewBox="0 0 14 14"><polygon points="7,1 8.8,5.2 13,5.2 9.6,8 10.8,12.5 7,9.6 3.2,12.5 4.4,8 1,5.2 5.2,5.2" fill="var(--text-muted)" fill-opacity="0.5" stroke="var(--text-muted)" stroke-width="0.8"/></svg><span>Claude Code</span></div>
+        <div class="legend-item" data-filter="agent" data-value="Smolagent"><svg width="14" height="14" viewBox="0 0 14 14"><polygon points="7,2 12,12 2,12" fill="var(--text-muted)" fill-opacity="0.5" stroke="var(--text-muted)" stroke-width="0.8"/></svg><span>Smolagent</span></div>
+        <div class="legend-item" data-filter="agent" data-value="ReAct + Shortlisting"><svg width="14" height="14" viewBox="0 0 14 14"><rect x="2" y="2" width="10" height="10" rx="1.5" fill="var(--text-muted)" fill-opacity="0.5" stroke="var(--text-muted)" stroke-width="0.8"/></svg><span>ReAct + Shortlisting</span></div>
+        <div class="legend-item" data-filter="agent" data-value="React"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="var(--text-muted)" fill-opacity="0.5" stroke="var(--text-muted)" stroke-width="0.8"/></svg><span>React</span></div>
+      </div>
+      <div class="legend-group">
+        <span class="legend-group-label">Models</span>
+        <div class="legend-item" data-filter="model" data-value="Claude Opus 4.5"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--clr-opus);border:1px solid rgba(128,128,128,0.2);"></span><span>Claude Opus 4.5</span></div>
+        <div class="legend-item" data-filter="model" data-value="Gemini 3 Pro"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--clr-gemini);border:1px solid rgba(128,128,128,0.2);"></span><span>Gemini 3 Pro</span></div>
+        <div class="legend-item" data-filter="model" data-value="GPT-5.2"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--clr-gpt);border:1px solid rgba(128,128,128,0.2);"></span><span>GPT-5.2</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const root = document.querySelector('.pareto-embed');
+  const data = [
+    { agent: "OpenAI Solo",          model: "Claude Opus 4.5", cost: 8.54, success: 0.73 },
+    { agent: "Claude Code",          model: "Claude Opus 4.5", cost: 8.03, success: 0.67 },
+    { agent: "Smolagent",            model: "Claude Opus 4.5", cost: 4.39, success: 0.66 },
+    { agent: "ReAct + Shortlisting", model: "Gemini 3 Pro",    cost: 0.66, success: 0.62 },
+    { agent: "ReAct + Shortlisting", model: "Claude Opus 4.5", cost: 3.78, success: 0.62 },
+    { agent: "React",                model: "Gemini 3 Pro",    cost: 0.81, success: 0.61 },
+    { agent: "React",                model: "Claude Opus 4.5", cost: 5.75, success: 0.61 },
+    { agent: "OpenAI Solo",          model: "Gemini 3 Pro",    cost: 2.81, success: 0.60 },
+    { agent: "Claude Code",          model: "Gemini 3 Pro",    cost: 2.47, success: 0.57 },
+    { agent: "Smolagent",            model: "Gemini 3 Pro",    cost: 1.85, success: 0.56 },
+    { agent: "ReAct + Shortlisting", model: "GPT-5.2",         cost: 0.26, success: 0.46 },
+    { agent: "React",                model: "GPT-5.2",         cost: 0.22, success: 0.41 },
+    { agent: "OpenAI Solo",          model: "GPT-5.2",         cost: 0.25, success: 0.39 },
+    { agent: "Claude Code",          model: "GPT-5.2",         cost: 0.50, success: 0.38 },
+    { agent: "Smolagent",            model: "GPT-5.2",         cost: 0.36, success: 0.38 },
+  ];
+
+  const modelColors = {
+    "Claude Opus 4.5": "#5ba8a0",
+    "Gemini 3 Pro":    "#6a8cbe",
+    "GPT-5.2":         "#9b8ec4",
+  };
+
+  const W = 740, H = 420;
+  const ml = 62, mr = 20, mt = 14, mb = 52;
+  const pw = W - ml - mr, ph = H - mt - mb;
+  const xMin = 0, xMax = 9.5, yMin = 0.30, yMax = 0.78;
+
+  const sx = c => ml + ((c - xMin) / (xMax - xMin)) * pw;
+  const sy = s => mt + (1 - ((s - yMin) / (yMax - yMin))) * ph;
+
+  const sorted = [...data].sort((a, b) => a.cost - b.cost);
+  const pareto = [];
+  let bestS = -Infinity;
+  for (const p of sorted) {
+    if (p.success > bestS) { pareto.push(p); bestS = p.success; }
+  }
+
+  const svg = root.querySelector('.chart');
+  const tooltip = root.querySelector('.tooltip');
+  const chartWrap = root.querySelector('.chart-wrap');
+  const legendItems = root.querySelectorAll('.legend-item[data-filter]');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  function el(tag, attrs = {}) {
+    const e = document.createElementNS(ns, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    return e;
+  }
+
+  /* Resolve theme-aware text color for SVG elements */
+  const textFill = () => getComputedStyle(root).getPropertyValue('color').trim() || '#e8e8e8';
+  const mutedFill = () => {
+    const cs = getComputedStyle(document.documentElement);
+    return cs.getPropertyValue('--text-muted').trim() || 'rgba(255,255,255,0.5)';
+  };
+
+  const xTicks = [0,1,2,3,4,5,6,7,8,9];
+  const yTicks = [0.3,0.4,0.5,0.6,0.7];
+
+  for (const x of xTicks) {
+    const px = sx(x);
+    svg.appendChild(el('line', { x1: px, y1: mt, x2: px, y2: mt + ph, stroke: 'var(--text-muted)', 'stroke-opacity': '0.15', 'stroke-width': 1 }));
+    const t = el('text', { x: px, y: mt + ph + 22, 'font-size': 11, fill: 'var(--text-muted)', 'text-anchor': 'middle', 'font-family': 'Inter, system-ui', 'font-weight': 400 });
+    t.textContent = `$${x}`;
+    svg.appendChild(t);
+  }
+
+  for (const y of yTicks) {
+    const py = sy(y);
+    svg.appendChild(el('line', { x1: ml, y1: py, x2: ml + pw, y2: py, stroke: 'var(--text-muted)', 'stroke-opacity': '0.15', 'stroke-width': 1 }));
+    const t = el('text', { x: ml - 10, y: py + 4, 'font-size': 11, fill: 'var(--text-muted)', 'text-anchor': 'end', 'font-family': 'Inter, system-ui', 'font-weight': 400 });
+    t.textContent = `${Math.round(y * 100)}%`;
+    svg.appendChild(t);
+  }
+
+  svg.appendChild(el('line', { x1: ml, y1: mt + ph, x2: ml + pw, y2: mt + ph, stroke: 'var(--text-muted)', 'stroke-opacity': '0.25', 'stroke-width': 1 }));
+  svg.appendChild(el('line', { x1: ml, y1: mt, x2: ml, y2: mt + ph, stroke: 'var(--text-muted)', 'stroke-opacity': '0.25', 'stroke-width': 1 }));
+
+  const xLabel = el('text', { x: ml + pw / 2, y: H - 8, 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--text-muted)', 'font-family': 'Inter, system-ui', 'font-weight': 500 });
+  xLabel.textContent = 'Average cost per task (USD)';
+  svg.appendChild(xLabel);
+
+  const yLabel = el('text', { x: 14, y: mt + ph / 2, 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--text-muted)', 'font-family': 'Inter, system-ui', 'font-weight': 500, transform: `rotate(-90 14 ${mt + ph / 2})` });
+  yLabel.textContent = 'Success rate';
+  svg.appendChild(yLabel);
+
+  if (pareto.length > 1) {
+    let areaD = `M ${sx(pareto[0].cost)} ${sy(pareto[0].success)}`;
+    for (let i = 1; i < pareto.length; i++) areaD += ` L ${sx(pareto[i].cost)} ${sy(pareto[i].success)}`;
+    areaD += ` L ${sx(pareto[pareto.length - 1].cost)} ${mt + ph}`;
+    areaD += ` L ${sx(pareto[0].cost)} ${mt + ph} Z`;
+    svg.appendChild(el('path', { d: areaD, fill: 'url(#pareto-fade)' }));
+  }
+
+  let paretoD = pareto.map((p, i) => `${i === 0 ? 'M' : 'L'} ${sx(p.cost)} ${sy(p.success)}`).join(' ');
+  const paretoLine = el('path', { d: paretoD, fill: 'none', stroke: 'var(--text-muted)', 'stroke-opacity': '0.4', 'stroke-width': 1.6, 'stroke-dasharray': '6 4' });
+  svg.appendChild(paretoLine);
+
+  const lastPareto = pareto[pareto.length - 1];
+  const paretoLabel = el('text', { x: sx(lastPareto.cost) + 8, y: sy(lastPareto.success) - 10, 'font-size': 10, fill: 'var(--text-muted)', 'font-family': 'Inter, system-ui', 'font-style': 'italic' });
+  paretoLabel.textContent = 'Pareto frontier';
+  svg.appendChild(paretoLabel);
+
+  const pointEls = [];
+
+  function makeShape(agent, x, y, color) {
+    const g = el('g');
+    const common = { fill: color, 'fill-opacity': '0.82', stroke: 'rgba(128,128,128,0.3)', 'stroke-width': '1.5' };
+    let shape;
+
+    if (agent === 'Claude Code') {
+      const half = 9;
+      const pts = [];
+      for (let i = 0; i < 10; i++) {
+        const r = i % 2 === 0 ? half : half * 0.42;
+        const a = i * Math.PI / 5 - Math.PI / 2;
+        pts.push(`${x + r * Math.cos(a)},${y + r * Math.sin(a)}`);
+      }
+      shape = el('polygon', { points: pts.join(' '), ...common });
+    } else if (agent === 'OpenAI Solo') {
+      const half = 8;
+      shape = el('polygon', { points: `${x},${y - half} ${x + half},${y} ${x},${y + half} ${x - half},${y}`, ...common });
+    } else if (agent === 'Smolagent') {
+      const half = 8.5;
+      shape = el('polygon', { points: `${x},${y - half} ${x + half},${y + half} ${x - half},${y + half}`, ...common });
+    } else if (agent === 'ReAct + Shortlisting') {
+      const half = 6.5;
+      shape = el('rect', { x: x - half, y: y - half, width: half * 2, height: half * 2, rx: 2, ...common });
+    } else {
+      const half = 7;
+      shape = el('circle', { cx: x, cy: y, r: half, ...common });
+    }
+
+    g.appendChild(shape);
+    g.appendChild(el('circle', { cx: x, cy: y, r: 20, fill: 'transparent', cursor: 'pointer' }));
+    return g;
+  }
+
+  data.forEach((d, i) => {
+    const x = sx(d.cost);
+    const y = sy(d.success);
+    const color = modelColors[d.model] || '#7A7A7A';
+    const g = makeShape(d.agent, x, y, color);
+    g.classList.add('chart-point');
+    g.dataset.agent = d.agent;
+    g.dataset.model = d.model;
+    g.dataset.idx = i;
+    svg.appendChild(g);
+    pointEls.push({ el: g, data: d, x, y });
+  });
+
+  let activeFilters = { agent: null, model: null };
+
+  function applyFilters() {
+    const hasFilter = activeFilters.agent || activeFilters.model;
+    legendItems.forEach(li => {
+      const t = li.dataset.filter;
+      const v = li.dataset.value;
+      if (activeFilters[t] === v) {
+        li.classList.add('active');
+        li.classList.remove('dimmed');
+      } else if (activeFilters[t] && activeFilters[t] !== v) {
+        li.classList.remove('active');
+        li.classList.add('dimmed');
+      } else {
+        li.classList.remove('active');
+        li.classList.remove('dimmed');
+      }
+    });
+
+    pointEls.forEach(({ el: g, data: d }) => {
+      const matchAgent = !activeFilters.agent || d.agent === activeFilters.agent;
+      const matchModel = !activeFilters.model || d.model === activeFilters.model;
+      const visible = !hasFilter || (matchAgent && matchModel);
+      g.style.opacity = visible ? '1' : '0.08';
+      g.style.filter = 'none';
+    });
+
+    paretoLine.style.opacity = hasFilter ? '0.1' : '1';
+  }
+
+  function showTooltip(d, x, y) {
+    pointEls.forEach(p => {
+      if (p.data === d) {
+        p.el.style.opacity = '1';
+        p.el.style.filter = 'drop-shadow(0 2px 8px rgba(0,0,0,0.25))';
+      } else {
+        p.el.style.opacity = '0.15';
+        p.el.style.filter = 'none';
+      }
+    });
+    paretoLine.style.opacity = '0.15';
+
+    const rect = chartWrap.getBoundingClientRect();
+    const svgRect = svg.getBoundingClientRect();
+    const scaleX = svgRect.width / W;
+    const scaleY = svgRect.height / H;
+    const tipX = x * scaleX + (svgRect.left - rect.left);
+    const tipY = y * scaleY + (svgRect.top - rect.top);
+    const successColor = modelColors[d.model] || '#333';
+
+    tooltip.innerHTML = `
+      <div class="tooltip-agent">${d.agent}</div>
+      <div class="tooltip-model">${d.model}</div>
+      <div class="tooltip-stats">
+        <div><div class="tooltip-stat-label">Success</div><div class="tooltip-stat-value" style="color:${successColor}">${(d.success * 100).toFixed(0)}%</div></div>
+        <div><div class="tooltip-stat-label">Cost/task</div><div class="tooltip-stat-value">$${d.cost.toFixed(2)}</div></div>
+      </div>
+    `;
+
+    tooltip.classList.add('visible');
+    const tipW = tooltip.offsetWidth;
+    const tipH = tooltip.offsetHeight;
+    let left = tipX + 18;
+    let top = tipY - tipH / 2;
+    if (left + tipW > rect.width - 8) left = tipX - tipW - 18;
+    if (top < 4) top = 4;
+    if (top + tipH > rect.height - 4) top = rect.height - tipH - 4;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+
+  function hideTooltip() {
+    applyFilters();
+    tooltip.classList.remove('visible');
+  }
+
+  pointEls.forEach(({ el: g, data: d, x, y }) => {
+    g.addEventListener('mouseenter', () => showTooltip(d, x, y));
+    g.addEventListener('mouseleave', hideTooltip);
+  });
+
+  legendItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const type = item.dataset.filter;
+      const value = item.dataset.value;
+      activeFilters[type] = (activeFilters[type] === value) ? null : value;
+      applyFilters();
+    });
+  });
+})();
+</script>
