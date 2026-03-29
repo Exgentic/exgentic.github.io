@@ -34,8 +34,8 @@ def fixup_html(html: str) -> str:
     html = html.replace('href="/styles.css"', 'href="styles.css"')
     # /blog/blog.css -> blog.css
     html = html.replace('href="/blog/blog.css"', 'href="blog.css"')
-    # /blog/<slug>/figures/ -> figures/
-    html = re.sub(r'src="/blog/[^/]+/figures/', 'src="figures/', html)
+    # /blog/figures/ -> figures/
+    html = html.replace('src="/blog/figures/', 'src="figures/')
     # Navigation links: point back to the main site
     html = re.sub(r'href="/(#[^"]*)"', r'href="https://exgentic.ai/\1"', html)
     html = html.replace('href="/"', 'href="https://exgentic.ai/"')
@@ -46,22 +46,12 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         staging = Path(tmp)
 
-        # Find the blog post directory
-        blog_dirs = sorted(
-            d for d in (REPO_ROOT / "blog").iterdir()
-            if d.is_dir() and (d / "index.html").exists()
-        )
-        if not blog_dirs:
-            raise SystemExit("No blog posts found in blog/*/index.html")
-        blog_dir = blog_dirs[0]
-
         # index.html — with path fixups
-        raw_html = (blog_dir / "index.html").read_text()
+        raw_html = (REPO_ROOT / "blog" / "index.html").read_text()
         (staging / "index.html").write_text(fixup_html(raw_html))
 
         # figures/
-        if (blog_dir / "figures").exists():
-            shutil.copytree(blog_dir / "figures", staging / "figures")
+        shutil.copytree(REPO_ROOT / "blog" / "figures", staging / "figures")
 
         # CSS files
         shutil.copy2(REPO_ROOT / "blog" / "blog.css", staging / "blog.css")
