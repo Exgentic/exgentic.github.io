@@ -1,7 +1,7 @@
 ---
 title: "The Open Agent Leaderboard"
 subtitle: "How good are general purpose AI agents? We built an open evaluation framework to find out."
-author: Exgentic Team
+author: Elron Bandel
 date: 2026-03-15
 reading_time: 9 min
 slug: open-leaderboard
