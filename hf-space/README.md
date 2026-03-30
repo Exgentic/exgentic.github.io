@@ -8,7 +8,7 @@ pinned: false
 license: apache-2.0
 ---
 
-# Exgentic: The Open General Agent Leaderboard
+# The Open Agent Leaderboard
 
 Interactive leaderboard and efficiency analysis for general-purpose AI agents evaluated across diverse real-world benchmarks.
 

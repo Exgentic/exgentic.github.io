@@ -1,5 +1,5 @@
 ---
-pretty_name: Exgentic Open General Agent Leaderboard Results
+pretty_name: Open Agent Leaderboard Results
 license: cdla-permissive-2.0
 tags:
   - benchmark
@@ -85,7 +85,7 @@ configs:
     path: data/train-*
 ---
 
-# Exgentic Open General Agent Leaderboard Results
+# Open Agent Leaderboard Results
 
 Detailed evaluation results for general-purpose AI agents across diverse real-world benchmarks — without domain-specific tuning.
 
