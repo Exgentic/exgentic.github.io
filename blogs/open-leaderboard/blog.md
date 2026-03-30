@@ -93,7 +93,7 @@ The full methodology and empirical analysis are described in our [paper on gener
 
 Everything behind this leaderboard is open. Today we're releasing:
 
-- [The Open Agent Leaderboard](https://huggingface.co/spaces/Exgentic/open-leaderboard-blog) -- explore the results directly
+- [The Open Agent Leaderboard](https://huggingface.co/spaces/open-agent-leaderboard/leaderboard) -- explore the results directly
 - [Exgentic](https://github.com/Exgentic/exgentic) -- run and reproduce evaluations yourself
 - [The paper](https://arxiv.org/abs/2602.22953) -- full methodology and empirical analysis
 
@@ -129,7 +129,7 @@ General-purpose agents deserve evaluation that reflects what's actually being me
 
 The Open Agent Leaderboard is a starting point. We believe it can become something bigger: a shared standard for how the community evaluates, compares, and improves open agent systems.
 
-[Explore the leaderboard](https://huggingface.co/spaces/Exgentic/open-leaderboard-blog). [Read the paper](https://arxiv.org/abs/2602.22953). [Try Exgentic](https://github.com/Exgentic/exgentic). And if this direction resonates, help us build it.
+[Explore the leaderboard](https://huggingface.co/spaces/open-agent-leaderboard/leaderboard). [Read the paper](https://arxiv.org/abs/2602.22953). [Try Exgentic](https://github.com/Exgentic/exgentic). And if this direction resonates, help us build it.
 
 General agents are reshaping the way work is done. Let's research and discuss them openly.
 
