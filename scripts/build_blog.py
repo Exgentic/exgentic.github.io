@@ -349,6 +349,16 @@ def style_leaderboard_table(html: str) -> str:
     return re.sub(r"<table>.*?</table>", _process_table, html, flags=re.DOTALL)
 
 
+def wrap_tables_in_scroll(html: str) -> str:
+    """Wrap <table> elements in a scrollable container div."""
+    return re.sub(
+        r"(<table.*?</table>)",
+        r'<div class="table-scroll">\1</div>',
+        html,
+        flags=re.DOTALL,
+    )
+
+
 def wrap_images_in_figures(html: str) -> str:
     """Wrap standalone <img> with alt text into <figure> + <figcaption>."""
     def replacer(m: re.Match) -> str:
@@ -449,6 +459,7 @@ def build_blog(slug: str) -> None:
     body_html = convert_image_paths(body_html, figures_url)
     body_html = wrap_images_in_figures(body_html)
     body_html = style_leaderboard_table(body_html)
+    body_html = wrap_tables_in_scroll(body_html)
 
     # Format date
     date_iso, date_display = format_date(meta["date"])

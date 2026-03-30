@@ -175,9 +175,16 @@
 }
 
 /* ===== BLOG TABLE (markdown-generated, styled to match main page leaderboard) ===== */
+.blog-post-body .table-scroll{
+  overflow-x:auto;margin:32px -50px;
+  width:calc(100% + 100px);max-width:780px;
+}
+@media(max-width:880px){
+  .blog-post-body .table-scroll{margin:32px 0;width:100%}
+}
 .blog-post-body table{
   width:100%;border-collapse:collapse;font-size:.78rem;
-  margin:32px 0;
+  margin:0;
   border-radius:12px;border:1px solid var(--border);
   background:var(--bg-card);
   overflow:hidden;
@@ -252,6 +259,13 @@
   font-family:'JetBrains Mono',monospace;font-size:.72rem;
   color:var(--text-muted);
 }
+
+/* Comparison table: center data cells, left-align first column */
+.blog-post-body td{text-align:center}
+.blog-post-body th:first-child,
+.blog-post-body td:first-child{text-align:left;font-weight:600;color:var(--text-primary);white-space:nowrap}
+/* Highlight the Exgentic row */
+.blog-post-body tbody tr:last-child td:first-child{color:var(--cyan)}
 
 /* Light mode table score colors */
 body.light-mode .blog-post-body .score-high .val{color:#3d877e}
