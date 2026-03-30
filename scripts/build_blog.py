@@ -384,19 +384,16 @@ def format_date(date_val) -> tuple[str, str]:
 # Blog card on main index.html
 # ---------------------------------------------------------------------------
 
-BLOG_CARD_RE = re.compile(
-    r"<div\s+class=\"blog-card-home\s+glass\">.*?</div>\s*\n\s*(?=<div class=\"blog-card-placeholder\")",
+BLOG_CARDS_RE = re.compile(
+    r"(<div\s+class=\"blog-cards-grid\">).*?(<div\s+class=\"blog-card-placeholder\")",
     re.DOTALL,
 )
 
 
-def update_main_index(meta: dict, url: str) -> None:
-    """Update the first blog card on the main index.html."""
-    if not MAIN_INDEX.exists():
-        return
-    html = MAIN_INDEX.read_text(encoding="utf-8")
+def _render_blog_card(meta: dict, url: str) -> str:
+    """Render a single blog card HTML fragment."""
     _, date_display = format_date(meta["date"])
-    new_card = (
+    return (
         f'<div class="blog-card-home glass">\n'
         f'        <div class="blog-card-home-meta">\n'
         f"          <time>{date_display}</time>\n"
@@ -406,30 +403,40 @@ def update_main_index(meta: dict, url: str) -> None:
         f'        <h3><a href="{url}">{meta["title"]}</a></h3>\n'
         f'        <p>{meta["subtitle"]}</p>\n'
         f'        <a href="{url}" class="blog-card-home-link">Read more &rarr;</a>\n'
-        f"      </div>\n      "
+        f"      </div>"
     )
-    new_html, n = BLOG_CARD_RE.subn(
-        new_card,
-        html,
-        count=1,
-    )
+
+
+def update_main_index_all(all_metas: list[tuple[dict, str]]) -> None:
+    """Rewrite all blog cards on index.html from the full list of posts."""
+    if not MAIN_INDEX.exists():
+        return
+    html = MAIN_INDEX.read_text(encoding="utf-8")
+
+    # Sort by date descending (newest first)
+    all_metas.sort(key=lambda x: str(x[0].get("date", "")), reverse=True)
+
+    cards = "\n      ".join(_render_blog_card(meta, url) for meta, url in all_metas)
+    replacement = rf'\1\n      {cards}\n      \2'
+
+    new_html, n = BLOG_CARDS_RE.subn(replacement, html, count=1)
     if n:
         MAIN_INDEX.write_text(new_html, encoding="utf-8")
-        print(f"  Updated blog card in {MAIN_INDEX}")
+        print(f"  Updated {len(all_metas)} blog card(s) in {MAIN_INDEX}")
     else:
-        print("  Skipped blog card update (no matching card in index.html)")
+        print("  Skipped blog card update (no matching grid in index.html)")
 
 
 # ---------------------------------------------------------------------------
 # Build one blog
 # ---------------------------------------------------------------------------
 
-def build_blog(slug: str) -> None:
+def build_blog(slug: str) -> tuple[dict, str] | None:
     src_dir = BLOGS_SRC / slug
     md_file = src_dir / "blog.md"
     if not md_file.exists():
         print(f"  Skipping {slug}: no blog.md found")
-        return
+        return None
 
     print(f"Building blog: {slug}")
     text = md_file.read_text(encoding="utf-8")
@@ -505,8 +512,7 @@ def build_blog(slug: str) -> None:
         n_files = sum(1 for _ in dest_figures.rglob("*") if _.is_file())
         print(f"  Copied {n_files} figure(s) to {dest_figures}")
 
-    # Update blog card on main index.html
-    update_main_index(meta, url)
+    return meta, url
 
 
 # ---------------------------------------------------------------------------
@@ -528,8 +534,14 @@ def main() -> None:
         print("No blogs with blog.md found in", BLOGS_SRC)
         return
 
+    all_metas = []
     for slug in slugs:
-        build_blog(slug)
+        result = build_blog(slug)
+        if result:
+            all_metas.append(result)
+
+    if all_metas:
+        update_main_index_all(all_metas)
 
     print("\nDone.")
 
