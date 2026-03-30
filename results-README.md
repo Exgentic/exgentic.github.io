@@ -1,102 +1,76 @@
-# Exgentic Leaderboard Data
+# Open Agent Leaderboard Data
 
 ## Overview
-This dataset contains benchmark evaluation results for various AI agent frameworks tested across multiple real-world tasks. The data powers the Exgentic leaderboard, providing transparent performance comparisons for general-purpose AI agents.
+Benchmark evaluation results for general-purpose AI agent systems tested across six diverse real-world tasks. The data powers the [Open Agent Leaderboard](https://huggingface.co/spaces/open-agent-leaderboard/leaderboard).
 
 ## License
-This dataset is licensed under the **Community Data License Agreement – Permissive – Version 2.0 (CDLA-Permissive-2.0)**.
+This dataset is licensed under the **Community Data License Agreement -- Permissive -- Version 2.0 (CDLA-Permissive-2.0)**.
 
 - Full license text: [LICENSE-DATA.txt](./LICENSE-DATA.txt)
 - Official license page: https://cdla.dev/permissive-2-0/
 
-### What This Means
-You are free to:
-- ✅ Use, reproduce, and modify the data
-- ✅ Create derivative works
-- ✅ Distribute and sublicense the data
-- ✅ Use for commercial purposes
-
-No attribution is legally required, but we appreciate citations (see below).
-
 ## Citation
-**[TODO: Update with paper citation when available]**
 
-For now, please cite:
-```
-Exgentic: Open Leaderboard for General-Purpose AI Agents
-https://ibm-research-ai.github.io/exgentic-website/
-Accessed: [Date]
+```bibtex
+@inproceedings{bandel2026general,
+  title={General Agent Evaluation},
+  author={Bandel, Elron and Yehudai, Asaf and Jacovi, Michal and Katz, Yoav and Shmueli-Scheuer, Michal and Choshen, Leshem},
+  booktitle={ICLR 2026 Workshop on LLM Agents},
+  year={2026},
+  url={https://arxiv.org/abs/2602.22953}
+}
 ```
 
 ## Data Description
 
-### File: `results.csv`
-Contains 91 evaluation runs across 15 model-agent combinations.
+### File: `data/results.csv`
+Each row represents one agent-model-benchmark combination.
 
-**Columns:**
-- `model`: Base language model (e.g., gpt-4o, claude-3.5-sonnet)
-- `agent`: Agent framework (e.g., ReAct, Reflexion, OpenHands)
-- `benchmark`: Evaluation task (WebArena, AssistantBench, GAIA, OSWorld)
-- `task`: Specific task within benchmark
-- `success`: Binary success indicator (0 or 1)
-- `cost`: Execution cost in USD
-- `turns`: Number of interaction turns
-- `tokens_input`: Input tokens used
-- `tokens_output`: Output tokens generated
-- `date`: Evaluation date (YYYY-MM-DD format)
+**Key columns:**
+- `agent`, `agent_name`: Agent identifier and display name
+- `model`, `model_name`: LLM used
+- `benchmark`, `benchmark_name`: Benchmark evaluated
+- `benchmark_score`: Primary success rate (0--1)
+- `average_agent_cost`: Mean cost per task in USD
+- `average_steps`: Mean steps per task
+- `planned_sessions`, `successful_sessions`, `total_sessions`: Task counts
+- `percent_finished`, `percent_successful`: Completion and success rates
 
-### Benchmarks Included
-1. **WebArena**: Web navigation and interaction tasks
-2. **AssistantBench**: General assistant capabilities
-3. **GAIA**: Question answering and reasoning
-4. **OSWorld**: Operating system interaction tasks
+### Benchmarks
 
-### Model-Agent Combinations
-15 combinations tested, including:
-- GPT-4o with ReAct, Reflexion, OpenHands
-- Claude 3.5 Sonnet with ReAct, Reflexion, OpenHands
-- Llama 3.1 405B with ReAct, Reflexion, OpenHands
-- And more...
+| Benchmark | Domain |
+|-----------|--------|
+| AppWorld | App-based task completion |
+| BrowseComp+ | Web research and information retrieval |
+| SWE-bench | Software engineering issue resolution |
+| TauBench-Airline | Customer service (airline) |
+| TauBench-Retail | Customer service (retail) |
+| TauBench-Telecom | Technical support (telecom) |
 
-## Data Source
-- **Website**: https://ibm-research-ai.github.io/exgentic-website/
-- **GitHub Repository**: https://github.com/IBM/exgentic
-- **Last Updated**: February 25, 2026
+### Agents
 
-## Data Collection Methodology
-[TODO: Add methodology details when available]
+| Agent | Framework |
+|-------|-----------|
+| Claude Code | [claude-code](https://github.com/anthropics/claude-code) |
+| OpenAI Solo | [openai-agents-python](https://github.com/openai/openai-agents-python) |
+| Smolagent | [smolagents](https://github.com/huggingface/smolagents) |
+| React | [litellm](https://github.com/BerriAI/litellm) |
+| React + Shortlisting | [litellm](https://github.com/BerriAI/litellm) |
 
-Each agent was evaluated on standardized benchmark tasks with consistent:
-- Evaluation protocols
-- Resource limits
-- Success criteria
-- Cost tracking
+### Models
 
-## Known Limitations
-- Results represent snapshot evaluations at a specific point in time
-- Performance may vary with different prompts or configurations
-- Costs are approximate and may vary based on API pricing changes
-- Some benchmarks have limited task coverage
+Claude Opus 4.5, GPT-5.2, Gemini Pro 3.
 
-## Updates and Versioning
-This dataset is periodically updated with new results. Check the `date` column for evaluation timestamps and the website for the latest version.
+## Data Collection
+
+Each agent was evaluated using the [Exgentic](https://github.com/Exgentic/exgentic) framework with consistent evaluation protocols, resource limits, success criteria, and cost tracking. Agents were tested as general-purpose systems without benchmark-specific tuning.
+
+See the [paper](https://arxiv.org/abs/2602.22953) for full methodology.
 
 ## Contact
-For questions, issues, or contributions:
-- GitHub Issues: https://github.com/IBM/exgentic/issues
-- Website: https://ibm-research-ai.github.io/exgentic-website/
-
-## Acknowledgments
-This work builds upon the following benchmark datasets:
-- WebArena
-- AssistantBench
-- GAIA
-- OSWorld
-
-We thank the creators of these benchmarks for their contributions to the AI agent evaluation ecosystem.
+- GitHub: https://github.com/Exgentic/open-agent-leaderboard
+- Website: https://exgentic.ai
 
 ---
 
-**License**: CDLA-Permissive-2.0  
-**Version**: 1.0
-**Date**: February 25, 2026
+**License**: CDLA-Permissive-2.0
