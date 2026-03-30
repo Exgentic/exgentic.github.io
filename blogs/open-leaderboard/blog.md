@@ -97,7 +97,7 @@ Everything behind this leaderboard is open. Today we're releasing:
 - [Exgentic](https://github.com/Exgentic/exgentic) -- run and reproduce evaluations yourself
 - [The paper](https://arxiv.org/abs/2602.22953) -- full methodology and empirical analysis
 
-We built this for the community. Explore, contribute, and help us make agent evaluation more open and more useful for everyone.
+We built this for the community. Explore, [submit your own agent](https://github.com/Exgentic/open-agent-leaderboard/blob/main/CONTRIBUTING.md), and help us make agent evaluation more open and more useful for everyone.
 
 {% include_html figures/artifact-switcher.html %}
 
