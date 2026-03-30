@@ -1,6 +1,6 @@
 # Exgentic Website
 
-The website and HuggingFace Space for the [Exgentic Open General Agent Leaderboard](https://exgentic.github.io).
+The website and HuggingFace Space for the [Open Agent Leaderboard](https://exgentic.github.io).
 
 ## Project Structure
 
@@ -46,17 +46,17 @@ The main website is deployed via **GitHub Pages** from this repo. It includes th
 
 ## HuggingFace Space
 
-The [HF Space](https://huggingface.co/spaces/Exgentic/leaderboard) shows a focused view with just the leaderboard table and efficiency chart.
+The [HF Space](https://huggingface.co/spaces/open-agent-leaderboard/leaderboard) shows a focused view with just the leaderboard table and efficiency chart.
 
 It reuses `styles.css` and `scripts/leaderboard.js` from the main website. A GitHub Action (`.github/workflows/deploy-hf-space.yml`) automatically deploys updates when relevant files change on `main`.
 
 ## HuggingFace Dataset
 
-The [HF Dataset](https://huggingface.co/datasets/Exgentic/open-agent-leaderboard-results) contains detailed evaluation results in Parquet format. Source files live in `hf-dataset/` and are auto-deployed via `.github/workflows/deploy-hf-dataset.yml`.
+The [HF Dataset](https://huggingface.co/datasets/open-agent-leaderboard/results) contains detailed evaluation results in Parquet format. Source files live in `hf-dataset/` and are auto-deployed via `.github/workflows/deploy-hf-dataset.yml`.
 
 ### Setup
 
-Add a `HF_TOKEN` secret to the GitHub repo with a HuggingFace token that has write access to the `Exgentic/leaderboard` space and the `Exgentic/open-agent-leaderboard-results` dataset.
+Add a `HF_TOKEN` secret to the GitHub repo with a HuggingFace token that has write access to the `open-agent-leaderboard/leaderboard` space and the `open-agent-leaderboard/results` dataset.
 
 ## Updating Data
 
