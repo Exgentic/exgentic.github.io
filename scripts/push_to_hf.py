@@ -4,7 +4,7 @@
 # ///
 # SPDX-License-Identifier: Apache-2.0
 
-"""Push the built blog to the Exgentic/open-leaderboard-blog Hugging Face Space."""
+"""Push the built blog to the open-agent-leaderboard/blog Hugging Face Space."""
 
 import re
 import shutil
@@ -14,11 +14,11 @@ from pathlib import Path
 from huggingface_hub import upload_folder
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SPACE_ID = "Exgentic/open-leaderboard-blog"
+SPACE_ID = "open-agent-leaderboard/blog"
 
 README_CONTENT = """\
 ---
-title: The Open General Agent Leaderboard
+title: The Open Agent Leaderboard
 emoji: "\U0001F4CA"
 colorFrom: green
 colorTo: blue

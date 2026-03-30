@@ -1,5 +1,5 @@
 ---
-title: "The Open General Agent Leaderboard"
+title: "The Open Agent Leaderboard"
 subtitle: "How good are general purpose AI agents? We built an open evaluation framework to find out."
 author: Exgentic Team
 date: 2026-03-15
@@ -11,7 +11,7 @@ Most evaluations in AI report a simple result: what score each model got on whic
 
 > How well an AI agent works depends on how it's built, not just the model inside it.
 
-Today we're launching the Open General Agent Leaderboard, an open benchmark for comparing full agent systems, not just the models inside them. It reports both quality and cost, so you can see not just what works, but what's worth deploying.
+Today we're launching the Open Agent Leaderboard, an open benchmark for comparing full agent systems, not just the models inside them. It reports both quality and cost, so you can see not just what works, but what's worth deploying.
 
 The leaderboard is paired with the Exgentic framework for running and reproducing evaluations, and a paper describing the full methodology and results. Everything is open from day one.
 
@@ -93,7 +93,7 @@ The full methodology and empirical analysis are described in our [paper on gener
 
 Everything behind this leaderboard is open. Today we're releasing:
 
-- [The Open General Agent Leaderboard](https://huggingface.co/spaces/Exgentic/open-leaderboard-blog) -- explore the results directly
+- [The Open Agent Leaderboard](https://huggingface.co/spaces/Exgentic/open-leaderboard-blog) -- explore the results directly
 - [Exgentic](https://github.com/Exgentic/exgentic) -- run and reproduce evaluations yourself
 - [The paper](https://arxiv.org/abs/2602.22953) -- full methodology and empirical analysis
 
@@ -127,7 +127,7 @@ This opens up some of the most interesting questions ahead. Is Claude Code bette
 
 General-purpose agents deserve evaluation that reflects what's actually being measured: the full system, not just the model.
 
-The Open General Agent Leaderboard is a starting point. We believe it can become something bigger: a shared standard for how the community evaluates, compares, and improves open agent systems.
+The Open Agent Leaderboard is a starting point. We believe it can become something bigger: a shared standard for how the community evaluates, compares, and improves open agent systems.
 
 [Explore the leaderboard](https://huggingface.co/spaces/Exgentic/open-leaderboard-blog). [Read the paper](https://arxiv.org/abs/2602.22953). [Try Exgentic](https://github.com/Exgentic/exgentic). And if this direction resonates, help us build it.
 

@@ -1,6 +1,6 @@
 # Exgentic Website
 
-The website and HuggingFace Space for the [Exgentic Open General Agent Leaderboard](https://exgentic.github.io).
+The website and HuggingFace Space for the [Open Agent Leaderboard](https://exgentic.github.io).
 
 ## Project Structure
 
