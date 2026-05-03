@@ -32,6 +32,8 @@ MODEL_MAP = {
     "openai_aws_claude-opus-4-5": ("claude", "claude-opus-4.5"),
     "openai_Azure_gpt-5.2-2025-12-11": ("gpt52", "gpt-5.2"),
     "openai_gcp_gemini-3-pro-preview": ("gemini", "gemini-3-pro"),
+    "openai_Azure_DeepSeek-V3.2": ("deepseek", "deepseek-v3.2"),
+    "openai_Azure_Kimi-K2.5": ("kimi", "kimi-k2.5"),
 }
 
 BENCHMARK_MAP = {
