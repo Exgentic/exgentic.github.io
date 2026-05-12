@@ -3,12 +3,16 @@
   const MODEL_DISPLAY = {
     'claude-opus-4.5': 'Claude Opus 4.5',
     'gpt-5.2': 'GPT 5.2',
-    'gemini-3-pro': 'Gemini Pro 3'
+    'gemini-3-pro': 'Gemini Pro 3',
+    'deepseek-v3.2': 'DeepSeek V3.2',
+    'kimi-k2.5': 'Kimi K2.5'
   };
   const MODEL_COLORS = {
     'claude-opus-4.5': '#5ba8a0',
     'gpt-5.2': '#9b8ec4',
-    'gemini-3-pro': '#6a8cbe'
+    'gemini-3-pro': '#6a8cbe',
+    'deepseek-v3.2': '#bf72b0',
+    'kimi-k2.5': '#5fbf94'
   };
   const AGENT_DISPLAY = {
     'Claude_Code': 'Claude Code',

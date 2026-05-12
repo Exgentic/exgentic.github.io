@@ -1,8 +1,8 @@
 // ===== 9. LEADERBOARD =====
 const BENCHMARKS=['AppWorld','BrowseComp+','SWE-bench','TauBench-Airline','TauBench-Retail','TauBench-Telecom'];
 const BENCH_SHORT={'AppWorld':'App','BrowseComp+':'Browse','SWE-bench':'SWE','TauBench-Airline':'Tau-Air','TauBench-Retail':'Tau-Ret','TauBench-Telecom':'Tau-Tel'};
-const MODEL_DISPLAY={'claude-opus-4.5':'Claude Opus 4.5','gpt-5.2':'GPT 5.2','gemini-3-pro':'Gemini Pro 3'};
-const MODEL_URLS={'claude-opus-4.5':'https://www.anthropic.com/claude','gpt-5.2':'https://openai.com/','gemini-3-pro':'https://deepmind.google/technologies/gemini/'};
+const MODEL_DISPLAY={'claude-opus-4.5':'Claude Opus 4.5','gpt-5.2':'GPT 5.2','gemini-3-pro':'Gemini Pro 3','deepseek-v3.2':'DeepSeek V3.2','kimi-k2.5':'Kimi K2.5'};
+const MODEL_URLS={'claude-opus-4.5':'https://www.anthropic.com/claude','gpt-5.2':'https://openai.com/','gemini-3-pro':'https://deepmind.google/technologies/gemini/','deepseek-v3.2':'https://www.deepseek.com/','kimi-k2.5':'https://www.moonshot.ai/'};
 const AGENT_DISPLAY={'Claude_Code':'Claude Code','OpenAI_Solo':'OpenAI Solo','Smolagent':'Smolagent','React':'React','React_+_Shortlisting':'React + Shortlist'};
 const AGENT_URLS={'Claude_Code':'https://github.com/anthropics/claude-code','OpenAI_Solo':'https://github.com/openai/openai-agents-python','Smolagent':'https://github.com/huggingface/smolagents','React':'https://github.com/BerriAI/litellm','React_+_Shortlisting':'https://github.com/BerriAI/litellm'};
 
@@ -98,6 +98,25 @@ function renderTable(data){
       renderTable(data);
     });
   });
+
+  // Remove any legacy "See all" button if it exists from a previous render
+  const oldBtn=document.getElementById('lbSeeAll');
+  if(oldBtn)oldBtn.remove();
+
+  // Toggle bottom-fade hint based on whether the table can still scroll down
+  const tableWrap=document.querySelector('.table-wrap');
+  const updateFade=()=>{
+    const atBottom=tableWrap.scrollTop+tableWrap.clientHeight>=tableWrap.scrollHeight-2;
+    const overflows=tableWrap.scrollHeight>tableWrap.clientHeight+2;
+    tableWrap.classList.toggle('lb-can-scroll',overflows&&!atBottom);
+  };
+  if(!tableWrap.dataset.scrollBound){
+    tableWrap.addEventListener('scroll',updateFade,{passive:true});
+    window.addEventListener('resize',updateFade);
+    tableWrap.dataset.scrollBound='1';
+  }
+  // Defer to next frame so layout is settled
+  requestAnimationFrame(updateFade);
 }
 
 // ===== CHART =====
