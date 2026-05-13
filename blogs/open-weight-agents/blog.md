@@ -1,6 +1,6 @@
 ---
 title: "Are open-weight models fit for agentic workloads?"
-subtitle: "We compared widely used open-weight models to frontier closed models. They trail on quality, fail unpredictably, and only tie on cost."
+subtitle: "We compared widely used open-weight models to frontier closed ones. We find that open models trail on quality, fail unpredictably, and only tie on cost."
 author: Elron Bandel
 date: 2026-05-13
 reading_time: 10 min
