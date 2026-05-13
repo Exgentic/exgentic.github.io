@@ -1,0 +1,184 @@
+<style>
+  .owa-agent-sink {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-primary);
+  }
+
+  .owa-agent-sink * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .owa-agent-sink .container { max-width: 820px; width: 100%; }
+
+  .owa-agent-sink .fig-header { margin-bottom: 1rem; }
+
+  .owa-agent-sink .fig-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25rem;
+  }
+
+  .owa-agent-sink .fig-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  .owa-agent-sink .chart-card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+
+  .owa-agent-sink .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    margin-bottom: 1.2rem;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+  }
+
+  .owa-agent-sink .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .owa-agent-sink .legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+  .owa-agent-sink .legend-swatch-good { background: #5fbf94; }
+  .owa-agent-sink .legend-swatch-sink {
+    background: #bf72b0;
+    box-shadow: 0 0 0 1.5px rgba(255,255,255,0.55) inset;
+  }
+
+  .owa-agent-sink .grouped-bars {
+    display: grid;
+    grid-template-columns: 140px repeat(2, 1fr);
+    column-gap: 18px;
+    row-gap: 8px;
+    align-items: center;
+  }
+
+  .owa-agent-sink .col-header {
+    font-size: 0.66rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-align: left;
+    padding-bottom: 4px;
+  }
+
+  .owa-agent-sink .row-divider {
+    grid-column: 1 / -1;
+    height: 4px;
+  }
+
+  .owa-agent-sink .model-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .owa-agent-sink .model-label .kind {
+    display: block;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 1px;
+  }
+
+  .owa-agent-sink .mini-bar-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
+  }
+
+  .owa-agent-sink .mini-bar-cell .bar-area { height: 18px; }
+  .owa-agent-sink .mini-bar-cell .bar {
+    height: 100%;
+    border-radius: 3px;
+    min-width: 2px;
+    transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .owa-agent-sink .mini-bar-cell .bar.sink {
+    box-shadow: 0 0 0 1.5px rgba(255,255,255,0.55) inset;
+  }
+  .owa-agent-sink .mini-bar-cell .score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-align: left;
+    line-height: 1;
+  }
+
+  .owa-agent-sink .fig-caption {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-top: 1rem;
+  }
+</style>
+
+<div class="owa-agent-sink">
+  <div class="container">
+    <div class="fig-header">
+      <div class="fig-title">A specific agent design breaks open-weight</div>
+      <div class="fig-subtitle">Telecom customer-service (TauBench-Telecom). The OpenAI agent SDK lifts closed-source, sinks open-weight.</div>
+    </div>
+
+    <div class="chart-card">
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-swatch legend-swatch-good"></span>score &ge; 20%</span>
+        <span class="legend-item"><span class="legend-swatch legend-swatch-sink"></span>sink (&lt; 20%)</span>
+      </div>
+      <div class="grouped-bars" id="agentSinkBars"></div>
+    </div>
+
+    <div class="fig-caption">
+      Outlined bars score below 20%.
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const COLOR_GOOD = '#5fbf94';
+  const COLOR_SINK = '#bf72b0';
+  function cellColor(s) { return s < 0.20 ? COLOR_SINK : COLOR_GOOD; }
+
+  // TauBench-Telecom, 4 models × 2 agents (paper data)
+  const AGENTS = ['ReAct', 'OpenAI agent SDK'];
+  const rows = [
+    { name: 'Claude Opus 4.5', kind: 'closed-source', scores: [0.76, 0.84] },
+    { name: 'Gemini 3 Pro',    kind: 'closed-source', scores: [0.73, 0.89] },
+    { name: 'DeepSeek V3.2',   kind: 'open-weight',   scores: [0.71, 0.18], divideAbove: true },
+    { name: 'Kimi K2.5',       kind: 'open-weight',   scores: [0.83, 0.00] },
+  ];
+
+  const root = document.getElementById('agentSinkBars');
+  let html = '<div></div>';
+  AGENTS.forEach(a => { html += `<div class="col-header">${a}</div>`; });
+  rows.forEach(row => {
+    if (row.divideAbove) {
+      html += '<div class="row-divider"></div>';
+    }
+    html += `<div class="model-label">${row.name}<span class="kind">${row.kind}</span></div>`;
+    row.scores.forEach(s => {
+      const sink = s < 0.20 ? ' sink' : '';
+      const w = (s * 100).toFixed(0);
+      html += `
+        <div class="mini-bar-cell">
+          <span class="score">${w}</span>
+          <div class="bar-area"><div class="bar${sink}" style="width: 0%; background: ${cellColor(s)}" data-width="${w}%"></div></div>
+        </div>
+      `;
+    });
+  });
+  root.innerHTML = html;
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      root.querySelectorAll('.bar').forEach(b => { b.style.width = b.dataset.width; });
+    }, 100);
+  });
+})();
+</script>
