@@ -27,10 +27,12 @@ function processData(rows,modelFilter){
   const BENCH_WEIGHT={};
   BENCHMARKS.forEach(b=>{BENCH_WEIGHT[b]=b.startsWith('TauBench')?1/12:1/4});
   return Object.values(groups).map(g=>{
+    // Every (model, agent, benchmark) cell is populated; zero is a real score
+    // (TauBench protocol failures, AppWorld tool-limit failures). Include all six.
     const bs=BENCHMARKS.map(b=>g.benchmarks[b]||0);
-    let wSum=0,wTotal=0;
-    BENCHMARKS.forEach((b,i)=>{if(bs[i]>0){wSum+=bs[i]*BENCH_WEIGHT[b];wTotal+=BENCH_WEIGHT[b]}});
-    const avg=wTotal?wSum/wTotal:0;
+    let wSum=0;
+    BENCHMARKS.forEach((b,i)=>{wSum+=bs[i]*BENCH_WEIGHT[b]});
+    const avg=wSum;  // weights sum to 1
     const cs=Object.values(g.costs).filter(c=>c>0);
     const avgCost=cs.length?cs.reduce((a,b)=>a+b,0)/cs.length:0;
     return{...g,avg,avgCost,benchScores:bs};
@@ -81,8 +83,7 @@ function renderTable(data){
     html+=`<td class="score-cell ${scoreClass(row.avg)}"><div class="bar bar-cyan" style="width:${row.avg*100}%"></div><span class="val">${fmtPct(row.avg)}</span></td>`;
     html+=`<td class="cost-cell">$${row.avgCost.toFixed(2)}</td>`;
     row.benchScores.forEach(s=>{
-      const barW=s>0?s*100:0;
-      html+=`<td class="score-cell ${scoreClass(s)}"><div class="bar bar-purple" style="width:${barW}%"></div><span class="val">${s>0?fmtPct(s):'&mdash;'}</span></td>`;
+      html+=`<td class="score-cell ${scoreClass(s)}"><div class="bar bar-purple" style="width:${s*100}%"></div><span class="val">${fmtPct(s)}</span></td>`;
     });
     html+=`</tr>`;return html;
   }).join('');
