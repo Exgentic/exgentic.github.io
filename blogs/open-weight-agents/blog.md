@@ -1,6 +1,6 @@
 ---
 title: "Are open-weight models fit for agentic workloads?"
-subtitle: "We tested two leading open-weight models against the closed-source frontier: both the performance leaders and the cost-effective option. Open-weight trails on quality, fails unpredictably, and is competitive but not dominant on cost."
+subtitle: "We compared widely used open-weight models to frontier closed models. They trail on quality, fail unpredictably, and only tie on cost."
 author: Elron Bandel
 date: 2026-05-13
 reading_time: 10 min
