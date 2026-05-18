@@ -98,18 +98,14 @@ DeepSeek retains one specific niche: at absolute minimum cost with no quality fl
 
 ## What this means for deployment
 
-**For a (task × agent) combination you've measured directly,** open-weight can be a strong choice. On specific (task, agent) cells, DeepSeek already reaches 80%+ at a fraction of premium-frontier prices. If you control the workload and can run your own evaluation on the exact combination you plan to ship, you can lock in the cost gap: meaningful against Opus and Gemini, modest against GPT-5.2.
+**For a (task × agent) combination you've measured directly,** open-weight can be a strong choice. DeepSeek already reaches 80%+ on its best combinations, at a fraction of premium-frontier prices. If you control the workload and can run your own evaluation on the exact combination you plan to ship, you can lock in the cost gap: meaningful against Opus and Gemini, modest against GPT-5.2.
 
 **For tasks or agent designs you haven't measured, open-weight is not safe to deploy.** The 18-to-29-point gap to the performance frontier matters, but the bigger problem is unpredictability. Open-weight scores swing twice as widely as closed-source scores under agent choice, and the combinations that collapse only reveal themselves at evaluation time.
 
 **For general-purpose agents meant to handle whatever comes their way,** open-weight is not ready. A general-purpose system meets combinations it hasn't been measured on and runs inside diverse agent designs. Both are the conditions where open-weight is hardest to predict.
 
-## Bottom line
+## What's next
 
-The two open-weight models we tested are not close to the two leading closed-source models on agentic workloads. They trail Opus and Gemini by 18 to 29 percentage points on average, swing twice as widely with agent choice, and show catastrophic failure cells more often than the closed-source models do.
+This is a snapshot. New open-weight models ship constantly, and the picture will shift with each release cycle. The structure has held across every open-weight model we've tested so far: competitive on the tasks and agents they appear tuned for, unpredictable elsewhere. The coming releases will tell us how durable that pattern is.
 
-On cost, the picture is mixed rather than triumphant. Against the premium-tier frontier, open-weight is dramatically cheaper. Against the cost-effective end of closed-source, open-weight comes in slightly behind on both axes: neither cheaper nor higher-quality at the best deployment configuration.
-
-Practically, open-weight is a strong choice for combinations you've measured directly, and a poor choice for combinations you haven't, because nothing in the data tells you how it will behave there. The cost-savings case is real only against the premium-tier closed models; the cheap closed-source alternative closes the gap.
-
-We'll keep the leaderboard updated as new open-weight models ship. If you've evaluated others, or have data that contradicts what we found here, open a PR on [our GitHub](https://github.com/Exgentic/exgentic) and we'll include it.
+We'll keep the [leaderboard](https://www.exgentic.ai) current as new models arrive. If you've run your own evaluations on different models, agents, or benchmarks, open a PR on [GitHub](https://github.com/Exgentic/exgentic) and we'll add them.
