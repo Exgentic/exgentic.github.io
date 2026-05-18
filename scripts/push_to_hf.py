@@ -46,14 +46,10 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         staging = Path(tmp)
 
-        # Find the blog post directory
-        blog_dirs = sorted(
-            d for d in (REPO_ROOT / "blog").iterdir()
-            if d.is_dir() and (d / "index.html").exists()
-        )
-        if not blog_dirs:
-            raise SystemExit("No blog posts found in blog/*/index.html")
-        blog_dir = blog_dirs[0]
+        # Use the open-leaderboard blog post
+        blog_dir = REPO_ROOT / "blog" / "open-leaderboard"
+        if not (blog_dir / "index.html").exists():
+            raise SystemExit("Blog post not found: blog/open-leaderboard/index.html")
 
         # index.html — with path fixups
         raw_html = (blog_dir / "index.html").read_text()
