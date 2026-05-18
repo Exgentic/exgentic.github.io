@@ -1,5 +1,5 @@
 ---
-title: Exgentic Leaderboard
+title: Open Agent Leaderboard
 emoji: 🤖
 colorFrom: blue
 colorTo: indigo
