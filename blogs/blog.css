@@ -194,7 +194,7 @@
   background:var(--bg-glass);
 }
 .blog-post-body th{
-  padding:10px 8px;text-align:left;font-weight:600;font-size:.7rem;
+  padding:10px 8px;text-align:center;font-weight:600;font-size:.7rem;
   text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);
   border-bottom:1px solid var(--border);white-space:nowrap;
 }
@@ -263,7 +263,7 @@
 /* Comparison table: center data cells, left-align first column */
 .blog-post-body td{text-align:center}
 .blog-post-body th:first-child,
-.blog-post-body td:first-child{text-align:left;font-weight:600;color:var(--text-primary);white-space:nowrap}
+.blog-post-body td:first-child{text-align:center;font-weight:600;color:var(--text-primary);white-space:nowrap}
 /* Highlight the Exgentic row */
 .blog-post-body tbody tr:last-child td:first-child{color:var(--cyan)}
 
