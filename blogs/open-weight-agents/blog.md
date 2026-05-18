@@ -104,12 +104,8 @@ DeepSeek retains one specific niche: at absolute minimum cost with no quality fl
 
 **For general-purpose agents meant to handle whatever comes their way,** open-weight is not ready. A general-purpose system meets combinations it hasn't been measured on and runs inside diverse agent designs. Both are the conditions where open-weight is hardest to predict.
 
-## Bottom line
+## What's next
 
-The two open-weight models we tested are not close to the two leading closed-source models on agentic workloads. They trail Opus and Gemini by 18 to 29 percentage points on average, swing twice as widely with agent choice, and show catastrophic failure cells more often than the closed-source models do.
+This is a snapshot. New open-weight models ship every few weeks, and the picture we measured here will shift as releases land. So far the structure has held across the open-weight models we've tested: competitive on specific cells, unpredictable in general. We'll see how durable that pattern is.
 
-On cost, the picture is mixed rather than triumphant. Against the premium-tier frontier, open-weight is dramatically cheaper. Against the cost-effective end of closed-source, open-weight comes in slightly behind on both axes: neither cheaper nor higher-quality at the best deployment configuration.
-
-Practically: open-weight is ready for narrow, evaluated workloads where you control the combination, the agent, and the task. It is not ready for general-purpose agents or production paths where you can't run an eval first.
-
-We'll keep the [leaderboard](https://www.exgentic.ai) current as new open-weight models ship. If you've run your own evaluations on different models, agents, or benchmarks, open a PR on [GitHub](https://github.com/Exgentic/exgentic) and we'll add them.
+We'll keep the [leaderboard](https://www.exgentic.ai) current as new models arrive. If you've run your own evaluations on different models, agents, or benchmarks, open a PR on [GitHub](https://github.com/Exgentic/exgentic) and we'll add them.
