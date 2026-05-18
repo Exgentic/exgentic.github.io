@@ -115,13 +115,9 @@ Not all of this is easy yet. Most benchmarks weren't designed with general-purpo
 
 ## What's next
 
-We're actively expanding the benchmarks, the agents, and the models on the leaderboard.
+Since launch we've added two open-weight models, DeepSeek V3.2 and Kimi K2.5, bringing the leaderboard to five models across five agents and six benchmarks. The open-weight results tell a clear story: competitive on specific combinations, but trailing frontier closed-source models by 18--29 percentage points on average. Read more in our [open-weight deep-dive](/blog/open-weight-agents/).
 
-A key priority is evaluating open-source models. Understanding how open models compare to proprietary ones across diverse agent settings matters for the whole community, and we're working to make that a core part of the leaderboard.
-
-We're also adding new benchmarks like WebArena Verified, and already experimenting internally with agents like Codex CLI and Gemini CLI.
-
-This opens up some of the most interesting questions ahead. Is Claude Code better with Claude? Is Gemini CLI better with Gemini? Or do some models simply perform well regardless of the agent wrapped around them? This leaderboard is built to answer exactly these kinds of questions, and we'll have results to share soon.
+The leaderboard is only as useful as the community that feeds it. We're looking for contributions across three axes: **new agents** (wrap your agent in the Exgentic protocol and submit results), **new benchmarks** (any task suite with a programmatic evaluator can be integrated), and **new models** (especially open-weight models we haven't covered yet). Every submission follows the same PR-based process documented in [CONTRIBUTING.md](https://github.com/Exgentic/exgentic/blob/main/CONTRIBUTING.md).
 
 ## Closing
 
