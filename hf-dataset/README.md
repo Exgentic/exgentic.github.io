@@ -10,74 +10,6 @@ tags:
   - agent-evaluation
 language:
   - en
-dataset_info:
-  features:
-  - name: agent
-    dtype: large_string
-  - name: agent_name
-    dtype: large_string
-  - name: average_action_count
-    dtype: float64
-  - name: average_agent_cost
-    dtype: float64
-  - name: average_benchmark_cost
-    dtype: float64
-  - name: average_invalid_action_count
-    dtype: float64
-  - name: average_invalid_action_percent
-    dtype: float64
-  - name: average_score
-    dtype: float64
-  - name: average_steps
-    dtype: float64
-  - name: benchmark
-    dtype: large_string
-  - name: benchmark_name
-    dtype: large_string
-  - name: benchmark_score
-    dtype: float64
-  - name: completed_sessions
-    dtype: float64
-  - name: incomplete_sessions
-    dtype: float64
-  - name: missing_sessions
-    dtype: float64
-  - name: model
-    dtype: large_string
-  - name: model_name
-    dtype: large_string
-  - name: percent_error
-    dtype: float64
-  - name: percent_finished
-    dtype: float64
-  - name: percent_finished_successful
-    dtype: float64
-  - name: percent_finished_unsuccessful
-    dtype: float64
-  - name: percent_successful
-    dtype: float64
-  - name: percent_unfinished
-    dtype: float64
-  - name: planned_sessions
-    dtype: int64
-  - name: subset_name
-    dtype: large_string
-  - name: successful_sessions
-    dtype: int64
-  - name: total_agent_cost
-    dtype: float64
-  - name: total_benchmark_cost
-    dtype: float64
-  - name: total_run_cost
-    dtype: float64
-  - name: total_sessions
-    dtype: int64
-  splits:
-  - name: train
-    num_bytes: 32724
-    num_examples: 90
-  download_size: 22410
-  dataset_size: 32724
 configs:
 - config_name: default
   data_files:
@@ -89,21 +21,24 @@ configs:
 
 Detailed evaluation results for general-purpose AI agents across diverse real-world benchmarks — without domain-specific tuning.
 
-- **Leaderboard**: [huggingface.co/spaces/Exgentic/leaderboard](https://huggingface.co/spaces/open-agent-leaderboard/leaderboard)
-- **Website**: [exgentic.github.io](https://exgentic.github.io)
+- **Leaderboard**: [open-agent-leaderboard/leaderboard](https://huggingface.co/spaces/open-agent-leaderboard/leaderboard)
+- **Website**: [exgentic.ai](https://www.exgentic.ai)
 - **Paper**: [arXiv:2602.22953](https://arxiv.org/abs/2602.22953)
+- **GitHub**: [Exgentic/exgentic](https://github.com/Exgentic/exgentic)
 - **License**: [CDLA-Permissive-2.0](https://cdla.dev/permissive-2-0/)
 
 ## Benchmarks
 
-| Benchmark | Description |
-|-----------|-------------|
-| AppWorld | App-based task completion in simulated smartphone environments |
-| BrowseComp+ | Web browsing and complex information retrieval |
-| SWE-bench | Software engineering issue resolution on real GitHub repos |
-| TauBench-Airline | Customer service agent evaluation (airline domain) |
-| TauBench-Retail | Customer service agent evaluation (retail domain) |
-| TauBench-Telecom | Customer service agent evaluation (telecom domain) |
+| Benchmark | Task ID | Description |
+|-----------|---------|-------------|
+| AppWorld | `appworld` | App-based task completion in simulated smartphone environments |
+| BrowseComp+ | `browsecomp_plus` | Web browsing and complex information retrieval |
+| SWE-bench | `swebench` | Software engineering issue resolution on real GitHub repos |
+| TauBench-Airline | `taubench_airline` | Customer service agent evaluation (airline domain) |
+| TauBench-Retail | `taubench_retail` | Customer service agent evaluation (retail domain) |
+| TauBench-Telecom | `taubench_telecom` | Customer service agent evaluation (telecom domain) |
+
+The `overall` score is a weighted average: each TauBench sub-task gets 1/12 weight (1/4 total for TauBench), all others get 1/4 each.
 
 ## Agents Evaluated
 
@@ -113,14 +48,51 @@ Detailed evaluation results for general-purpose AI agents across diverse real-wo
 | OpenAI Solo | [openai-agents-python](https://github.com/openai/openai-agents-python) |
 | Smolagent | [smolagents](https://github.com/huggingface/smolagents) |
 | React | [litellm](https://github.com/BerriAI/litellm) |
-| React + Shortlisting | [litellm](https://github.com/BerriAI/litellm) |
+| React + Shortlisting | [litellm](https://github.com/BerriAI/litellm) + [exgentic](https://github.com/Exgentic/exgentic) |
 
 ## Models
 
-Results are reported for each agent × model combination: **Claude Opus 4.5**, **Gemini Pro 3**, **GPT-5.2**, **DeepSeek V3.2**, **Kimi K2.5**.
+Results are reported for each agent × model combination: **Claude Opus 4.5**, **Gemini 3 Pro**, **GPT-5.2**, **DeepSeek V3.2**, **Kimi K2.5**.
+
+## Submitting new results
+
+This dataset is the source of truth for the Open Agent Leaderboard. To add results for a new model, agent, or benchmark:
+
+1. **Run evaluations** using the [Exgentic framework](https://github.com/Exgentic/exgentic)
+2. **Open a PR** on this dataset adding your rows to the parquet file in `data/`
+
+Each row represents one (agent, model, benchmark) combination. Required fields:
+
+| Field | Description |
+|-------|-------------|
+| `agent` | Agent identifier (e.g., `claude_code`) |
+| `agent_name` | Display name (e.g., `Claude Code CLI`) |
+| `model` | Model identifier (e.g., `openai_Azure_DeepSeek-V3.2`) |
+| `model_name` | Display name (e.g., `openai/azure/DeepSeek-V3.2`) |
+| `benchmark` | Benchmark identifier (e.g., `swebench`) |
+| `benchmark_name` | Display name (e.g., `SWE-bench`) |
+| `benchmark_score` | Primary score (0-1) |
+| `planned_sessions` | Number of tasks attempted |
+| `total_sessions` | Number of sessions completed |
+| `successful_sessions` | Number of sessions that passed |
+
+See the existing data for the full schema and examples.
 
 ## Schema
 
-See [results-README.md](https://huggingface.co/datasets/open-agent-leaderboard/results/blob/main/results-README.md) for full column descriptions.
-
-> **Note**: `dataset_info` stats in this file are auto-generated by `scripts/build_data.py` and reflect the last build.
+| Column | Type | Description |
+|--------|------|-------------|
+| `agent` / `agent_name` | string | Agent identifier and display name |
+| `model` / `model_name` | string | Model identifier and display name |
+| `benchmark` / `benchmark_name` | string | Benchmark identifier and display name |
+| `benchmark_score` | float | Primary success rate (0-1) |
+| `average_score` | float | Average score across sessions |
+| `average_agent_cost` | float | Average cost per task (USD) |
+| `average_steps` | float | Average number of agent steps per task |
+| `average_action_count` | float | Average number of actions per task |
+| `average_invalid_action_count` | float | Average invalid actions per task |
+| `percent_successful` | float | Fraction of tasks that succeeded |
+| `percent_finished` | float | Fraction of tasks that completed (success or fail) |
+| `percent_error` | float | Fraction of tasks that errored |
+| `total_agent_cost` | float | Total cost across all tasks (USD) |
+| `planned_sessions` / `total_sessions` / `successful_sessions` | int | Session counts |
