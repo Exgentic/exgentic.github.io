@@ -3,6 +3,8 @@
     --clr-opus: #5ba8a0;
     --clr-gemini: #6a8cbe;
     --clr-gpt: #9b8ec4;
+    --clr-deepseek: #c4885b;
+    --clr-kimi: #b85b8e;
     font-family: 'Inter', system-ui, sans-serif;
     color: var(--text-primary);
   }
@@ -169,6 +171,8 @@
         <div class="legend-item" data-filter="model" data-value="Claude Opus 4.5"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--clr-opus);border:1px solid rgba(128,128,128,0.2);"></span><span>Claude Opus 4.5</span></div>
         <div class="legend-item" data-filter="model" data-value="Gemini 3 Pro"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--clr-gemini);border:1px solid rgba(128,128,128,0.2);"></span><span>Gemini 3 Pro</span></div>
         <div class="legend-item" data-filter="model" data-value="GPT-5.2"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--clr-gpt);border:1px solid rgba(128,128,128,0.2);"></span><span>GPT-5.2</span></div>
+        <div class="legend-item" data-filter="model" data-value="DeepSeek V3.2"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--clr-deepseek);border:1px solid rgba(128,128,128,0.2);"></span><span>DeepSeek V3.2</span></div>
+        <div class="legend-item" data-filter="model" data-value="Kimi K2.5"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--clr-kimi);border:1px solid rgba(128,128,128,0.2);"></span><span>Kimi K2.5</span></div>
       </div>
     </div>
   </div>
@@ -178,33 +182,45 @@
 (() => {
   const root = document.querySelector('.pareto-embed');
   const data = [
-    { agent: "OpenAI Solo",          model: "Claude Opus 4.5", cost: 8.54, success: 0.73 },
-    { agent: "Claude Code",          model: "Claude Opus 4.5", cost: 8.03, success: 0.67 },
-    { agent: "Smolagent",            model: "Claude Opus 4.5", cost: 4.39, success: 0.66 },
-    { agent: "ReAct + Shortlisting", model: "Gemini 3 Pro",    cost: 0.66, success: 0.62 },
-    { agent: "ReAct + Shortlisting", model: "Claude Opus 4.5", cost: 3.78, success: 0.62 },
-    { agent: "React",                model: "Gemini 3 Pro",    cost: 0.81, success: 0.61 },
-    { agent: "React",                model: "Claude Opus 4.5", cost: 5.75, success: 0.61 },
-    { agent: "OpenAI Solo",          model: "Gemini 3 Pro",    cost: 2.81, success: 0.60 },
-    { agent: "Claude Code",          model: "Gemini 3 Pro",    cost: 2.47, success: 0.57 },
-    { agent: "Smolagent",            model: "Gemini 3 Pro",    cost: 1.85, success: 0.56 },
-    { agent: "ReAct + Shortlisting", model: "GPT-5.2",         cost: 0.26, success: 0.46 },
-    { agent: "React",                model: "GPT-5.2",         cost: 0.22, success: 0.41 },
-    { agent: "OpenAI Solo",          model: "GPT-5.2",         cost: 0.25, success: 0.39 },
-    { agent: "Claude Code",          model: "GPT-5.2",         cost: 0.50, success: 0.38 },
-    { agent: "Smolagent",            model: "GPT-5.2",         cost: 0.36, success: 0.38 },
+    { agent: "OpenAI Solo",          model: "Claude Opus 4.5", cost: 5.97, success: 0.73 },
+    { agent: "Claude Code",          model: "Claude Opus 4.5", cost: 5.95, success: 0.67 },
+    { agent: "Smolagent",            model: "Claude Opus 4.5", cost: 3.21, success: 0.66 },
+    { agent: "ReAct + Shortlisting", model: "Gemini 3 Pro",    cost: 0.51, success: 0.62 },
+    { agent: "ReAct + Shortlisting", model: "Claude Opus 4.5", cost: 2.73, success: 0.62 },
+    { agent: "React",                model: "Gemini 3 Pro",    cost: 0.60, success: 0.61 },
+    { agent: "React",                model: "Claude Opus 4.5", cost: 4.04, success: 0.61 },
+    { agent: "OpenAI Solo",          model: "Gemini 3 Pro",    cost: 1.99, success: 0.59 },
+    { agent: "Claude Code",          model: "Gemini 3 Pro",    cost: 1.73, success: 0.56 },
+    { agent: "Smolagent",            model: "Gemini 3 Pro",    cost: 1.31, success: 0.56 },
+    { agent: "ReAct + Shortlisting", model: "GPT-5.2",         cost: 0.21, success: 0.46 },
+    { agent: "React",                model: "DeepSeek V3.2",   cost: 0.27, success: 0.46 },
+    { agent: "ReAct + Shortlisting", model: "DeepSeek V3.2",   cost: 0.17, success: 0.45 },
+    { agent: "ReAct + Shortlisting", model: "Kimi K2.5",       cost: 0.29, success: 0.43 },
+    { agent: "React",                model: "Kimi K2.5",       cost: 0.34, success: 0.43 },
+    { agent: "Smolagent",            model: "Kimi K2.5",       cost: 0.48, success: 0.42 },
+    { agent: "Claude Code",          model: "DeepSeek V3.2",   cost: 0.16, success: 0.42 },
+    { agent: "Smolagent",            model: "DeepSeek V3.2",   cost: 0.17, success: 0.41 },
+    { agent: "React",                model: "GPT-5.2",         cost: 0.18, success: 0.41 },
+    { agent: "Claude Code",          model: "GPT-5.2",         cost: 0.36, success: 0.39 },
+    { agent: "OpenAI Solo",          model: "GPT-5.2",         cost: 0.20, success: 0.39 },
+    { agent: "Smolagent",            model: "GPT-5.2",         cost: 0.34, success: 0.38 },
+    { agent: "OpenAI Solo",          model: "DeepSeek V3.2",   cost: 0.09, success: 0.32 },
+    { agent: "Claude Code",          model: "Kimi K2.5",       cost: 0.41, success: 0.30 },
+    { agent: "OpenAI Solo",          model: "Kimi K2.5",       cost: 0.15, success: 0.25 },
   ];
 
   const modelColors = {
     "Claude Opus 4.5": "#5ba8a0",
     "Gemini 3 Pro":    "#6a8cbe",
     "GPT-5.2":         "#9b8ec4",
+    "DeepSeek V3.2":   "#c4885b",
+    "Kimi K2.5":       "#b85b8e",
   };
 
   const W = 740, H = 420;
   const ml = 62, mr = 20, mt = 14, mb = 52;
   const pw = W - ml - mr, ph = H - mt - mb;
-  const xMin = 0, xMax = 9.5, yMin = 0.30, yMax = 0.78;
+  const xMin = 0, xMax = 7, yMin = 0.10, yMax = 0.80;
 
   const sx = c => ml + ((c - xMin) / (xMax - xMin)) * pw;
   const sy = s => mt + (1 - ((s - yMin) / (yMax - yMin))) * ph;
@@ -235,8 +251,8 @@
     return cs.getPropertyValue('--text-muted').trim() || 'rgba(255,255,255,0.5)';
   };
 
-  const xTicks = [0,1,2,3,4,5,6,7,8,9];
-  const yTicks = [0.3,0.4,0.5,0.6,0.7];
+  const xTicks = [0,1,2,3,4,5,6];
+  const yTicks = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8];
 
   for (const x of xTicks) {
     const px = sx(x);
