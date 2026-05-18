@@ -7,6 +7,10 @@ evaluation_framework: exgentic
 license: cdla-permissive-2.0
 
 tasks:
+  - id: overall
+    name: Overall
+    description: Weighted average across all benchmarks (TauBench sub-tasks each 1/12, others 1/4)
+
   - id: appworld
     name: AppWorld
     description: App-based task completion in simulated smartphone environments

@@ -117,7 +117,7 @@ Detailed evaluation results for general-purpose AI agents across diverse real-wo
 
 ## Models
 
-Results are reported for each agent × model combination: **Claude Opus 4.5**, **GPT-5.2**, **Gemini Pro 3**.
+Results are reported for each agent × model combination: **Claude Opus 4.5**, **Gemini Pro 3**, **GPT-5.2**, **DeepSeek V3.2**, **Kimi K2.5**.
 
 ## Schema
 

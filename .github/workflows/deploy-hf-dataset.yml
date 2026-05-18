@@ -1,39 +1,58 @@
-name: Deploy to HuggingFace Dataset
+name: Sync from HuggingFace Dataset
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'data/results.csv'
-      - 'scripts/build_data.py'
-      - 'hf-dataset/README.md'
-      - 'hf-dataset/eval.yaml'
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build parquet from source
+      - name: Download dataset from HuggingFace
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          pip install huggingface_hub pyarrow
+          python3 -c "
+          from huggingface_hub import hf_hub_download
+          import pyarrow.parquet as pq
+          import csv, os
+
+          path = hf_hub_download(
+              repo_id='open-agent-leaderboard/results',
+              repo_type='dataset',
+              filename='data/train-00000-of-00001.parquet',
+              token=os.environ.get('HF_TOKEN'),
+          )
+          table = pq.read_table(path)
+          rows = table.to_pydict()
+          cols = table.column_names
+
+          with open('data/results.csv', 'w', newline='') as f:
+              writer = csv.DictWriter(f, fieldnames=cols)
+              writer.writeheader()
+              for i in range(table.num_rows):
+                  writer.writerow({c: rows[c][i] for c in cols})
+
+          print(f'Downloaded {table.num_rows} rows to data/results.csv')
+          "
+
+      - name: Build website CSV
         run: |
           pip install pyarrow
           python3 scripts/build_data.py
 
-      - name: Push to HuggingFace
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      - name: Commit and push if changed
         run: |
-          pip install huggingface_hub
-          python3 -c "
-          from huggingface_hub import HfApi
-          api = HfApi(token='$HF_TOKEN')
-          api.upload_folder(
-              folder_path='hf-dataset',
-              repo_id='Exgentic/open-agent-leaderboard-results',
-              repo_type='dataset',
-              commit_message='Auto-deploy from GitHub',
-              delete_patterns=['*'],
-          )
-          print('Deployed to HuggingFace Dataset')
-          "
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/results.csv results.csv hf-dataset/data/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Sync results from open-agent-leaderboard/results"
+            git push
+          fi

@@ -47,7 +47,7 @@ jobs:
           api = HfApi(token='$HF_TOKEN')
           api.upload_folder(
               folder_path='staging',
-              repo_id='Exgentic/leaderboard',
+              repo_id='open-agent-leaderboard/leaderboard',
               repo_type='space',
               commit_message='Auto-deploy from GitHub',
               delete_patterns=['*'],
