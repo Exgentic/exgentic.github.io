@@ -98,7 +98,7 @@ DeepSeek retains one specific niche: at absolute minimum cost with no quality fl
 
 ## What this means for deployment
 
-**For a (task × agent) combination you've measured directly,** open-weight can be a strong choice. On specific (task, agent) cells, DeepSeek already reaches 80%+ at a fraction of premium-frontier prices. If you control the workload and can run your own evaluation on the exact combination you plan to ship, you can lock in the cost gap: meaningful against Opus and Gemini, modest against GPT-5.2.
+**For a (task × agent) combination you've measured directly,** open-weight can be a strong choice. DeepSeek already reaches 80%+ on its best combinations, at a fraction of premium-frontier prices. If you control the workload and can run your own evaluation on the exact combination you plan to ship, you can lock in the cost gap: meaningful against Opus and Gemini, modest against GPT-5.2.
 
 **For tasks or agent designs you haven't measured, open-weight is not safe to deploy.** The 18-to-29-point gap to the performance frontier matters, but the bigger problem is unpredictability. Open-weight scores swing twice as widely as closed-source scores under agent choice, and the combinations that collapse only reveal themselves at evaluation time.
 
