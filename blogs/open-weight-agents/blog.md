@@ -110,6 +110,6 @@ The two open-weight models we tested are not close to the two leading closed-sou
 
 On cost, the picture is mixed rather than triumphant. Against the premium-tier frontier, open-weight is dramatically cheaper. Against the cost-effective end of closed-source, open-weight comes in slightly behind on both axes: neither cheaper nor higher-quality at the best deployment configuration.
 
-Practically, open-weight is a strong choice for combinations you've measured directly, and a poor choice for combinations you haven't, because nothing in the data tells you how it will behave there. The cost-savings case is real only against the premium-tier closed models; the cheap closed-source alternative closes the gap.
+Practically: open-weight is ready for narrow, evaluated workloads where you control the combination, the agent, and the task. It is not ready for general-purpose agents or production paths where you can't run an eval first.
 
-We'll keep the leaderboard updated as new open-weight models ship. If you've evaluated others, or have data that contradicts what we found here, open a PR on [our GitHub](https://github.com/Exgentic/exgentic) and we'll include it.
+We'll keep the [leaderboard](https://www.exgentic.ai) current as new open-weight models ship. If you've run your own evaluations on different models, agents, or benchmarks, open a PR on [GitHub](https://github.com/Exgentic/exgentic) and we'll add them.
