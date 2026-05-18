@@ -97,7 +97,7 @@ Everything behind this leaderboard is open. Today we're releasing:
 - [Exgentic](https://github.com/Exgentic/exgentic) -- run and reproduce evaluations yourself
 - [The paper](https://arxiv.org/abs/2602.22953) -- full methodology and empirical analysis
 
-We built this for the community. Explore, [submit your own agent](https://github.com/Exgentic/open-agent-leaderboard/blob/main/CONTRIBUTING.md), and help us make agent evaluation more open and more useful for everyone.
+We built this for the community. Explore, [submit your own results](https://huggingface.co/datasets/open-agent-leaderboard/results), and help us make agent evaluation more open and more useful for everyone.
 
 {% include_html figures/artifact-switcher.html %}
 
@@ -117,7 +117,7 @@ Not all of this is easy yet. Most benchmarks weren't designed with general-purpo
 
 Since launch we've added two open-weight models, DeepSeek V3.2 and Kimi K2.5, bringing the leaderboard to five models across five agents and six benchmarks. The open-weight results tell a clear story: competitive on specific combinations, but trailing frontier closed-source models by 18--29 percentage points on average. Read more in our [open-weight deep-dive](/blog/open-weight-agents/).
 
-The leaderboard is only as useful as the community that feeds it. We're looking for contributions across three axes: **new agents** (wrap your agent in the Exgentic protocol and submit results), **new benchmarks** (any task suite with a programmatic evaluator can be integrated), and **new models** (especially open-weight models we haven't covered yet). Every submission follows the same PR-based process documented in [CONTRIBUTING.md](https://github.com/Exgentic/exgentic/blob/main/CONTRIBUTING.md).
+The leaderboard is only as useful as the community that feeds it. We're looking for contributions across three axes: **new agents** (wrap your agent in the Exgentic protocol and submit results), **new benchmarks** (any task suite with a programmatic evaluator can be integrated), and **new models** (especially open-weight models we haven't covered yet). Submit results by opening a PR on the [results dataset](https://huggingface.co/datasets/open-agent-leaderboard/results).
 
 ## Closing
 
