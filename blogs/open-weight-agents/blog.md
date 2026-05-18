@@ -106,6 +106,6 @@ DeepSeek retains one specific niche: at absolute minimum cost with no quality fl
 
 ## What's next
 
-This is a snapshot. New open-weight models ship every few weeks, and the picture we measured here will shift as releases land. So far the structure has held across the open-weight models we've tested: competitive on specific cells, unpredictable in general. We'll see how durable that pattern is.
+This is a snapshot. New open-weight models ship constantly, and the picture will shift with each release cycle. The structure has held across every open-weight model we've tested so far: competitive on the tasks and agents they appear tuned for, unpredictable elsewhere. The coming releases will tell us how durable that pattern is.
 
 We'll keep the [leaderboard](https://www.exgentic.ai) current as new models arrive. If you've run your own evaluations on different models, agents, or benchmarks, open a PR on [GitHub](https://github.com/Exgentic/exgentic) and we'll add them.
