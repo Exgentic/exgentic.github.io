@@ -1,5 +1,5 @@
 ---
-title: "What Frontier Agents Actually Do"
+title: "What Frontier Agents Actually Do: A Public Dataset of 10K Agent Runs"
 subtitle: "10K real agent runs, in one standard format, so anyone can study how agents behave and not just what they scored."
 author: Elron Bandel
 date: 2026-07-01
