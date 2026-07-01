@@ -1,7 +1,7 @@
 ---
 title: "What Frontier Agents Actually Do: A Public Dataset of 10K Agent Runs"
 subtitle: "10K real agent runs, in one standard format, so anyone can study how agents behave and not just what they scored."
-author: Elron Bandel
+author: ""
 date: 2026-07-01
 reading_time: 8 min
 slug: agent-llm-traces-v2
