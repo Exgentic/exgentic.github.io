@@ -9,9 +9,9 @@ slug: agent-llm-traces-v2
 
 AI agents now book our travel, write our code, and answer our customers. Two can finish the same task and look identical on paper — one taking three clean steps, the other opening a file it shouldn't, crashing a service, and recovering by luck. We already know whether they succeed and what they cost. It's time we saw how they get there.
 
-Today we're releasing [Exgentic Agent LLM Traces](https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2): 10K real agent runs, across five leading models and six kinds of task, with every model call preserved in one standard format. It's the part of the run that normally gets thrown away.
+Today we're releasing [Exgentic Agent LLM Traces](https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2): 10K real agent runs — five leading models, five agent designs, six kinds of task — with every model call preserved in one standard format. It's the part of the run that normally gets thrown away.
 
-> We've always known whether agents succeed or failed. Now we can see how.
+> We've always known whether agents succeed. Now the record of how is public.
 
 ## Why this matters
 
@@ -19,7 +19,9 @@ Agents are moving into real work: writing code, handling customer support, doing
 
 That leaves a gap. We study *models* on mountains of public data. We study *agents* — the multi-step, tool-using, failing-and-recovering systems people actually deploy — on almost nothing public. The behavior that decides whether an agent is worth shipping lives in the full record of what it did, and that record rarely leaves the lab that produced it.
 
-The gap exists for a concrete reason: producing real agent runs at scale is slow, costly, and fragmented. It means running the strongest available models across many different environments, thousands of times over, and paying for every token they generate. And even once you have the runs, every tool records them in its own shape, so what data exists stays private and mutually incompatible. There has been no large, uniform, public record of what capable agents actually do.
+A single trace is the full sequence of what an agent did: every model call, in order — the input it received, the tools it had, what it output, and whether it errored. A score tells you whether an agent succeeded; the sequence tells you how it got there — which tools it chose, how its context grew, where it hesitated or recovered. That's the part of the run that normally gets discarded, and the part that's hardest to study without a large public record of it.
+
+The gap exists for a concrete reason: producing real agent runs at scale is slow, costly, and fragmented. It means running frontier models across many different environments, thousands of times over, and paying for every token they generate. And even once you have the runs, every tool records them in its own shape, so what data exists stays private and mutually incompatible. There has been no large, uniform, public record of what capable agents actually do.
 
 > Model behavior is studied everywhere. Agent behavior is barely studied at all, because the data isn't public.
 
@@ -27,13 +29,13 @@ This release is a piece of that missing record. Real runs, at scale, from fronti
 
 ## What you can do with it
 
-Preserving the full run, not just the verdict, is what makes the data useful. Each of these was previously gated behind running the evaluations yourself:
+Preserving the full run, not just the verdict, is what makes the data useful. Each of these previously required running the evaluations yourself:
 
-- **Train and fine-tune agents on real runs.** Long, tool-using runs from strong models are the kind of data that is hard to obtain and expensive to generate.
+- **Debug your own agent against a reference set.** Compare its behavior to how frontier models handle the same kinds of tasks.
 - **Build tools that evaluate agents, using real failures.** Study where agents actually break instead of on made-up examples.
-- **Replay a recorded moment against a new model.** Feed the exact situation an agent faced to a different model and compare, without re-running the whole evaluation.
-- **Debug your own agent against a reference set.** Compare its behavior to how the strongest models handle the same kinds of tasks.
-- **Load-test inference infrastructure against realistic traffic.** Standard load tests send independent requests; real agent runs are dependency chains where the output of one call shapes the input of the next. Because these traces are already in OTel format, they work directly with tools that replay recorded workloads against live endpoints.
+- **Replay a recorded step against a new model.** Each step in a trace captures the full context the model saw — the conversation history, system instructions, tool calls, and tool results — along with what it output. Feed that exact context to a different model to see how it would have acted, without the overhead of deploying and running the agent yourself.
+- **Evaluate inference infrastructure under realistic load.** Real agent runs are dependency chains — one call's output shapes the next — not the independent requests standard load tests send. Replay these traces against a live endpoint to measure how a serving configuration behaves under true agentic traffic.
+- **Train and fine-tune agents on real runs.** Long, tool-using runs from frontier models are the kind of data that is hard to obtain and expensive to generate.
 
 ## What's in it
 
@@ -54,11 +56,13 @@ The coverage spans the range of real agent work — software engineering, deep r
 | Customer service | τ²-bench Retail | 1.8K | 198K |
 | Customer service | τ²-bench Airline | 1K | 255K |
 
-Five frontier models are represented in comparable volume — DeepSeek-V3.2 (2.3K runs), Kimi-K2.5 (2.3K), GPT-5.2 (2.1K), Claude Opus 4.5 (1.9K), and Gemini 3 Pro (1.4K) — each run through up to five different agent designs. Because the format is identical across all of them, comparing how two models handled the same task, or how one model's behavior shifts between agent designs, is a filter, not a data-cleaning project.
+*(The token counts above group by benchmark; the model table below groups by model — averages differ because each model ran a different mix of benchmarks.)*
+
+Five frontier models are represented in comparable volume — DeepSeek-V3.2 (2.3K runs), Kimi-K2.5 (2.3K), GPT-5.2 (2.1K), Claude Opus 4.5 (1.9K), and Gemini 3 Pro (1.4K) — each run through up to five different agent designs. Because the format is identical across all of them, the runs line up directly — the same task across models, or one model across agent designs, without any per-tool reconciliation.
 
 ## A closer look
 
-Three views of the data, each answering a different question.
+These aren't our findings — they're examples of what the traces let you ask.
 
 **What kind of work is this?** Task complexity differs sharply across benchmarks:
 
@@ -73,7 +77,7 @@ Three views of the data, each answering a different question.
 
 Turns are the number of model calls in a run. Tool calls are how many tool invocations the model issued in total across those calls. The third column counts the fraction of model calls where the model returned more than one tool call in a single response — batching multiple requests at once rather than one at a time. Duration is the wall-clock time from the first to the last model call in a run.
 
-Taken together, these four numbers show how structurally different the workloads are: SWE-bench and AppWorld runs are long, tool-heavy, and slow; τ²-bench runs are short, light on tools, and fast. The workloads are not interchangeable, and which ones you pull matters for training, evaluation, and infrastructure work.
+These four numbers let you see how structurally different the workloads are: SWE-bench and AppWorld runs are long, tool-heavy, and slow; τ²-bench runs are short, light on tools, and fast. The workloads are not interchangeable, and which ones you pull matters for training, evaluation, and infrastructure work.
 
 **How much does it cost?** Token consumption varies as much by model as by task:
 
@@ -85,7 +89,7 @@ Taken together, these four numbers show how structurally different the workloads
 | GPT-5.2 | 26.3K | 552K |
 | Kimi-K2.5 | 23.1K | 655K |
 
-A Claude Opus 4.5 run consumes on average 4× the tokens of a GPT-5.2 run — a difference that compounds across hundreds of calls. Selecting traces by model matters if you're estimating replay costs, building token-budget-aware training pipelines, or studying how different models use their context window.
+Token consumption varying as much by model as by task is the kind of signal that matters when estimating replay costs, building token-budget-aware training pipelines, or studying how different models use their context window.
 
 **How does context evolve?** Because agent design determines how the prompt is constructed on each call, it is the primary driver of how context accumulates — not the task type. Prefix retention measures what fraction of messages carry over from one call to the next: 1.0 means a single growing conversation; lower values mean the agent reconstructs the context window more aggressively each time.
 
@@ -97,15 +101,15 @@ A Claude Opus 4.5 run consumes on average 4× the tokens of a GPT-5.2 run — a 
 | openai_solo | 18.3 | 0.86 |
 | tool_calling_with_shortlisting | 50.1 | 0.03 |
 
-Four of the five designs maintain high retention throughout a run — they accumulate a single long conversation. The exception is `tool_calling_with_shortlisting`, which drops to 0.03: it selects a fresh subset of tools for each call, rebuilding the prompt from scratch every time. Despite having the highest average turn count by far, it never builds up a long conversational context. This makes its traces structurally different from the others at the message level — worth knowing before using them for fine-tuning or prefix caching analysis.
+Four of the five designs maintain high retention throughout a run — they accumulate a single long conversation. The exception is `tool_calling_with_shortlisting`, which drops to 0.03: it selects a fresh subset of tools for each call, rebuilding the prompt from scratch every time. Despite having the highest average turn count by far, it never builds up a long conversational context. This makes its traces structurally different from the others at the message level — something to check before using them for fine-tuning or prefix caching analysis.
 
 ## Inference benchmarking: an ongoing example
 
 One use of this data is already underway. A team working on LLM inference infrastructure is using these traces to benchmark serving configurations under realistic agentic load — the kind of workload that synthetic benchmarks systematically miss.
 
-The tool at the center of that effort is [inference-perf](https://github.com/kubernetes-sigs/inference-perf), a Kubernetes SIG benchmarking tool that replays OTel traces as directed acyclic graphs. Rather than sending independent requests at a fixed rate, it reconstructs the dependency structure of a real agent run — the order and dependencies between calls, and how context accumulated across them — and drives that structure against the inference endpoint under test. Downstream calls receive the actual live-generated output from upstream calls, so KV-cache behavior and context growth stay realistic throughout the replay.
+What makes these runs different from synthetic benchmarks is their structure: real agent runs are dependency chains, where each call's output becomes the next call's input, context accumulates, and KV-cache pressure builds exactly as it does in production. A synthetic load generator can't reproduce that. The replay keeps structure and inputs from the recorded run while regenerating outputs live against the endpoint under test, so downstream calls receive fresh output from upstream — context grows as it would in a real run, and cache behavior reflects what production would produce.
 
-Because the Exgentic traces are already in OTel format, they plug into this workflow without any conversion. The result is end-to-end run latency measured against real agent traffic, not a synthetic proxy for it — exactly the signal needed to evaluate whether a serving configuration change is worth shipping.
+The tool driving this is [inference-perf](https://github.com/kubernetes-sigs/inference-perf), a Kubernetes SIG benchmarking tool that replays OTel traces against a live endpoint. Because the Exgentic traces are already in OTel format, they plug in without conversion. The result is latency, cache hit rates, and cost measured under real agentic load — exactly the signal needed to evaluate whether a serving configuration change is worth shipping.
 
 This is one example of what becomes possible when traces are public and in a standard format. The work is ongoing; we'll share results as they come in.
 
