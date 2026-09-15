@@ -194,11 +194,8 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
   border-radius:8px;
   overflow:hidden;
   border:1px solid #2a3040;
-  width:min(1040px, 100vw - 48px);
-  max-width:1040px;
-}
-@supports (width: 100dvw){
-  .schema-section{width:min(1040px, 100dvw - 48px);}
+  width:100%;
+  max-width:760px;
 }
 .schema-section{
   --bg:#0f1115; --panel:#161a22; --border:#2a3040;
@@ -207,7 +204,7 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
   background:var(--bg);
   color:var(--text);
   font-family:'IBM Plex Sans', sans-serif;
-  padding:clamp(14px,2vw,20px) clamp(18px,3vw,28px);
+  padding:clamp(10px,1.4vw,14px) clamp(12px,2vw,18px);
 }
 .schema-section .shead{
   font-family:'IBM Plex Mono', monospace;
@@ -225,12 +222,12 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
   color:var(--text);
   letter-spacing:-0.005em;
 }
-.ntree{display:flex; flex-direction:column; gap:5px;}
-.ngen{display:flex; gap:clamp(5px,1vw,10px);}
+.ntree{display:flex; flex-direction:column; gap:4px;}
+.ngen{display:flex; gap:clamp(4px,.8vw,7px);}
 .nslot{flex:1 1 0; min-width:0; position:relative;}
 .nslot.wide{flex:1.6 1 0;}
 .nslot.spacer{flex:1 1 0; visibility:hidden;}
-.nbox{border:1.5px solid var(--border); border-radius:7px; background:var(--panel); padding:6px 9px; display:flex; flex-direction:column; min-height:44px; height:100%; min-width:0; overflow:hidden;}
+.nbox{border:1.5px solid var(--border); border-radius:6px; background:var(--panel); padding:5px 7px; display:flex; flex-direction:column; min-height:0; height:100%; min-width:0; overflow:hidden;}
 .nbox .nhead{display:flex; align-items:baseline; gap:5px; flex-wrap:wrap;}
 .nbox .nname{font-weight:700; font-size:clamp(11.5px,1.3vw,13px);}
 .nbox.attr .nname{font-weight:600; font-size:clamp(10.5px,1.15vw,11.5px);}
@@ -259,10 +256,6 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
 .diaglegend .obadge.benchmark{color:#e0a94f; border:1px solid rgba(224,169,79,.4); background:rgba(224,169,79,.1);}
 .diaglegend .obadge.mixed{color:#e0685f; border:1px solid rgba(224,104,95,.4); background:rgba(224,104,95,.1);}
 .schema-section .snote{font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--muted2); margin-top:8px;}
-
-@media (max-width:900px){
-  .schema-section{width:100%; max-width:none;}
-}
 
 @media (max-width:640px){
   .ngen{flex-wrap:wrap;}
@@ -332,13 +325,13 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
 
   <p>None of these are wrong or incomplete on their own terms. WEKA and TraceLab hash away conversation content because their question is "what request pattern hits the server," and content would just be noise for that. Mooncake keeps timing and prefix shape because KV-cache reuse is a scheduling problem, not a semantics problem.</p>
 
-  <p>The one dimension that's easy to miss on a skim: <strong>human vs. benchmark origin</strong>. SWE-chat, WEKA/AgentX, and TraceLab are all human-sourced. Mooncake is mixed.</p>
+  <p>The one dimension that's easy to miss on a skim, and one no schema field captures directly: <strong>human vs. benchmark origin</strong> — how a session actually came about. SWE-chat, WEKA/AgentX, and TraceLab are all human-sourced: real developers, real sessions. Mooncake is mixed — real production traffic from Moonshot AI's Kimi service, with roughly 10% of traces explicitly synthetic (Poisson-generated arrivals, filling gaps in the load model). Exgentic sits at the other end on purpose: entirely benchmark-generated, for reasons the next section gets into.</p>
 
   <h2>Where Exgentic sits</h2>
 
   <p>The short version, for anyone who hasn't read <a href="#" target="_blank" rel="noopener">[link: Exgentic Agent LLM Traces v2 blog post]</a> yet: Exgentic keeps the full request and response body for every model call, not just a pass/fail score — recorded in OpenTelemetry GenAI format, at benchmark scale, across multiple agent scaffolds and frontier models. That's the detail that matters for this comparison: it's the only corpus here with nothing summarized away.</p>
 
-  <p>Full content plus timing plus subagent structure means the shapes the four thinner datasets above care about (request timing, token counts, prefix-sharing, subagent nesting) should all be derivable <em>from</em> Exgentic's fuller records, not the other way around. That's a reason to reach for Exgentic first if you're not sure yet which of the narrower questions you're actually asking — the fuller record can always be reduced down to what any of the others need; none of the others can be built back up into it. Exgentic is also the only one in this comparison that's deliberately, entirely benchmark-generated — a feature for its purpose (uniformity, scale, replayability), and a limit worth knowing before you reach for it to study <em>how people actually work with agents</em> — that's the one question a benchmark-generated corpus isn't designed to answer, no matter how full its records are.</p>
+  <p>Full content plus timing plus subagent structure means most of what the thinner datasets above care about — request timing, token counts, message bodies — is already there in Exgentic's fuller records, not something you'd have to go elsewhere for. That's a reason to reach for Exgentic first if you're not sure yet which of the narrower questions you're actually asking. But "fuller" isn't "superset": Exgentic doesn't currently carry a prefix/cache-hit signal at all, and tool calls live inside the message content rather than as their own structured span — so for those two specific shapes, it's Mooncake/WEKA/TraceLab that have the field, not Exgentic. And Exgentic is also the only one in this comparison that's deliberately, entirely benchmark-generated — a feature for its purpose (uniformity, scale, replayability), and a limit worth knowing before you reach for it to study <em>how people actually work with agents</em> — that's the one question a benchmark-generated corpus isn't designed to answer, no matter how full its records are.</p>
 
   <h2>The schema, field by field</h2>
 
@@ -353,7 +346,7 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
           <div class="nbox">
             <div class="nhead"><span class="nname">Turn</span><span class="ntag">claude_code.interaction</span></div>
             <div class="ndesc">one per <b>user message</b> sent — turn <b>#1, #2, #3…</b> in the session, plus its text</div>
-            <div class="ndots" data-support="swe,exg"></div>
+            <div class="ndots" data-support="swe,exg-partial,tl-partial"></div>
           </div>
         </div>
       </div>
@@ -376,13 +369,13 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
           <div class="nbox">
             <div class="nhead"><span class="nname">Tool Call</span><span class="ntag">claude_code.tool</span></div>
             <div class="ndesc">tool <b>name + args</b>, nested execution</div>
-            <div class="ndots" data-support="swe,moon-partial,tl-partial,weka-partial,exg"></div>
+            <div class="ndots" data-support="swe,tl-partial,exg-partial"></div>
           </div>
         </div>
       </div>
       <div class="ngen gen-attr">
         <div class="nslot spacer" style="flex:.7 1 0;"></div>
-        <div class="nslot" style="flex:1.45 1 0; display:flex; gap:8px;">
+        <div class="nslot" style="flex:1.45 1 0; display:flex; flex-wrap:wrap; gap:8px;">
           <div class="nbox attr" style="flex:1 1 0; min-width:0;">
             <div class="nhead"><span class="nname">Token Accounting</span></div>
             <div class="ndesc"><b>input/output token counts</b> per call</div>
@@ -394,26 +387,36 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
             <div class="ndots" data-support="swe,exg"></div>
           </div>
           <div class="nbox attr" style="flex:1 1 0; min-width:0;">
+            <div class="nhead"><span class="nname">Request Params</span></div>
+            <div class="ndesc"><b>temperature</b>, max_tokens as sent to the model per call</div>
+            <div class="ndots" data-support="exg"></div>
+          </div>
+          <div class="nbox attr" style="flex:1 1 0; min-width:0;">
             <div class="nhead"><span class="nname">Prefix / Cache Structure</span></div>
             <div class="ndesc">shared-prefix or <b>cache-hit</b> signal across requests</div>
-            <div class="ndots" data-support="moon,weka,exg,swe-partial"></div>
+            <div class="ndots" data-support="swe,weka,moon,tl"></div>
           </div>
         </div>
-        <div class="nslot wide" style="display:flex; gap:8px;">
+        <div class="nslot wide" style="display:flex; flex-wrap:wrap; gap:8px;">
           <div class="nbox attr" style="flex:1 1 0;">
             <div class="nhead"><span class="nname">Timing &amp; Nesting</span></div>
             <div class="ndesc">span start/end, <b>parent_span_id</b>; subagents nest under caller</div>
-            <div class="ndots" data-support="swe-partial,moon,tl-partial,weka,exg"></div>
+            <div class="ndots" data-support="exg,weka,swe-partial,tl-partial"></div>
           </div>
           <div class="nbox" style="flex:1 1 0;">
             <div class="nhead"><span class="nname">Tool Execution</span><span class="ntag">claude_code.tool.execution</span></div>
             <div class="ndesc">the tool actually ran — <b>success</b> / <b>error</b></div>
-            <div class="ndots" data-support="swe,exg-partial"></div>
+            <div class="ndots" data-support="tl,swe-partial"></div>
           </div>
           <div class="nbox attr" style="flex:1 1 0;">
-            <div class="nhead"><span class="nname">Human vs. Benchmark Origin</span></div>
-            <div class="ndesc">how the session actually <b>came about</b></div>
-            <div class="ndots" data-support="swe,weka,tl,moon-partial,exg"></div>
+            <div class="nhead"><span class="nname">User Gated Decision</span><span class="ntag">tool.blocked_on_user</span></div>
+            <div class="ndesc">permission/clarification prompt + the user's <b>decision</b></div>
+            <div class="ndots"><span class="ntag" style="opacity:.6;">coming soon</span></div>
+          </div>
+          <div class="nbox attr" style="flex:1 1 0;">
+            <div class="nhead"><span class="nname">Tool Definitions</span></div>
+            <div class="ndesc">the full set of tools <b>available</b> to the model on a call, not just which ran</div>
+            <div class="ndots" data-support="exg"></div>
           </div>
         </div>
       </div>
@@ -526,13 +529,13 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
       <tbody>
         <tr>
           <td>KV-cache / prefix-reuse scheduling research</td>
-          <td class="name"><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a> or Exgentic</td>
-          <td><b>Mooncake</b> is purpose-built for exactly this, at production scale. <b>Exgentic</b> is a broader fit if Mooncake's production-only scope is too narrow — prefix and cache structure is derivable from its full content.</td>
+          <td class="name"><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a></td>
+          <td>Purpose-built for exactly this, at production scale, with the prefix/cache-hit signal as a first-class field. <b>Exgentic</b> isn't a fit here — it doesn't currently record a prefix or cache-hit signal at all.</td>
         </tr>
         <tr>
           <td>Load-testing or benchmarking inference infra under realistic agentic traffic, without needing conversation content</td>
-          <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> &amp; <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a>, or Exgentic</td>
-          <td><b>WEKA/AgentX</b> and <b>TraceLab</b> answer the same close-cousin question — infra load without content — at 8,000+ and 357K-round scale respectively; WEKA's hash is deterministically replayable, TraceLab's subagent nesting is only heuristically recovered. <b>Exgentic</b> carries the same traffic-shape signal inside its fuller record, plus content if the question grows beyond pure infra load.</td>
+          <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> &amp; <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a></td>
+          <td>Both answer the same close-cousin question — infra load without content — at 8,000+ and 357K-round scale respectively; WEKA's hash is deterministically replayable, TraceLab's subagent nesting is only heuristically recovered. <b>Exgentic</b> has timing and token counts but no dedicated tool-call span and no prefix/cache signal, so it's a weaker fit for infra load-shape specifically.</td>
         </tr>
         <tr>
           <td>Studying how <em>people</em> actually work with coding agents</td>
@@ -542,12 +545,12 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
         <tr>
           <td>Debugging an agent, building an evaluator from real failures, or you're not yet sure which of the above you need</td>
           <td class="name">Exgentic</td>
-          <td>Full request/response bodies at benchmark scale, five models and five scaffolds to compare against.</td>
+          <td>Full request/response bodies at benchmark scale, five models and five scaffolds to compare against — the richest record here for anything that starts from message content rather than infra-level traffic shape.</td>
         </tr>
       </tbody>
     </table>
   </div>
-  <p class="tbl-caption">Exgentic is named in every row on purpose — its full-content record is a superset of what the narrower corpora keep, so it's always at least a candidate.</p>
+  <p class="tbl-caption">Exgentic isn't a universal answer — it wins on full message content at benchmark scale, but it's currently thin on exactly the two fields (prefix/cache structure, standalone tool-call spans) that the infra-focused corpora were purpose-built to capture.</p>
 
   <h2>Try it yourself</h2>
 
