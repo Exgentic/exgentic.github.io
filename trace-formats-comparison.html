@@ -312,12 +312,12 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
         <tr>
           <td class="name"><a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a></td>
           <td>Agent-serving infra (batching, latency)</td>
-          <td>A replayable <em>request-pattern</em> corpus from real sessions — a load model, not a behavior record</td>
+          <td>A replayable request-and-tool-call trace from real sessions, built for serving-system analysis — content is stripped out, tool calls and cache-prefix structure are heuristically reconstructed rather than captured directly</td>
         </tr>
         <tr>
           <td class="name"><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">SWE-chat</a></td>
           <td>Human–agent interaction research</td>
-          <td>Full session content across several coding agents (Claude Code, Cursor, Codex, Gemini CLI) — human-sourced, with request/response bodies kept in full. Recorded live via <a href="https://github.com/entireio" target="_blank" rel="noopener">Entire.io</a>, an opt-in CLI that hooks into each agent natively and checkpoints sessions to git as they happen, then scraped from public repos afterward to assemble the published dataset</td>
+          <td>Full session content across several coding agents (Claude Code, Cursor, Codex, Gemini CLI) — human-sourced, with request/response bodies kept in full. Recorded via <a href="https://github.com/entireio" target="_blank" rel="noopener">Entire.io</a>, an opt-in CLI that hooks into each agent natively and checkpoints sessions to git as they happen, by developers who opted in to session logging; the published dataset was then collected from those public repositories</td>
         </tr>
       </tbody>
     </table>
@@ -329,9 +329,11 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
 
   <h2>Where Exgentic sits</h2>
 
-  <p>The short version, for anyone who hasn't read <a href="#" target="_blank" rel="noopener">[link: Exgentic Agent LLM Traces v2 blog post]</a> yet: Exgentic keeps the full request and response body for every model call, not just a pass/fail score — recorded in OpenTelemetry GenAI format, at benchmark scale, across multiple agent scaffolds and frontier models. That's the detail that matters for this comparison: it's the only corpus here with nothing summarized away.</p>
+  <p>The short version, for anyone who hasn't read <a href="#" target="_blank" rel="noopener">[link: Exgentic Agent LLM Traces v2 blog post]</a> yet: Exgentic keeps the full request and response body for every model call, not just a pass/fail score — recorded in OpenTelemetry GenAI format, at benchmark scale, across multiple agent scaffolds and frontier models. That's the detail that matters for this comparison: it's the only corpus in this comparison organized around preserving complete model request and response bodies as benchmark-scale OpenTelemetry traces.</p>
 
   <p>Full content plus timing plus subagent structure means most of what the thinner datasets above care about — request timing, token counts, message bodies — is already there in Exgentic's fuller records, not something you'd have to go elsewhere for. That's a reason to reach for Exgentic first if you're not sure yet which of the narrower questions you're actually asking. But "fuller" isn't "superset": Exgentic doesn't currently carry a prefix/cache-hit signal at all, and tool calls live inside the message content rather than as their own structured span — so for those two specific shapes, it's Mooncake/WEKA/TraceLab that have the field, not Exgentic. And Exgentic is also the only one in this comparison that's deliberately, entirely benchmark-generated — a feature for its purpose (uniformity, scale, replayability), and a limit worth knowing before you reach for it to study <em>how people actually work with agents</em> — that's the one question a benchmark-generated corpus isn't designed to answer, no matter how full its records are.</p>
+
+  <p>Two fields worth calling out specifically, because they're easy to skim past: <strong>tool definitions</strong> — the full set of tools the model could have called on a given turn, not just the one it picked — and <strong>request parameters</strong> — temperature, max_tokens, as actually sent. Most trace datasets tell you what happened; almost none tell you what could have happened, which is exactly what you need for counterfactual analysis, tool-selection research, or judging whether a model's behavior reflects the model or the sampling settings it was run under. Neither is a big, attention-grabbing field, but both are the kind of thing you only miss once you've needed it and it isn't there. And underneath all of this: recording in OpenTelemetry's GenAI semantic conventions, rather than a bespoke research schema, means Exgentic's traces plug into the tracing tooling teams already run — a practical advantage that's independent of how much content any given record carries.</p>
 
   <h2>The schema, field by field</h2>
 
@@ -545,7 +547,7 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
         <tr>
           <td>Debugging an agent, building an evaluator from real failures, or you're not yet sure which of the above you need</td>
           <td class="name">Exgentic</td>
-          <td>Full request/response bodies at benchmark scale, five models and five scaffolds to compare against — the richest record here for anything that starts from message content rather than infra-level traffic shape.</td>
+          <td>Full request/response bodies at benchmark scale, five models and five scaffolds to compare against — the richest benchmark-generated model-interaction record in this comparison, for anything that starts from message content rather than infra-level traffic shape.</td>
         </tr>
       </tbody>
     </table>
