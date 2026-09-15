@@ -1,0 +1,596 @@
+<!--
+SPDX-License-Identifier: Apache-2.0
+Copyright (C) 2026, The Exgentic organization and its contributors.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recording What an Agent Did</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --paper:#f7f5f0;
+  --paper-raised:#fbfaf6;
+  --ink:#1f2320;
+  --ink-soft:#3d423c;
+  --rule:#c9c3b4;
+  --rule-soft:#dcd8cc;
+  --muted:#6b6558;
+  --accent:#a8532e;
+  --accent-soft:#f1ded3;
+  --link:#8a4527;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1b1d1a;
+    --paper-raised:#22251f;
+    --ink:#eae6da;
+    --ink-soft:#c9c4b5;
+    --rule:#42453d;
+    --rule-soft:#33362f;
+    --muted:#9b9585;
+    --accent:#e08a5f;
+    --accent-soft:#3a2a20;
+    --link:#e6a274;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1b1d1a;
+  --paper-raised:#22251f;
+  --ink:#eae6da;
+  --ink-soft:#c9c4b5;
+  --rule:#42453d;
+  --rule-soft:#33362f;
+  --muted:#9b9585;
+  --accent:#e08a5f;
+  --accent-soft:#3a2a20;
+  --link:#e6a274;
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Serif', Georgia, serif;
+  font-size:17px;
+  line-height:1.64;
+}
+::selection{background:var(--accent-soft);}
+
+.wrap{max-width:760px; margin:0 auto; padding:60px 24px 120px; position:relative;}
+
+/* ---------- line-number gutter + toggle ---------- */
+.lnum-toggle{
+  position:fixed;
+  top:18px;
+  right:18px;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  color:var(--muted);
+  background:var(--paper-raised);
+  border:1px solid var(--rule-soft);
+  border-radius:20px;
+  padding:6px 12px;
+  cursor:pointer;
+  user-select:none;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+.lnum-toggle input{margin:0; cursor:pointer;}
+body:not(.show-linenums) .lnum{display:none;}
+.lnum{
+  position:absolute;
+  left:-38px;
+  width:30px;
+  text-align:right;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10.5px;
+  color:var(--muted);
+  opacity:.65;
+  line-height:inherit;
+  user-select:none;
+  pointer-events:none;
+}
+@media (max-width:900px){
+  .lnum{position:static; display:inline-block; float:left; margin:0 6px 0 -2px; left:auto;}
+}
+@media (max-width:560px){
+  .lnum-toggle{top:auto; bottom:14px; right:14px;}
+  .lnum{display:none !important;}
+}
+
+/* ---------- masthead ---------- */
+.kicker{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 14px;
+}
+h1.title{
+  font-family:'IBM Plex Sans', 'IBM Plex Serif', sans-serif;
+  font-weight:650;
+  font-size:clamp(32px, 6vw, 46px);
+  line-height:1.1;
+  letter-spacing:-0.01em;
+  margin:0 0 20px;
+  text-wrap:balance;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:26px;
+}
+.dek{
+  font-family:'IBM Plex Serif', serif;
+  font-style:italic;
+  font-size:19px;
+  color:var(--ink-soft);
+  margin:0 0 44px;
+  text-wrap:balance;
+}
+
+p{margin:0 0 20px;}
+h2{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-weight:600;
+  font-size:25px;
+  letter-spacing:-0.005em;
+  margin:56px 0 18px;
+  text-wrap:balance;
+}
+a{color:var(--link); text-decoration:none; border-bottom:1px dotted var(--link);}
+a:hover{border-bottom-style:solid;}
+a:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:1px;}
+code{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:.87em;
+  background:var(--paper-raised);
+  border:1px solid var(--rule-soft);
+  border-radius:3px;
+  padding:1px 5px;
+}
+
+/* ---------- static table ---------- */
+.tbl-wrap{overflow-x:auto; margin:28px 0 10px; border:1.5px solid var(--ink); border-radius:2px;}
+table.cmp{width:100%; border-collapse:collapse; font-size:14px;}
+table.cmp th, table.cmp td{padding:12px 15px; text-align:left; vertical-align:top; border-bottom:1px solid var(--rule-soft); border-right:1px solid var(--rule-soft);}
+table.cmp th:last-child, table.cmp td:last-child{border-right:none;}
+table.cmp thead th{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10.5px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:var(--paper-raised);
+  border-bottom:1.5px solid var(--ink);
+  font-weight:500;
+}
+table.cmp tbody tr:last-child td{border-bottom:none;}
+table.cmp td.name{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-weight:600;
+  font-size:15px;
+  color:var(--ink);
+  white-space:nowrap;
+}
+table.cmp td.name a{color:var(--ink); border-bottom:1px dotted var(--rule);}
+table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
+.tbl-caption{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11.5px;
+  color:var(--muted);
+  margin:0 0 36px;
+  max-width:66ch;
+}
+
+/* ---------- schema section (dark, ported from Agentic-Traces-Public.html slide 3) ---------- */
+.schema-section{
+  margin:36px auto 44px;
+  border-radius:8px;
+  overflow:hidden;
+  border:1px solid #2a3040;
+  width:min(1040px, 100vw - 48px);
+  max-width:1040px;
+}
+@supports (width: 100dvw){
+  .schema-section{width:min(1040px, 100dvw - 48px);}
+}
+.schema-section{
+  --bg:#0f1115; --panel:#161a22; --border:#2a3040;
+  --text:#e6e9ef; --muted2:#9aa4b6; --accent2:#5b9dd9; --accentg:#4fc3a1;
+  --c-swe:#e0a94f; --c-weka:#5b9dd9; --c-moon:#e0685f; --c-tl:#9aa4b6; --c-exg:#d98fd0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'IBM Plex Sans', sans-serif;
+  padding:clamp(14px,2vw,20px) clamp(18px,3vw,28px);
+}
+.schema-section .shead{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--muted2);
+  margin-bottom:8px;
+}
+.schema-section .stitle{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-weight:600;
+  font-size:clamp(15px,1.8vw,18px);
+  margin-bottom:12px;
+  color:var(--text);
+  letter-spacing:-0.005em;
+}
+.ntree{display:flex; flex-direction:column; gap:5px;}
+.ngen{display:flex; gap:clamp(5px,1vw,10px);}
+.nslot{flex:1 1 0; min-width:0; position:relative;}
+.nslot.wide{flex:1.6 1 0;}
+.nslot.spacer{flex:1 1 0; visibility:hidden;}
+.nbox{border:1.5px solid var(--border); border-radius:7px; background:var(--panel); padding:6px 9px; display:flex; flex-direction:column; min-height:44px; height:100%; min-width:0; overflow:hidden;}
+.nbox .nhead{display:flex; align-items:baseline; gap:5px; flex-wrap:wrap;}
+.nbox .nname{font-weight:700; font-size:clamp(11.5px,1.3vw,13px);}
+.nbox.attr .nname{font-weight:600; font-size:clamp(10.5px,1.15vw,11.5px);}
+.nbox .ntag{font-family:'IBM Plex Mono', monospace; font-size:clamp(8.5px,.95vw,9.5px); color:var(--muted2);}
+.nbox .ndesc{font-family:'IBM Plex Mono', monospace; font-size:clamp(8.5px,.9vw,9.5px); color:var(--muted2); margin-top:2px; line-height:1.28;}
+.nbox .ndesc b{color:var(--accent2); font-weight:600;}
+.nbox .ndots{display:flex; flex-wrap:wrap; gap:3px; margin-top:auto; padding-top:4px;}
+.ndots .ddot{width:6px; height:6px; border-radius:50%; flex:0 0 auto; transition:opacity .15s, transform .15s;}
+.ntree.filtering .nbox{transition:opacity .15s, border-color .15s; opacity:.4;}
+.ntree.filtering .nbox.has-match{opacity:1; border-color:var(--accent2);}
+.ntree.filtering .ndots .ddot{opacity:.25; transform:scale(.85);}
+.ntree.filtering .ndots .ddot.match{opacity:1; transform:scale(1.35);}
+.nstack::before, .nstack::after{content:""; position:absolute; border:1.5px solid var(--border); border-radius:7px; background:var(--panel); z-index:0;}
+.nstack::before{inset:4px 4px -4px -4px; opacity:.32;}
+.nstack::after{inset:2px 2px -2px -2px; opacity:.5; z-index:1;}
+.nstack .nbox{position:relative; z-index:2;}
+.diaglegend{display:flex; gap:5px; flex-wrap:wrap; padding-top:10px; margin-top:10px; border-top:1px solid var(--border);}
+.diaglegend .litem{display:flex; align-items:center; gap:5px; font-size:clamp(10px,1.1vw,11px); color:var(--muted2); font-family:'IBM Plex Mono', monospace; padding:4px 8px; border:1px solid transparent; border-radius:20px; cursor:pointer; background:none; transition:background .15s, border-color .15s, color .15s;}
+.diaglegend .litem:hover{border-color:var(--border); color:var(--text);}
+.diaglegend .litem.active{background:rgba(255,255,255,.08); border-color:var(--accent2); color:var(--text);}
+.diaglegend .litem.hint{color:var(--muted2); font-style:italic; cursor:default;}
+.diaglegend .litem.hint:hover{border-color:transparent; color:var(--muted2);}
+.diaglegend .dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto;}
+.diaglegend .obadge{font-size:.75em; text-transform:uppercase; letter-spacing:.03em; padding:1px 6px; border-radius:100px; margin-left:2px; font-weight:700;}
+.diaglegend .obadge.human{color:var(--accent2); border:1px solid rgba(91,157,217,.4); background:rgba(91,157,217,.1);}
+.diaglegend .obadge.benchmark{color:#e0a94f; border:1px solid rgba(224,169,79,.4); background:rgba(224,169,79,.1);}
+.diaglegend .obadge.mixed{color:#e0685f; border:1px solid rgba(224,104,95,.4); background:rgba(224,104,95,.1);}
+.schema-section .snote{font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--muted2); margin-top:8px;}
+
+@media (max-width:900px){
+  .schema-section{width:100%; max-width:none;}
+}
+
+@media (max-width:640px){
+  .ngen{flex-wrap:wrap;}
+  .nslot{flex:1 1 100%;}
+}
+
+@media (max-width:560px){
+  .wrap{padding:44px 16px 100px;}
+  h1.title{font-size:30px;}
+}
+</style>
+</head>
+<body class="show-linenums">
+
+<label class="lnum-toggle">
+  <input type="checkbox" id="lnum-checkbox" checked>
+  <span>Line numbers</span>
+</label>
+
+<div class="wrap" id="content-wrap">
+
+  <p class="kicker">Draft — for internal review before this goes anywhere public</p>
+  <h1 class="title">Recording what an agent did — and which format you actually want</h1>
+  <p class="dek">As agentic systems become more prevalent, more people need to answer different questions about them — and gathering evidence to answer those questions means recording what an agent actually did. Different questions turn out to need very different data.</p>
+
+  <p>A dataset built to characterize <em>inference infrastructure load</em> looks nothing like one built to study <em>human-agent interaction</em>, which looks nothing like one built for a <em>replayable behavior record</em>. Very few of the public corpora that exist today are shaped anything like one another — pick one that "has agent traces" and you can still discover it can't answer your question, because it was never built to.</p>
+
+  <p>Our own team ships one of these corpora — Exgentic's Agent LLM Traces, introduced in <a href="#" target="_blank" rel="noopener">[link: Exgentic Agent LLM Traces v2 blog post]</a>. That post covers what's in the dataset and how it's built. This one starts from a different question: how does it sit next to everything else out there, and when should you reach for something other than it? When we lined it up against the rest of the field, the differences turned out not to be cosmetic. The schema follows the goal, every time.</p>
+
+  <p>This post is that placement exercise, written up so the next person doesn't have to redo it.</p>
+
+  <h2>Starting from the thinnest end</h2>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <th>Built for</th>
+          <th>What's actually in it</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> <span style="color:var(--muted); font-weight:400;">(SemiAnalysis)</span></td>
+          <td>Inference-infra workload characterization</td>
+          <td>Subagent traffic patterns and request shape from real human sessions — content is hashed away, because content was never the point</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a> <span style="color:var(--muted); font-weight:400;">(FAST'25)</span></td>
+          <td>KV-cache reuse &amp; scheduling research</td>
+          <td>Production request traces from a real serving system — timing, token counts, prefix structure only; ~90% real traffic, ~10% explicitly synthetic (Poisson-generated arrivals, to fill gaps in the load model)</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a></td>
+          <td>Agent-serving infra (batching, latency)</td>
+          <td>A replayable <em>request-pattern</em> corpus from real sessions — a load model, not a behavior record</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">SWE-chat</a></td>
+          <td>Human–agent interaction research</td>
+          <td>Full session content across several coding agents (Claude Code, Cursor, Codex, Gemini CLI) — human-sourced, with request/response bodies kept in full. Recorded live via <a href="https://github.com/entireio" target="_blank" rel="noopener">Entire.io</a>, an opt-in CLI that hooks into each agent natively and checkpoints sessions to git as they happen, then scraped from public repos afterward to assemble the published dataset</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>None of these are wrong or incomplete on their own terms. WEKA and TraceLab hash away conversation content because their question is "what request pattern hits the server," and content would just be noise for that. Mooncake keeps timing and prefix shape because KV-cache reuse is a scheduling problem, not a semantics problem.</p>
+
+  <p>The one dimension that's easy to miss on a skim: <strong>human vs. benchmark origin</strong>. SWE-chat, WEKA/AgentX, and TraceLab are all human-sourced. Mooncake is mixed.</p>
+
+  <h2>Where Exgentic sits</h2>
+
+  <p>The short version, for anyone who hasn't read <a href="#" target="_blank" rel="noopener">[link: Exgentic Agent LLM Traces v2 blog post]</a> yet: Exgentic keeps the full request and response body for every model call, not just a pass/fail score — recorded in OpenTelemetry GenAI format, at benchmark scale, across multiple agent scaffolds and frontier models. That's the detail that matters for this comparison: it's the only corpus here with nothing summarized away.</p>
+
+  <p>Full content plus timing plus subagent structure means the shapes the four thinner datasets above care about (request timing, token counts, prefix-sharing, subagent nesting) should all be derivable <em>from</em> Exgentic's fuller records, not the other way around. That's a reason to reach for Exgentic first if you're not sure yet which of the narrower questions you're actually asking — the fuller record can always be reduced down to what any of the others need; none of the others can be built back up into it. Exgentic is also the only one in this comparison that's deliberately, entirely benchmark-generated — a feature for its purpose (uniformity, scale, replayability), and a limit worth knowing before you reach for it to study <em>how people actually work with agents</em> — that's the one question a benchmark-generated corpus isn't designed to answer, no matter how full its records are.</p>
+
+  <h2>The schema, field by field</h2>
+
+  <p>The table above is the summary. Underneath it, every dataset is a specific set of fields — and the fields are the real story, because they're what determines whether a question is answerable at all. Click a dataset below to isolate what it actually supports.</p>
+
+  <div class="schema-section">
+    <div class="shead">Comparing schemas</div>
+    <div class="stitle">What the other efforts actually support</div>
+    <div class="ntree" id="diagram2">
+      <div class="ngen gen-turn">
+        <div class="nslot">
+          <div class="nbox">
+            <div class="nhead"><span class="nname">Turn</span><span class="ntag">claude_code.interaction</span></div>
+            <div class="ndesc">one per <b>user message</b> sent — turn <b>#1, #2, #3…</b> in the session, plus its text</div>
+            <div class="ndots" data-support="swe,exg"></div>
+          </div>
+        </div>
+      </div>
+      <div class="ngen gen-mid">
+        <div class="nslot" style="flex:.7 1 0;">
+          <div class="nbox attr">
+            <div class="nhead"><span class="nname">Who &amp; Where</span></div>
+            <div class="ndesc">which user, which session, <b>terminal type</b> (e.g. VS Code) — on every span</div>
+            <div class="ndots"><span class="ntag" style="opacity:.6;">coming soon</span></div>
+          </div>
+        </div>
+        <div class="nslot nstack" style="flex:1.45 1 0;">
+          <div class="nbox">
+            <div class="nhead"><span class="nname">Request</span><span class="ntag">chat &lt;model&gt;</span></div>
+            <div class="ndesc">one per <b>call to the model</b> — what we sent it + what it replied</div>
+            <div class="ndots" data-support="moon,tl,weka,exg,swe"></div>
+          </div>
+        </div>
+        <div class="nslot wide nstack">
+          <div class="nbox">
+            <div class="nhead"><span class="nname">Tool Call</span><span class="ntag">claude_code.tool</span></div>
+            <div class="ndesc">tool <b>name + args</b>, nested execution</div>
+            <div class="ndots" data-support="swe,moon-partial,tl-partial,weka-partial,exg"></div>
+          </div>
+        </div>
+      </div>
+      <div class="ngen gen-attr">
+        <div class="nslot spacer" style="flex:.7 1 0;"></div>
+        <div class="nslot" style="flex:1.45 1 0; display:flex; gap:8px;">
+          <div class="nbox attr" style="flex:1 1 0; min-width:0;">
+            <div class="nhead"><span class="nname">Token Accounting</span></div>
+            <div class="ndesc"><b>input/output token counts</b> per call</div>
+            <div class="ndots" data-support="moon,tl,weka,exg,swe"></div>
+          </div>
+          <div class="nbox attr" style="flex:1 1 0; min-width:0;">
+            <div class="nhead"><span class="nname">Full Message Body</span></div>
+            <div class="ndesc">the actual prompt sent &amp; the <b>model's reply</b>, verbatim; redacted at save time</div>
+            <div class="ndots" data-support="swe,exg"></div>
+          </div>
+          <div class="nbox attr" style="flex:1 1 0; min-width:0;">
+            <div class="nhead"><span class="nname">Prefix / Cache Structure</span></div>
+            <div class="ndesc">shared-prefix or <b>cache-hit</b> signal across requests</div>
+            <div class="ndots" data-support="moon,weka,exg,swe-partial"></div>
+          </div>
+        </div>
+        <div class="nslot wide" style="display:flex; gap:8px;">
+          <div class="nbox attr" style="flex:1 1 0;">
+            <div class="nhead"><span class="nname">Timing &amp; Nesting</span></div>
+            <div class="ndesc">span start/end, <b>parent_span_id</b>; subagents nest under caller</div>
+            <div class="ndots" data-support="swe-partial,moon,tl-partial,weka,exg"></div>
+          </div>
+          <div class="nbox" style="flex:1 1 0;">
+            <div class="nhead"><span class="nname">Tool Execution</span><span class="ntag">claude_code.tool.execution</span></div>
+            <div class="ndesc">the tool actually ran — <b>success</b> / <b>error</b></div>
+            <div class="ndots" data-support="swe,exg-partial"></div>
+          </div>
+          <div class="nbox attr" style="flex:1 1 0;">
+            <div class="nhead"><span class="nname">Human vs. Benchmark Origin</span></div>
+            <div class="ndesc">how the session actually <b>came about</b></div>
+            <div class="ndots" data-support="swe,weka,tl,moon-partial,exg"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="diaglegend" id="legend2"></div>
+    <div class="snote">"Coming soon" — no dataset in this comparison captures that field today. Click a dataset to isolate which boxes it fills; click again to clear.</div>
+  </div>
+
+  <script>
+  (function(){
+    var DS = {
+      exg:{label:'Exgentic', color:'#d98fd0', origin:'benchmark'},
+      swe:{label:'SWE-chat', color:'#e0a94f', origin:'human'},
+      weka:{label:'WEKA/AgentX', color:'#5b9dd9', origin:'human'},
+      moon:{label:'Mooncake', color:'#e0685f', origin:'mixed'},
+      tl:{label:'TraceLab', color:'#9aa4b6', origin:'human'},
+    };
+
+    function renderDots(root){
+      root.querySelectorAll('.ndots').forEach(function(el){
+        var raw = el.getAttribute('data-support');
+        if (!raw) return;
+        el.innerHTML = '';
+        raw.split(',').forEach(function(tok){
+          var isPartial = tok.endsWith('-partial');
+          var key = tok.replace('-partial','');
+          var d = DS[key];
+          if (!d) return;
+          var dot = document.createElement('span');
+          dot.setAttribute('data-key', key);
+          dot.className = 'ddot';
+          dot.style.background = d.color;
+          dot.style.opacity = isPartial ? '0.5' : '1';
+          dot.title = d.label + (isPartial ? ' (partial)' : '');
+          el.appendChild(dot);
+        });
+      });
+    }
+
+    function buildLegend(el){
+      if (!el) return;
+      el.innerHTML = '';
+      var tree = el.previousElementSibling;
+      var activeKey = null;
+
+      function applyFilter(){
+        el.querySelectorAll('.litem').forEach(function(li){ li.classList.toggle('active', li.dataset.key === activeKey); });
+        if (!tree) return;
+        if (!activeKey){
+          tree.classList.remove('filtering');
+          tree.querySelectorAll('.nbox.has-match').forEach(function(b){ b.classList.remove('has-match'); });
+          tree.querySelectorAll('.ddot.match').forEach(function(d){ d.classList.remove('match'); });
+          return;
+        }
+        tree.classList.add('filtering');
+        tree.querySelectorAll('.nbox').forEach(function(box){
+          var hit = box.querySelector('.ddot[data-key="' + activeKey + '"]');
+          box.classList.toggle('has-match', !!hit);
+        });
+        tree.querySelectorAll('.ddot').forEach(function(d){ d.classList.toggle('match', d.getAttribute('data-key') === activeKey); });
+      }
+
+      function makeItem(key, label, dotColor, origin){
+        var item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'litem';
+        item.dataset.key = key;
+        var dot = document.createElement('span');
+        dot.className = 'dot';
+        dot.style.background = dotColor;
+        item.appendChild(dot);
+        item.appendChild(document.createTextNode(label));
+        if (origin){
+          var badge = document.createElement('span');
+          badge.className = 'obadge ' + origin;
+          badge.textContent = origin;
+          item.appendChild(badge);
+        }
+        item.addEventListener('click', function(){
+          activeKey = (activeKey === key) ? null : key;
+          applyFilter();
+        });
+        el.appendChild(item);
+      }
+
+      Object.keys(DS).forEach(function(key){ makeItem(key, DS[key].label, DS[key].color, DS[key].origin); });
+
+      var hint = document.createElement('span');
+      hint.className = 'litem hint';
+      hint.textContent = 'click a dataset to isolate it';
+      el.appendChild(hint);
+    }
+
+    renderDots(document.getElementById('diagram2'));
+    buildLegend(document.getElementById('legend2'));
+  })();
+  </script>
+
+  <h2>So which one do you actually want?</h2>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th>If your question is…</th>
+          <th>Use…</th>
+          <th>Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>KV-cache / prefix-reuse scheduling research</td>
+          <td class="name"><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a> or Exgentic</td>
+          <td><b>Mooncake</b> is purpose-built for exactly this, at production scale. <b>Exgentic</b> is a broader fit if Mooncake's production-only scope is too narrow — prefix and cache structure is derivable from its full content.</td>
+        </tr>
+        <tr>
+          <td>Load-testing or benchmarking inference infra under realistic agentic traffic, without needing conversation content</td>
+          <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> &amp; <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a>, or Exgentic</td>
+          <td><b>WEKA/AgentX</b> and <b>TraceLab</b> answer the same close-cousin question — infra load without content — at 8,000+ and 357K-round scale respectively; WEKA's hash is deterministically replayable, TraceLab's subagent nesting is only heuristically recovered. <b>Exgentic</b> carries the same traffic-shape signal inside its fuller record, plus content if the question grows beyond pure infra load.</td>
+        </tr>
+        <tr>
+          <td>Studying how <em>people</em> actually work with coding agents</td>
+          <td class="name"><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">SWE-chat</a></td>
+          <td>Human-sourced with full content, across 5,851 sessions spanning several coding agents. <b>Exgentic</b> isn't a fit here — benchmark-generated by design, so it can't answer a question about human behavior.</td>
+        </tr>
+        <tr>
+          <td>Debugging an agent, building an evaluator from real failures, or you're not yet sure which of the above you need</td>
+          <td class="name">Exgentic</td>
+          <td>Full request/response bodies at benchmark scale, five models and five scaffolds to compare against.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tbl-caption">Exgentic is named in every row on purpose — its full-content record is a superset of what the narrower corpora keep, so it's always at least a candidate.</p>
+
+  <h2>Try it yourself</h2>
+
+  <p>Exgentic's traces are public today on <a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">HuggingFace</a>.</p>
+
+  <p>This post has been about <em>shape</em> — which fields each corpus keeps, and which questions that answers. There's a second axis we haven't touched at all: <em>how</em> a trace corpus comes to exist in the first place — benchmark-generated like Exgentic, scraped from live sessions like SWE-chat, or synthetically constructed like Mooncake's Poisson-filled 10%. That distinction changes what a dataset can honestly claim about the behavior it records, independent of how rich its schema is. It's worth its own post — coming next.</p>
+
+</div>
+
+<script>
+(function(){
+  var wrap = document.getElementById('content-wrap');
+  var checkbox = document.getElementById('lnum-checkbox');
+
+  // number direct block-level children of .wrap for review reference
+  var n = 0;
+  Array.prototype.forEach.call(wrap.children, function(el){
+    if (el.classList.contains('schema-section')) return; // interactive widget isn't line-referenced
+    n++;
+    var span = document.createElement('span');
+    span.className = 'lnum';
+    span.setAttribute('aria-hidden', 'true');
+    span.textContent = n;
+    el.style.position = el.style.position || 'relative';
+    el.insertBefore(span, el.firstChild);
+  });
+
+  function applyState(on){
+    document.body.classList.toggle('show-linenums', on);
+  }
+
+  var saved = null;
+  try { saved = localStorage.getItem('lnum-visible'); } catch (e) {}
+  if (saved !== null){
+    checkbox.checked = (saved === '1');
+  }
+  applyState(checkbox.checked);
+
+  checkbox.addEventListener('change', function(){
+    applyState(checkbox.checked);
+    try { localStorage.setItem('lnum-visible', checkbox.checked ? '1' : '0'); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
