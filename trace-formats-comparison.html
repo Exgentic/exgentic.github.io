@@ -294,6 +294,8 @@ table.cmp td.name .org{
 
   <p>This post is that placement exercise, written up so the next person doesn't have to redo it.</p>
 
+  <p>Two words worth pinning down before the comparison starts, since they show up constantly below and aren't the same thing: a <strong>session</strong> is the actual run — a real developer's coding session, or one benchmark task attempt, the thing that happened. A <strong>trace</strong> is the recorded artifact of that session — whatever a dataset actually captured and shipped. The gap between the two is the whole story here: WEKA has 8,000+ real sessions, but its traces hash the content away, so a rich session doesn't guarantee a rich trace. Where this post gives a count ("8,000+ sessions," "23,000 traces"), it's naming whichever unit that dataset actually counts in its own documentation.</p>
+
   <h2>Starting from the thinnest end</h2>
 
   <div class="tbl-wrap">
@@ -586,7 +588,7 @@ table.cmp td.name .org{
 
   <p>Exgentic's traces are public today on <a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">HuggingFace</a>.</p>
 
-  <p>This post has been about what each corpus actually lets you learn — which questions it can and can't answer, given what it keeps. There's a separate question we haven't touched at all: <em>how</em> a trace corpus comes to exist in the first place — benchmark-generated like Exgentic, scraped from live sessions like SWE-chat, or synthetically constructed like Mooncake's Poisson-filled 10%. That distinction changes what a dataset can honestly claim about the behavior it records, independent of how much it captures. It's worth its own post — coming next.</p>
+  <p>This post has been about what each corpus actually lets you learn — which questions it can and can't answer, given what it keeps. There's a separate question we haven't touched at all: <em>how</em> the underlying sessions came to exist in the first place — benchmark-generated like Exgentic, scraped from real developers' sessions like SWE-chat, or synthetically constructed like Mooncake's Poisson-filled 10%. That distinction changes what a dataset can honestly claim about the behavior its traces record, independent of how much any single trace captures. It's worth its own post — coming next.</p>
 
 </div>
 
