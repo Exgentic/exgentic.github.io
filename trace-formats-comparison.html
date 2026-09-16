@@ -278,7 +278,7 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
 <div class="wrap" id="content-wrap">
 
   <p class="kicker">Draft — for internal review before this goes anywhere public</p>
-  <h1 class="title">Recording what an agent did — and which format you actually want</h1>
+  <h1 class="title">Recording what an agent did — and which dataset you actually want</h1>
   <p class="dek">As agentic systems become more prevalent, more people need to answer different questions about them — and gathering evidence to answer those questions means recording what an agent actually did. Different questions turn out to need very different data.</p>
 
   <p>A dataset built to characterize <em>inference infrastructure load</em> looks nothing like one built to study <em>human-agent interaction</em>, which looks nothing like one built for a <em>replayable behavior record</em>. Very few of the public corpora that exist today are shaped anything like one another — pick one that "has agent traces" and you can still discover it can't answer your question, because it was never built to.</p>
@@ -294,30 +294,40 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
       <thead>
         <tr>
           <th>Dataset</th>
+          <th>Scale</th>
+          <th>Origin</th>
           <th>Built for</th>
-          <th>What's actually in it</th>
+          <th>What's captured</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> <span style="color:var(--muted); font-weight:400;">(SemiAnalysis)</span></td>
+          <td>8,000+ sessions</td>
+          <td>Human, real usage</td>
           <td>Inference-infra workload characterization</td>
-          <td>Subagent traffic patterns and request shape from real human sessions — content is hashed away, because content was never the point</td>
+          <td>Subagent traffic patterns and request shape — content is hashed away, because content was never the point</td>
         </tr>
         <tr>
-          <td class="name"><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a> <span style="color:var(--muted); font-weight:400;">(FAST'25)</span></td>
+          <td class="name"><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a> <span style="color:var(--muted); font-weight:400;">(Moonshot AI / FAST'25)</span></td>
+          <td>23,000 traces</td>
+          <td>~90% real, ~10% synthetic</td>
           <td>KV-cache reuse &amp; scheduling research</td>
-          <td>Production request traces from a real serving system — timing, token counts, prefix structure only; ~90% real traffic, ~10% explicitly synthetic (Poisson-generated arrivals, to fill gaps in the load model)</td>
+          <td>Production request traces from a real serving system (Kimi) — timing, token counts, prefix structure only; the synthetic slice is Poisson-generated arrivals filling gaps in the load model</td>
         </tr>
         <tr>
-          <td class="name"><a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a></td>
+          <td class="name"><a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a> <span style="color:var(--muted); font-weight:400;">(University of Washington)</span></td>
+          <td>4,265 sessions</td>
+          <td>Human, real usage</td>
           <td>Agent-serving infra (batching, latency)</td>
-          <td>A replayable request-and-tool-call trace from real sessions, built for serving-system analysis — content is stripped out, tool calls and cache-prefix structure are heuristically reconstructed rather than captured directly</td>
+          <td>A replayable request-and-tool-call trace, built for serving-system analysis — content is stripped out, tool calls and cache-prefix structure are heuristically reconstructed rather than captured directly</td>
         </tr>
         <tr>
-          <td class="name"><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">SWE-chat</a></td>
+          <td class="name"><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">SWE-chat</a> <span style="color:var(--muted); font-weight:400;">(SALT-NLP)</span></td>
+          <td>5,851 sessions</td>
+          <td>Human, real usage</td>
           <td>Human–agent interaction research</td>
-          <td>Full session content across several coding agents (Claude Code, Cursor, Codex, Gemini CLI) — human-sourced, with request/response bodies kept in full. Recorded via <a href="https://github.com/entireio" target="_blank" rel="noopener">Entire.io</a>, an opt-in CLI that hooks into each agent natively and checkpoints sessions to git as they happen, by developers who opted in to session logging; the published dataset was then collected from those public repositories</td>
+          <td>Full session content across several coding agents (Claude Code, Cursor, Codex, Gemini CLI), with request/response bodies kept in full. Recorded via <a href="https://github.com/entireio" target="_blank" rel="noopener">Entire.io</a>, an opt-in CLI that hooks into each agent natively and checkpoints sessions to git as they happen, by developers who opted in to session logging; the published dataset was then collected from those public repositories</td>
         </tr>
       </tbody>
     </table>
@@ -326,6 +336,8 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
   <p>None of these are wrong or incomplete on their own terms. WEKA and TraceLab hash away conversation content because their question is "what request pattern hits the server," and content would just be noise for that. Mooncake keeps timing and prefix shape because KV-cache reuse is a scheduling problem, not a semantics problem.</p>
 
   <p>The one dimension that's easy to miss on a skim, and one no schema field captures directly: <strong>human vs. benchmark origin</strong> — how a session actually came about. SWE-chat, WEKA/AgentX, and TraceLab are all human-sourced: real developers, real sessions. Mooncake is mixed — real production traffic from Moonshot AI's Kimi service, with roughly 10% of traces explicitly synthetic (Poisson-generated arrivals, filling gaps in the load model). Exgentic sits at the other end on purpose: entirely benchmark-generated, for reasons the next section gets into.</p>
+
+  <p>That same origin question is also the privacy question. WEKA and TraceLab hash conversation content away by design, so there's nothing session-identifying to leak. SWE-chat keeps full content from real developers, but it's opt-in — those developers chose to checkpoint their own sessions via Entire.io, knowingly. Mooncake's real traffic is production data from a live service, handled at the infrastructure level rather than published with message content attached. Exgentic sits outside this concern entirely, for a structural reason rather than a policy one: every session is benchmark-generated, so there's no real person's data in it to protect in the first place.</p>
 
   <h2>Where Exgentic sits</h2>
 
@@ -560,7 +572,7 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
 
   <p>Exgentic's traces are public today on <a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">HuggingFace</a>.</p>
 
-  <p>This post has been about <em>shape</em> — which fields each corpus keeps, and which questions that answers. There's a second axis we haven't touched at all: <em>how</em> a trace corpus comes to exist in the first place — benchmark-generated like Exgentic, scraped from live sessions like SWE-chat, or synthetically constructed like Mooncake's Poisson-filled 10%. That distinction changes what a dataset can honestly claim about the behavior it records, independent of how rich its schema is. It's worth its own post — coming next.</p>
+  <p>This post has been about what each corpus actually lets you learn — which questions it can and can't answer, given what it keeps. There's a separate question we haven't touched at all: <em>how</em> a trace corpus comes to exist in the first place — benchmark-generated like Exgentic, scraped from live sessions like SWE-chat, or synthetically constructed like Mooncake's Poisson-filled 10%. That distinction changes what a dataset can honestly claim about the behavior it records, independent of how much it captures. It's worth its own post — coming next.</p>
 
 </div>
 
