@@ -176,10 +176,17 @@ table.cmp td.name{
   font-weight:600;
   font-size:15px;
   color:var(--ink);
-  white-space:nowrap;
 }
 table.cmp td.name a{color:var(--ink); border-bottom:1px dotted var(--rule);}
 table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
+table.cmp td.name .org{
+  display:block;
+  font-family:'IBM Plex Mono', monospace;
+  font-weight:400;
+  font-size:11px;
+  color:var(--muted);
+  margin-top:3px;
+}
 .tbl-caption{
   font-family:'IBM Plex Mono', monospace;
   font-size:11.5px;
@@ -291,6 +298,13 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
 
   <div class="tbl-wrap">
     <table class="cmp">
+      <colgroup>
+        <col style="width:14%;">
+        <col style="width:10%;">
+        <col style="width:13%;">
+        <col style="width:18%;">
+        <col style="width:45%;">
+      </colgroup>
       <thead>
         <tr>
           <th>Dataset</th>
@@ -302,28 +316,28 @@ table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
       </thead>
       <tbody>
         <tr>
-          <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> <span style="color:var(--muted); font-weight:400;">(SemiAnalysis)</span></td>
+          <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a><span class="org">SemiAnalysis</span></td>
           <td>8,000+ sessions</td>
           <td>Human, real usage</td>
           <td>Inference-infra workload characterization</td>
           <td>Subagent traffic patterns and request shape — content is hashed away, because content was never the point</td>
         </tr>
         <tr>
-          <td class="name"><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a> <span style="color:var(--muted); font-weight:400;">(Moonshot AI / FAST'25)</span></td>
+          <td class="name"><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a><span class="org">Moonshot AI &middot; FAST'25</span></td>
           <td>23,000 traces</td>
           <td>~90% real, ~10% synthetic</td>
           <td>KV-cache reuse &amp; scheduling research</td>
           <td>Production request traces from a real serving system (Kimi) — timing, token counts, prefix structure only; the synthetic slice is Poisson-generated arrivals filling gaps in the load model</td>
         </tr>
         <tr>
-          <td class="name"><a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a> <span style="color:var(--muted); font-weight:400;">(University of Washington)</span></td>
+          <td class="name"><a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a><span class="org">University of Washington</span></td>
           <td>4,265 sessions</td>
           <td>Human, real usage</td>
           <td>Agent-serving infra (batching, latency)</td>
           <td>A replayable request-and-tool-call trace, built for serving-system analysis — content is stripped out, tool calls and cache-prefix structure are heuristically reconstructed rather than captured directly</td>
         </tr>
         <tr>
-          <td class="name"><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">SWE-chat</a> <span style="color:var(--muted); font-weight:400;">(SALT-NLP)</span></td>
+          <td class="name"><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">SWE-chat</a><span class="org">SALT-NLP</span></td>
           <td>5,851 sessions</td>
           <td>Human, real usage</td>
           <td>Human–agent interaction research</td>
