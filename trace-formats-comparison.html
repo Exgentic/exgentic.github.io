@@ -549,6 +549,152 @@ table.cmp td.name .org{
   })();
   </script>
 
+  <h2>From a trace file to a running workload</h2>
+
+  <p>A trace format is only half of the practical story. To benchmark a serving stack, something has to turn the recording back into requests. Here, <em>replay</em> does not always mean resending the original bytes. Some replay paths preserve a session's dependency graph and feed each live model response into the next turn; others preserve only arrival times, input and output lengths, or prefix-sharing relationships and generate substitute payloads with the same serving shape. Those are both useful experiments, but they answer different questions.</p>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th>Mechanism</th>
+          <th>Execution model</th>
+          <th>Scheduling</th>
+          <th>Payload construction</th>
+          <th>Target</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name"><a href="https://github.com/kubernetes-sigs/inference-perf" target="_blank" rel="noopener">Inference-Perf</a></td>
+          <td>Builds a dependency graph for each session and releases calls as their predecessors complete</td>
+          <td>Controls session concurrency or start rate; dependency-relative waits can be capped</td>
+          <td>Uses recorded or reconstructed inputs and, where supported, substitutes live predecessor outputs. OTel replay can duplicate sessions and add cache-isolating markers.</td>
+          <td>A live inference endpoint through its chat API</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://docs.nvidia.com/aiperf/latest/" target="_blank" rel="noopener">AIPerf</a></td>
+          <td>Converts each dataset through a format-specific adapter into conversations or independent requests</td>
+          <td>Supports recorded fixed schedules or closed-loop conversations, plus delay caps and concurrency controls</td>
+          <td>Uses recorded messages when present; otherwise synthesizes prompts from token lengths and cache-prefix information. Supports filtering, model rewriting, and cache isolation.</td>
+          <td>A live OpenAI-compatible inference endpoint</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/vllm-project/guidellm/blob/main/docs/guides/trace_replay.md" target="_blank" rel="noopener">GuideLLM</a></td>
+          <td>Converts trace rows into independent requests or multi-turn conversations through a format-specific loader</td>
+          <td>Uses trace timestamps and conversation dependencies; supports time scaling, wait caps, and minimum session concurrency</td>
+          <td>Generates prompts from token lengths and hash IDs. Where supported, it models subagents and tool calls with supplied or built-in schemas and placeholder results.</td>
+          <td>A live OpenAI-compatible inference endpoint</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://docs.vllm.ai/en/latest/cli/bench/serve/" target="_blank" rel="noopener">vLLM bench serve</a></td>
+          <td>Treats each timed-trace row as an independent request</td>
+          <td>Schedules requests from their timestamps; timestamp units are configurable</td>
+          <td>Deterministically expands hash IDs into shared token blocks up to the recorded input length; field names and block size are configurable</td>
+          <td>A live online-serving endpoint, commonly vLLM</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/sgl-project/sglang/blob/main/docs/docs/developer_guide/bench_serving.mdx" target="_blank" rel="noopener">SGLang bench_serving</a></td>
+          <td>Treats each trace row as the start of a synthetic multi-round session</td>
+          <td>Can use trace timestamps, adjusted by a slowdown factor; the configured rounds within a session are emitted as a burst</td>
+          <td>Builds prompts from hash IDs, adds synthetic user turns and placeholder assistant responses, and uses a configurable output length</td>
+          <td>A supported live serving endpoint, including SGLang and OpenAI-compatible backends</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/ai-dynamo/dynamo/blob/main/docs/fern/pages/cli/operations/simulation-with-dynosim/dynosim-replay.mdx" target="_blank" rel="noopener">NVIDIA DynoSim</a></td>
+          <td>Runs trace events through simulated engine cores in virtual time</td>
+          <td>Uses trace timestamps with a configurable speedup and stopping horizon</td>
+          <td>Maps token lengths and prefix hashes into a configurable model of workers, scheduling, KV capacity, routing, and aggregated or disaggregated serving</td>
+          <td>Simulated Dynamo engine cores, without HTTP or live workers</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tbl-caption">Inference-Perf, AIPerf, GuideLLM, vLLM bench serve, and SGLang bench_serving drive live inference endpoints, but their format-specific loaders do not necessarily preserve the same parts of a trace. DynoSim instead evaluates a simulated serving topology. Compare results only where the replay target, preserved trace properties, and reported metric align.</p>
+
+  <p>That boundary matters when reading benchmark results. Request-level throughput from two endpoint load generators can be compared if model, hardware, concurrency, timing policy, and payload construction are aligned. It is not directly comparable to end-to-end session latency from a causal graph replay, which includes dependency and branch effects. Nor is either number directly comparable to a DynoSim prediction, where no model is decoding tokens. The mechanisms can share a source trace without measuring the same system.</p>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th>Trace dataset</th>
+          <th>Replay mechanism</th>
+          <th>Dataset-specific replay</th>
+          <th>Documentation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name" rowspan="3">WEKA / AgentX</td>
+          <td>Inference-Perf</td>
+          <td>Reconstructs WEKA's parent-child turns, subagent branches, live-output flow, and recorded think-time gaps, subject to a configurable cap.</td>
+          <td><a href="https://github.com/kubernetes-sigs/inference-perf/blob/main/docs/weka_trace_replay.md" target="_blank" rel="noopener">Weka Trace Replay</a></td>
+        </tr>
+        <tr>
+          <td>AIPerf</td>
+          <td>Reconstructs WEKA's parent/subagent graph, infers flattened branches from hash-prefix and timing evidence, synthesizes cache-equivalent prompts, and follows recorded timing.</td>
+          <td><a href="https://docs.nvidia.com/aiperf/latest/tutorials/datasets-inputs/replay-weka-agentic-coding-traces" target="_blank" rel="noopener">Replay WEKA Agentic Coding Traces</a></td>
+        </tr>
+        <tr>
+          <td>GuideLLM</td>
+          <td>Preserves WEKA conversations and subagent spawn/join topology; tool-call turns use supplied or synthetic tool definitions and placeholder results.</td>
+          <td><a href="https://github.com/vllm-project/guidellm/blob/main/docs/guides/trace_replay.md#weka" target="_blank" rel="noopener">Trace Replay: WEKA</a></td>
+        </tr>
+        <tr>
+          <td class="name">TraceLab</td>
+          <td>AIPerf</td>
+          <td>Groups rounds into conversations, synthesizes prompts and prefix-block IDs from token counts, and heuristically attaches subagents by timing containment.</td>
+          <td><a href="https://docs.nvidia.com/aiperf/dev/tutorials/datasets-inputs/replay-trace-lab-agentic-coding-traces" target="_blank" rel="noopener">Replay TraceLab Agentic Coding Traces</a></td>
+        </tr>
+        <tr>
+          <td class="name" rowspan="5">Mooncake</td>
+          <td>AIPerf</td>
+          <td>Replays timestamps, token lengths, and optional hash IDs; it can instead send exact preformatted messages and tool definitions when a trace provides them.</td>
+          <td><a href="https://docs.nvidia.com/aiperf/latest/benchmark-modes/trace-replay-with-mooncake-traces" target="_blank" rel="noopener">Trace Replay with Mooncake Traces</a></td>
+        </tr>
+        <tr>
+          <td>GuideLLM</td>
+          <td>Replays each Mooncake row independently, preserving timestamp offsets, token lengths, and shared hash-ID prefixes with generated prompts.</td>
+          <td><a href="https://github.com/vllm-project/guidellm/blob/main/docs/guides/trace_replay.md#mooncake" target="_blank" rel="noopener">Trace Replay: Mooncake</a></td>
+        </tr>
+        <tr>
+          <td>vLLM bench serve</td>
+          <td>Schedules independent rows by timestamp and deterministically expands hash IDs into shared token blocks of the recorded input length.</td>
+          <td><a href="https://docs.vllm.ai/en/latest/benchmarking/cli/#running-moonshotai-traces" target="_blank" rel="noopener">Replay Timed Traces: Running MoonshotAI traces</a></td>
+        </tr>
+        <tr>
+          <td>SGLang bench_serving</td>
+          <td>Starts each record at its trace timestamp, builds a hash-derived prompt, and emits the configured number of synthetic conversation rounds as a burst.</td>
+          <td><a href="https://github.com/sgl-project/sglang/blob/main/docs/docs/developer_guide/bench_serving.mdx#9-evaluating-large-scale-kvcache-sharing-with-mooncake-trace-sglang-only" target="_blank" rel="noopener">Bench Serving: Mooncake</a>; <a href="https://github.com/sgl-project/sglang/blob/main/python/sglang/benchmark/datasets/mooncake.py" target="_blank" rel="noopener">Mooncake loader</a></td>
+        </tr>
+        <tr>
+          <td>NVIDIA DynoSim</td>
+          <td>Runs a Mooncake-format trace's timestamps and hash-block demand through simulated Dynamo engine cores to predict routing, scheduling, latency, and prefix-cache reuse.</td>
+          <td><a href="https://github.com/ai-dynamo/dynamo/blob/main/docs/fern/pages/cli/operations/simulation-with-dynosim/dynosim-replay.mdx#replay-a-saved-trace" target="_blank" rel="noopener">Run a DynoSim Simulation</a></td>
+        </tr>
+        <tr>
+          <td class="name">SWE-chat</td>
+          <td>&mdash;</td>
+          <td>No native replay loader or documented replay path was found. Its full conversations can be transformed into other tools' inputs, but that is a conversion workflow and is intentionally not counted here as native replay.</td>
+          <td><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">Dataset documentation</a></td>
+        </tr>
+        <tr>
+          <td class="name" rowspan="2">Exgentic</td>
+          <td>Inference-Perf</td>
+          <td>Reconstructs Exgentic's OTel dependency graph and, by default, substitutes each live model response into downstream requests. It preserves shared-prefix and tool-call structure, using recorded tool-result messages rather than executing tools, and can duplicate sessions with cache-isolating markers.</td>
+          <td><a href="https://github.com/kubernetes-sigs/inference-perf/tree/main/workload-catalog/agentic-trace-replay" target="_blank" rel="noopener">Exgentic workload</a>; <a href="https://github.com/kubernetes-sigs/inference-perf/blob/main/docs/otel_trace_replay.md" target="_blank" rel="noopener">OTel Trace Replay</a></td>
+        </tr>
+        <tr>
+          <td>AIPerf</td>
+          <td>Sends self-contained recorded call snapshots, preserving messages, tool definitions, output limits, request controls, and start times. Fixed-schedule mode follows recorded offsets; closed-loop mode waits between calls, but neither mode feeds live responses into later requests. Recorded tool interactions are not executed.</td>
+          <td><a href="https://docs.nvidia.com/aiperf/latest/reference/benchmark-datasets#exgentic-agent-trace-replay" target="_blank" rel="noopener">Exgentic Agent Trace Replay</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tbl-caption">Native loaders only; generic JSON/CSV conversion paths are excluded. These entries describe dataset-specific behavior, while the mechanism table above identifies each system under test.</p>
+
   <h2>So which one do you actually want?</h2>
 
   <div class="tbl-wrap">
