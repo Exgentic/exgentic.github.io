@@ -117,9 +117,7 @@ ARTICLE_HEADER_TEMPLATE = """\
     <h1 class="blog-post-title">{title}</h1>
     <p class="blog-post-subtitle">{subtitle}</p>
     <div class="blog-post-meta">
-      <span>{author}</span>
-      <span>&middot;</span>
-      <time datetime="{date_iso}">{date_display}</time>
+      {author_block}<time datetime="{date_iso}">{date_display}</time>
       <span>&middot;</span>
       <span>{reading_time} read</span>
       <button class="blog-share-btn" id="shareBtn" title="Copy link">
@@ -482,7 +480,11 @@ def build_blog(slug: str) -> tuple[dict, str] | None:
         + ARTICLE_HEADER_TEMPLATE.format(
             title=meta["title"],
             subtitle=meta["subtitle"],
-            author=meta["author"],
+            author_block=(
+                f'<span>{meta["author"]}</span>\n      <span>&middot;</span>\n      '
+                if str(meta["author"]).strip()
+                else ""
+            ),
             date_iso=date_iso,
             date_display=date_display,
             reading_time=meta["reading_time"],
