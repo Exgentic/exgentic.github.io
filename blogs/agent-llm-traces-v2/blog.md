@@ -9,27 +9,23 @@ slug: agent-llm-traces-v2
 
 AI agents now book our travel, write our code, and answer our customers. Two can finish the same task and look identical on paper — one taking three clean steps, the other opening a file it shouldn't, crashing a service, and recovering by luck. We already know whether they succeed and what they cost. It's time we saw how they get there.
 
-Today we're releasing [Exgentic Agent LLM Traces](https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2): 10K real agent runs — five leading models, five agent designs, six kinds of task — with every model call preserved in one standard format. It's the part of the run that normally gets thrown away.
+Today we're releasing [Exgentic Agent LLM Traces](https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2): 10K real agent runs — five leading models, five agent designs, six kinds of task — with every model call preserved in one standard format.
 
 > We've always known whether agents succeed. Now the record of how is public.
 
 ## Why this matters
 
-Agents are moving into real work: writing code, handling customer support, doing research, automating tasks across hundreds of apps. Benchmarks are how we study that work before it reaches the people who depend on it — each one a controlled mirror of a real job, a stand-in for the messy thing we actually care about. So the question is never really how an agent scores on the mirror. It is how the agent will behave doing the real thing: what it costs, where it gives up, whether it recovers when something breaks. And what we know about that mostly comes from score-based benchmarks — each run reduced to a single number — because the full behavioral record is rarely what gets shared.
+Agents are moving into real work: writing code, handling customer support, doing research, automating tasks across hundreds of apps. Benchmarks are how we study that work before it reaches the people who depend on it. But score-based benchmarks reduce each run to a single number, leaving out what it costs, where the agent gives up, and whether it recovers when something breaks.
 
-That leaves a gap. We study *models* on mountains of public data. We study *agents* — the multi-step, tool-using, failing-and-recovering systems people actually deploy — on a handful of narrow, fragmented records. The behavior that decides whether an agent is worth shipping lives in the full record of what it did, and that record rarely leaves the lab that produced it.
+A single trace is the full sequence of what an agent did: every model call, in order — the input it received, the tools it had, what it output, and whether it errored. The sequence shows which tools it chose, how its context grew, and where it hesitated or recovered. We study *models* on mountains of public data, but *agents* on a handful of narrow, fragmented records.
 
-A single trace is the full sequence of what an agent did: every model call, in order — the input it received, the tools it had, what it output, and whether it errored. A score tells you whether an agent succeeded; the sequence tells you how it got there — which tools it chose, how its context grew, where it hesitated or recovered. That's the part of the run that normally gets discarded, and the part that's hardest to study without a large public record of it.
+The gap exists for a concrete reason: producing real agent runs at scale means running frontier models across many environments, thousands of times over, and paying for every token they generate. Even then, every tool records them in its own shape. Public traces also tend to be narrow — [SWE-agent-trajectories](https://huggingface.co/datasets/nebius/SWE-agent-trajectories) covers GitHub issues with one framework, while [KernelBench hard traces](https://huggingface.co/datasets/Infatoshi/kernelbench-hard-traces) covers GPU kernel coding. Some capture only the conversation visible to the user; others embed tool invocations and results in free text or omit which tools were available. The OTel format records the complete tool schema, structured results, and every model call in the agent's internal process. There has been no large, uniform, public record of how capable agents behave across the range of work they're deployed to do.
 
-The gap exists for a concrete reason: producing real agent runs at scale is slow, costly, and fragmented. It means running frontier models across many different environments, thousands of times over, and paying for every token they generate. And even once you have the runs, every tool records them in its own shape. The traces that do exist publicly tend to be narrow — for example, [SWE-agent-trajectories](https://huggingface.co/datasets/nebius/SWE-agent-trajectories) covers GitHub issues with one framework, and [KernelBench hard traces](https://huggingface.co/datasets/Infatoshi/kernelbench-hard-traces) covers GPU kernel coding. Beyond coverage, what the traces contain differs. Some capture only the conversation visible to the user, not the agent's internal calls. Others embed tool invocations and results in free text rather than structured fields, and don't record which tools the agent had available — only which ones it used. The OTel format records the full picture per call: the complete tool schema, structured results, and every model call in the agent's internal process. There has been no large, uniform, public record of how capable agents behave across the range of work they're actually deployed to do.
-
-> Model behavior is studied everywhere. Agent behavior is studied narrowly, because broad data is hard to produce and rarely shared.
-
-This release is a piece of that missing record. Real runs, at scale, from frontier models, across the domains agents are deployed in, in one format anyone can load. That combination didn't exist before today.
+This release is a piece of that missing record. Real runs, at scale, from frontier models, across the domains agents are deployed in, in one format anyone can load.
 
 ## What you can do with it
 
-Preserving the full run, not just the verdict, is what makes the data useful. Each of these previously required running the evaluations yourself:
+Preserving the full run, not just the verdict, is what makes the data useful. The following are valuable use cases for this data. Each previously required running the evaluations yourself:
 
 - **Debug your own agent against a reference set.** Compare its behavior to how frontier models handle the same kinds of tasks.
 - **Build tools that evaluate agents, using real failures.** Study where agents actually break instead of on made-up examples.
