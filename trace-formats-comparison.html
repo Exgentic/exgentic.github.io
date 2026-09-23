@@ -285,18 +285,20 @@ table.cmp td.name .org{
 <div class="wrap" id="content-wrap">
 
   <p class="kicker">Draft — for internal review before this goes anywhere public</p>
-  <h1 class="title">Recording what an agent did — and which dataset you actually want</h1>
-  <p class="dek">As agentic systems become more prevalent, more people need to answer different questions about them — and gathering evidence to answer those questions means recording what an agent actually did. Different questions turn out to need very different data.</p>
+  <h1 class="title">From agent traces to replay</h1>
+  <p class="dek">As agentic systems spread, more teams need to answer different questions about them — and answering means both recording what an agent did and being able to replay it. Different questions need different data and different replay machinery; the right choice is a pairing, driven by your use case.</p>
 
   <p>A dataset built to characterize <em>inference infrastructure load</em> looks nothing like one built to study <em>human-agent interaction</em>, which looks nothing like one built for a <em>replayable behavior record</em>. Very few of the public corpora that exist today are shaped anything like one another — pick one that "has agent traces" and you can still discover it can't answer your question, because it was never built to.</p>
 
-  <p>This post is a survey of the public agentic-trace corpora that exist today — what each one keeps, what it throws away, and which questions that leaves answerable. When you line them up, the differences turn out not to be cosmetic. The schema follows the goal, every time.</p>
+  <p>But the dataset is only half the decision. A trace is inert until something replays it, and the replay mechanism decides what you can actually do with what the dataset kept. A rich trace that no tool can replay the way you need is a dead end; a capable mechanism can't reconstruct detail the trace already threw away. So the real question isn't "which dataset" but "which dataset and which mechanism" — and the answer depends on what you're trying to learn.</p>
 
-  <p>Disclosure: we build one of the datasets compared here — Exgentic's Agent LLM Traces, introduced in <a href="#" target="_blank" rel="noopener">[link: Exgentic Agent LLM Traces v2 blog post]</a>. It's treated as one entry among five below; weigh our read accordingly.</p>
+  <p>This post is a survey of that fragmented field — but a deliberately scoped one. It covers the trace corpora the inference-serving world actually consumes: the ones a replay mechanism (<a href="https://github.com/kubernetes-sigs/inference-perf" target="_blank" rel="noopener">Inference-Perf</a>, <a href="https://docs.nvidia.com/aiperf/latest/" target="_blank" rel="noopener">AIPerf</a>, <a href="https://github.com/vllm-project/guidellm/blob/main/docs/guides/trace_replay.md" target="_blank" rel="noopener">GuideLLM</a>, <a href="https://docs.vllm.ai/en/latest/cli/bench/serve/" target="_blank" rel="noopener">vLLM bench serve</a>, <a href="https://github.com/sgl-project/sglang/blob/main/docs/docs/developer_guide/bench_serving.mdx" target="_blank" rel="noopener">SGLang bench_serving</a>, <a href="https://github.com/ai-dynamo/dynamo/blob/main/docs/fern/pages/cli/operations/simulation-with-dynosim/dynosim-replay.mdx" target="_blank" rel="noopener">NVIDIA DynoSim</a>) can turn back into a live or simulated workload. For each, it asks what the dataset keeps, what it throws away, and which questions that leaves answerable. When you line them up, the differences turn out not to be cosmetic — the schema follows the goal, every time.</p>
+
+  <p>Concretely, the set below isn't hand-picked — it's what falls out of a mechanical sweep. We went to each of the six replay mechanisms mentioned above and collected every agentic-trace format it can natively load and re-run; the union of those is the list you see here.</p>
 
   <p>Two words worth pinning down before the comparison starts, since they show up constantly below and aren't the same thing: a <strong>session</strong> is the actual run — a real developer's coding session, or one benchmark task attempt, the thing that happened. A <strong>trace</strong> is the recorded artifact of that session — whatever a dataset actually captured and shipped. The gap between the two is the whole story here: WEKA has 8,000+ real sessions, but its traces hash the content away, so a rich session doesn't guarantee a rich trace. Where this post gives a count ("8,000+ sessions," "23,000 traces"), it's naming whichever unit that dataset actually counts in its own documentation.</p>
 
-  <h2>The field as it stands</h2>
+  <h2>The datasets, side by side</h2>
 
   <div class="tbl-wrap">
     <table class="cmp">
@@ -318,13 +320,6 @@ table.cmp td.name .org{
       </thead>
       <tbody>
         <tr>
-          <td class="name"><a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">Agent LLM Traces v2</a><span class="org">Exgentic</span></td>
-          <td>10,057 sessions</td>
-          <td>Benchmark-generated</td>
-          <td>Cross-model / cross-scaffold agent comparison</td>
-          <td>Full model request and response bodies in OpenTelemetry GenAI format, plus tool definitions and request params — no prefix/cache signal, and tool calls live inside message content rather than in their own span</td>
-        </tr>
-        <tr>
           <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a><span class="org">SemiAnalysis</span></td>
           <td>8,000+ sessions</td>
           <td>Human, real usage</td>
@@ -332,11 +327,11 @@ table.cmp td.name .org{
           <td>Subagent traffic patterns and request shape — content is hashed away, because content was never the point</td>
         </tr>
         <tr>
-          <td class="name"><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">SWE-chat</a><span class="org">SALT-NLP</span></td>
-          <td>5,851 sessions</td>
-          <td>Human, real usage</td>
-          <td>Human–agent interaction research</td>
-          <td>Full session content across several coding agents (Claude Code, Cursor, Codex, Gemini CLI), with request/response bodies kept in full. Recorded via <a href="https://github.com/entireio" target="_blank" rel="noopener">Entire.io</a>, an opt-in CLI that hooks into each agent natively and checkpoints sessions to git as they happen, by developers who opted in to session logging; the published dataset was then collected from those public repositories</td>
+          <td class="name"><a href="https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories" target="_blank" rel="noopener">SWE-smith</a><span class="org">SWE-bench</span></td>
+          <td>5,017 trajectories</td>
+          <td>Benchmark-generated</td>
+          <td>Training data for SWE agents (SFT)</td>
+          <td>Full multi-turn conversations plus the resulting code patch per task, generated by SWE-agent + Claude 3.7 Sonnet on SWE-smith task instances. No token counts, timing, or standalone tool-call spans — tool calls live inside message content. Software-engineering tasks only — bug-fixing over SWE-smith repository instances</td>
         </tr>
         <tr>
           <td class="name"><a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a><span class="org">University of Washington</span></td>
@@ -352,22 +347,37 @@ table.cmp td.name .org{
           <td>KV-cache reuse &amp; scheduling research</td>
           <td>Production request traces from a real serving system (Kimi) — timing, token counts, prefix structure only; the synthetic slice is Poisson-generated arrivals filling gaps in the load model</td>
         </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/benchmark-modes/trace-replay.md#large-baseten-parquet-traces" target="_blank" rel="noopener">Baseten Trace</a><span class="org">Baseten</span></td>
+          <td>Not publicly stated</td>
+          <td>Recorded serving traffic</td>
+          <td>Large-scale serving / infra benchmarking</td>
+          <td>Large Parquet of recorded request rows with sampled-session metadata; recorded prompt content is retained. Distributed as a replay loader format rather than a documented public corpus — origin, schema, and scale are not otherwise published</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">Agent LLM Traces v2</a><span class="org">Exgentic &middot; IBM</span></td>
+          <td>10,057 sessions</td>
+          <td>Benchmark-generated</td>
+          <td>Cross-model / cross-scaffold agent comparison</td>
+          <td>Full model request and response bodies in OpenTelemetry GenAI format, plus tool definitions and request params — no prefix/cache signal, and tool calls live inside message content rather than in their own span. Spans many task domains — software engineering, web, customer care, and deep research — not just one</td>
+        </tr>
       </tbody>
     </table>
   </div>
-  <p class="tbl-caption">Ordered by session count, descending. Mooncake is the one entry counted in traces rather than sessions, so its figure isn't directly comparable to the others — see the session/trace distinction above.</p>
+
+  <p>Disclosure: we build one of the datasets compared here — Exgentic's Agent LLM Traces, introduced in <a href="#" target="_blank" rel="noopener">[link: Exgentic Agent LLM Traces v2 blog post]</a>.</p>
 
   <p>None of these are wrong or incomplete on their own terms. WEKA and TraceLab hash away conversation content because their question is "what request pattern hits the server," and content would just be noise for that. Mooncake keeps timing and prefix shape because KV-cache reuse is a scheduling problem, not a semantics problem. Exgentic runs a fixed task set across five scaffolds and five models because its question is "is this the model or the scaffold," which needs uniformity more than realism.</p>
 
-  <p>The one dimension that's easy to miss on a skim, and one no schema field captures directly: <strong>human vs. benchmark origin</strong> — how a session actually came about. SWE-chat, WEKA/AgentX, and TraceLab are all human-sourced: real developers, real sessions. Exgentic is at the other pole, entirely benchmark-generated — uniform and replayable by construction, but not a record of how anyone actually works. Mooncake is mixed: real production traffic from Moonshot AI's Kimi service, with roughly 10% of traces explicitly synthetic (Poisson-generated arrivals, filling gaps in the load model).</p>
+  <p>One column in that table carries more weight than a skim gives it: <strong>Origin</strong>. Human vs. benchmark — how a session actually came about — isn't something you can read out of the trace records themselves; it's provenance you have to know going in, and it shapes what a dataset can honestly claim more than any field in the schema does. WEKA/AgentX, TraceLab, and Baseten are human-sourced: real developers or real serving traffic. Exgentic and SWE-smith are at the other pole, entirely benchmark-generated — uniform and replayable by construction, but not a record of how anyone actually works. Mooncake is mixed: real production traffic from Moonshot AI's Kimi service, with roughly 10% of traces explicitly synthetic (Poisson-generated arrivals, filling gaps in the load model).</p>
 
-  <p>That same origin question is also the privacy question. WEKA and TraceLab hash conversation content away by design, so there's nothing session-identifying to leak. SWE-chat keeps full content from real developers, but it's opt-in — those developers chose to checkpoint their own sessions via Entire.io, knowingly. Exgentic's sessions are benchmark-generated, so there's no real person's data in them to protect. Mooncake's real traffic is production data from a live service, handled at the infrastructure level rather than published with message content attached.</p>
+  <p>That same origin question is also the privacy question. WEKA and TraceLab hash conversation content away by design, so there's nothing session-identifying to leak. Exgentic's and SWE-smith's sessions are benchmark-generated, so there's no real person's data in them to protect. Mooncake's real traffic is production data from a live service, handled at the infrastructure level rather than published with message content attached.</p>
 
-  <p>Where the datasets genuinely divide is on <strong>content</strong>. Exgentic and SWE-chat keep full model request and response bodies; WEKA, TraceLab, and Mooncake keep token counts, timing, and prefix shape but discard the text. That asymmetry only runs one way: you can always throw content away to get the lightweight view, but you can never reconstruct content you didn't keep. For the infra questions those three were built for, dropping it is the right call — content would be dead weight. But it forecloses a whole class of questions permanently. Why an agent went down a bad path, what it was actually asked, whether a prompt change helped: a token-count-only trace can tell you a session was expensive or cache-missed, never why.</p>
+  <p>Where the datasets genuinely divide is on <strong>content</strong>. Exgentic and SWE-smith keep full model request and response bodies; WEKA, TraceLab, and Mooncake keep token counts, timing, and prefix shape but discard the text. That asymmetry only runs one way: you can always throw content away to get the lightweight view, but you can never reconstruct content you didn't keep. For the infra questions those three were built for, dropping it is the right call — content would be dead weight. But it forecloses a whole class of questions permanently. Why an agent went down a bad path, what it was actually asked, whether a prompt change helped: a token-count-only trace can tell you a session was expensive or cache-missed, never why.</p>
 
   <p>Two more differences are easy to skim past. The first is <strong>controlled comparability</strong>: Exgentic runs the same task set across five scaffolds and five models in a single trace format, which is what lets you ask whether a behavior came from the model, the scaffold, or the task. The human-sourced corpora can't answer that by construction — real sessions aren't matched pairs. The second is a pair of fields only Exgentic records: <strong>tool definitions</strong> (the full set of tools the model could have called on a turn, not just the one it picked) and <strong>request parameters</strong> (temperature, max_tokens, as actually sent). Most datasets tell you what happened; those two tell you what could have happened, which is what counterfactual and tool-selection work needs.</p>
 
-  <h2>The schema, field by field</h2>
+  <h2>What each dataset actually keeps</h2>
 
   <p>The table above is the summary. Underneath it, every dataset is a specific set of fields — and the fields are the real story, because they're what determines whether a question is answerable at all. Click a dataset below to isolate what it actually supports.</p>
 
@@ -464,7 +474,6 @@ table.cmp td.name .org{
     var DS = {
       exg:{label:'Exgentic', color:'#d98fd0', origin:'benchmark'},
       weka:{label:'WEKA/AgentX', color:'#5b9dd9', origin:'human'},
-      swe:{label:'SWE-chat', color:'#e0a94f', origin:'human'},
       tl:{label:'TraceLab', color:'#9aa4b6', origin:'human'},
       moon:{label:'Mooncake', color:'#e0685f', origin:'mixed'},
     };
@@ -549,7 +558,7 @@ table.cmp td.name .org{
   })();
   </script>
 
-  <h2>From a trace file to a running workload</h2>
+  <h2>From a trace file to a running workload: the replay mechanisms</h2>
 
   <p>A trace format is only half of the practical story. To benchmark a serving stack, something has to turn the recording back into requests. Here, <em>replay</em> does not always mean resending the original bytes. Some replay paths preserve a session's dependency graph and feed each live model response into the next turn; others preserve only arrival times, input and output lengths, or prefix-sharing relationships and generate substitute payloads with the same serving shape. Those are both useful experiments, but they answer different questions.</p>
 
@@ -674,10 +683,16 @@ table.cmp td.name .org{
           <td><a href="https://github.com/ai-dynamo/dynamo/blob/main/docs/fern/pages/cli/operations/simulation-with-dynosim/dynosim-replay.mdx#replay-a-saved-trace" target="_blank" rel="noopener">Run a DynoSim Simulation</a></td>
         </tr>
         <tr>
-          <td class="name">SWE-chat</td>
-          <td>&mdash;</td>
-          <td>No native replay loader or documented replay path was found. Its full conversations can be transformed into other tools' inputs, but that is a conversion workflow and is intentionally not counted here as native replay.</td>
-          <td><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">Dataset documentation</a></td>
+          <td class="name">SWE-smith</td>
+          <td>SGLang bench_serving</td>
+          <td>Replays pre-built multi-turn agentic traces round by round via the <code>agentic-trace</code> dataset, feeding the server's live reply back into the next round's history. SWE-smith / OpenHands trajectories are the documented example; the trace JSON is supplied by the user.</td>
+          <td><a href="https://github.com/sgl-project/sglang/blob/main/docs/docs/developer_guide/bench_serving.mdx" target="_blank" rel="noopener">Bench Serving: agentic-trace</a></td>
+        </tr>
+        <tr>
+          <td class="name">Baseten Trace</td>
+          <td>AIPerf</td>
+          <td>Streams large Baseten Parquet traces in bounded batches via the <code>baseten_trace</code> loader, projecting only the columns each replay option needs and replaying recorded prompts without regenerating them.</td>
+          <td><a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/benchmark-modes/trace-replay.md#large-baseten-parquet-traces" target="_blank" rel="noopener">Trace Replay: Baseten</a></td>
         </tr>
         <tr>
           <td class="name" rowspan="2">Exgentic</td>
@@ -695,7 +710,7 @@ table.cmp td.name .org{
   </div>
   <p class="tbl-caption">Native loaders only; generic JSON/CSV conversion paths are excluded. These entries describe dataset-specific behavior, while the mechanism table above identifies each system under test.</p>
 
-  <h2>So which one do you actually want?</h2>
+  <h2>So which combination do you actually want?</h2>
 
   <div class="tbl-wrap">
     <table class="cmp">
@@ -718,9 +733,9 @@ table.cmp td.name .org{
           <td>Both answer the same close-cousin question — infra load without content — at 8,000+ and 357K-round scale respectively; WEKA's hash is deterministically replayable, TraceLab's subagent nesting is only heuristically recovered.</td>
         </tr>
         <tr>
-          <td>Studying how <em>people</em> actually work with coding agents</td>
-          <td class="name"><a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">SWE-chat</a></td>
-          <td>Human-sourced with full content, across 5,851 sessions spanning several coding agents — the only corpus here that combines real developer sessions with complete message bodies.</td>
+          <td>Full-content agent trajectories for training or behavior analysis, without needing real-user provenance</td>
+          <td class="name"><a href="https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories" target="_blank" rel="noopener">SWE-smith</a></td>
+          <td>5,017 benchmark-generated trajectories with full conversations and the resulting patch — full content like Exgentic, but from a single agent (SWE-agent) rather than a matched cross-model/scaffold grid.</td>
         </tr>
         <tr>
           <td>Comparing models or scaffolds against each other, or debugging agent behavior from full message content</td>
@@ -734,9 +749,9 @@ table.cmp td.name .org{
 
   <h2>Where to get them</h2>
 
-  <p>All five are public today: <a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">Exgentic Agent LLM Traces v2</a> and <a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> on HuggingFace, <a href="https://huggingface.co/datasets/SALT-NLP/SWE-chat" target="_blank" rel="noopener">SWE-chat</a> on HuggingFace, and <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a> and <a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a> on GitHub.</p>
+  <p>Most are public today: <a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">Exgentic Agent LLM Traces v2</a>, <a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a>, and <a href="https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories" target="_blank" rel="noopener">SWE-smith</a> on HuggingFace, and <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a> and <a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a> on GitHub. Baseten Trace ships as an <a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/benchmark-modes/trace-replay.md#large-baseten-parquet-traces" target="_blank" rel="noopener">AIPerf loader format</a> rather than a published corpus.</p>
 
-  <p>This post has been about what each corpus actually lets you learn — which questions it can and can't answer, given what it keeps. There's a separate question we haven't touched at all: <em>how</em> the underlying sessions came to exist in the first place — benchmark-generated like Exgentic, scraped from real developers' sessions like SWE-chat, or synthetically constructed like Mooncake's Poisson-filled 10%. That distinction changes what a dataset can honestly claim about the behavior its traces record, independent of how much any single trace captures. It's worth its own post — coming next.</p>
+  <p>This post has been about what each corpus actually lets you learn — which questions it can and can't answer, given what it keeps. There's a separate question we haven't touched at all: <em>how</em> the underlying sessions came to exist in the first place — benchmark-generated like Exgentic and SWE-smith, recorded from real usage like WEKA/AgentX, or synthetically constructed like Mooncake's Poisson-filled 10%. That distinction changes what a dataset can honestly claim about the behavior its traces record, independent of how much any single trace captures. It's worth its own post — coming next.</p>
 
 </div>
 
