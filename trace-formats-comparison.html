@@ -354,7 +354,7 @@ table.cmp td.name .org{
           <td>Not publicly stated</td>
           <td>Recorded serving traffic</td>
           <td>Large-scale serving / infra benchmarking</td>
-          <td>Large Parquet of recorded request rows grouped by session id. Prompt text is replayed verbatim; the recorded completion text is kept in the trace for offline validation but is not replayed, since the benchmark measures a fresh response. Strongest here on KV-cache structure (per-row block hashes and block size, forwarded as request-body hints) and timing; nothing tool-shaped, since it replays <code>/v1/completions</code>. Distributed as a replay loader format rather than a public corpus — no dataset is published, and origin, schema, and scale are not otherwise documented; the column set and replay semantics above are from AIPerf's <a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/tutorials/baseten-trace.md" target="_blank" rel="noopener">Baseten trace tutorial</a></td>
+          <td>Large Parquet of recorded request rows grouped by session id — strongest here on KV-cache structure (block hashes and size) and timing, with nothing tool-shaped since it replays <code>/v1/completions</code>. Distributed as an AIPerf <a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/tutorials/baseten-trace.md" target="_blank" rel="noopener">loader format</a> rather than a published corpus, so its origin, schema, and scale aren't documented.</td>
         </tr>
         <tr>
           <td class="name"><a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">Agent LLM Traces v2</a><span class="org">Exgentic &middot; IBM</span></td>
