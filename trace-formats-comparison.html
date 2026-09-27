@@ -717,40 +717,15 @@ table.cmp td.name .org{
 
   <h2>So which combination do you actually want?</h2>
 
-  <div class="tbl-wrap">
-    <table class="cmp">
-      <thead>
-        <tr>
-          <th>If your question is…</th>
-          <th>Use…</th>
-          <th>Why</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>KV-cache / prefix-reuse scheduling research</td>
-          <td class="name"><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a></td>
-          <td>Purpose-built for exactly this, at production scale, with the prefix/cache-hit signal as a first-class field — the only corpus here that treats it as one.</td>
-        </tr>
-        <tr>
-          <td>Load-testing or benchmarking inference infra under realistic agentic traffic, without needing conversation content</td>
-          <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> &amp; <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a></td>
-          <td>Both answer the same close-cousin question — infra load without content — at 8,000+ and 357K-round scale respectively; WEKA's hash is deterministically replayable, TraceLab's subagent nesting is only heuristically recovered.</td>
-        </tr>
-        <tr>
-          <td>Full-content agent trajectories for training or behavior analysis, without needing real-user provenance</td>
-          <td class="name"><a href="https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories" target="_blank" rel="noopener">SWE-smith</a></td>
-          <td>5,017 benchmark-generated traces with full conversations and the resulting patch — full content like Exgentic, but from a single agent (SWE-agent) rather than a matched cross-model/scaffold grid.</td>
-        </tr>
-        <tr>
-          <td>Comparing models or scaffolds against each other, or debugging agent behavior from full message content</td>
-          <td class="name"><a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">Agent LLM Traces v2</a></td>
-          <td>The same task set run across five models and five scaffolds, with full request/response bodies — the only corpus here built for controlled cross-model/cross-scaffold comparison, and the only one recording tool definitions and request params.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="tbl-caption">None of these is a universal answer, and the gaps are specific: the infra-focused corpora don't keep content, the full-content ones don't record prefix/cache structure or standalone tool-call spans, and only one is built from matched runs. Pick on the question, not on record size.</p>
+  <p>It comes down to what you're trying to learn. For <strong>KV-cache or prefix-reuse scheduling research</strong>, reach for <a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a>: it's purpose-built for exactly that, at production scale, and it's the only corpus here that treats the prefix/cache-hit signal as a first-class field.</p>
+
+  <p>For <strong>load-testing or benchmarking inference infrastructure under realistic agentic traffic</strong>, where you don't need the conversation content, <a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> and <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a> both answer that close-cousin question — infra load without content — at 8,000+ sessions and 357K rounds respectively. WEKA's hashed content is deterministically replayable; TraceLab's subagent nesting is only heuristically recovered.</p>
+
+  <p>For <strong>full-content agent traces for training or behavior analysis</strong>, where real-user provenance isn't required, <a href="https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories" target="_blank" rel="noopener">SWE-smith</a> gives you 5,017 benchmark-generated traces with full conversations and the resulting patch — full content like Exgentic, but from a single agent (SWE-agent) rather than a matched cross-model/scaffold grid.</p>
+
+  <p>And for <strong>comparing models or scaffolds against each other, or debugging agent behavior from full message content</strong>, <a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">Exgentic Agent LLM Traces v2</a> runs the same task set across five models and five scaffolds with full request/response bodies — the only corpus here built for controlled cross-model/cross-scaffold comparison, and the only one that records tool definitions and request parameters.</p>
+
+  <p>None of these is a universal answer, and the gaps are specific: the infra-focused corpora don't keep content, the full-content ones don't record prefix/cache structure or standalone tool-call spans, and only one is built from matched runs. Pick on the question, not on record size.</p>
 
   <h2>Where to get them</h2>
 
