@@ -298,7 +298,7 @@ table.cmp td.name .org{
 
   <p>Concretely, the set below isn't hand-picked — it's derived. We went to each of the six replay mechanisms mentioned above and collected every agentic-trace format it can natively load and re-run; the union of those is exactly the list you see here.</p>
 
-  <p>Two terms are worth defining first, since they mean different things. A <strong>session</strong> is the actual run — a developer's coding session, or one benchmark task attempt. A <strong>trace</strong> is what a dataset captured and shipped of it. The gap is the whole story: the linked WEKA release has 391 real sessions, but its traces hash the content away, so a rich session doesn't guarantee a rich trace. Each count below uses whichever unit that dataset counts in its own documentation.</p>
+  <p>Two terms are worth defining first, since they mean different things. A <strong>session</strong> is the actual run — a developer's coding session, or one benchmark task attempt. A <strong>trace</strong> is what a dataset captured and shipped of it. The gap is the whole story: the linked WEKA release ships 391 traces drawn from real sessions, but they hash the content away, so a rich session doesn't guarantee a rich trace. Each count below uses whichever unit that dataset counts in its own documentation — which is why Mooncake is counted in neither: it publishes no session or trace boundary at all, only individual requests.</p>
 
   <h2>The datasets, side by side</h2>
 
@@ -323,7 +323,7 @@ table.cmp td.name .org{
       <tbody>
         <tr>
           <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a><span class="org">SemiAnalysis</span></td>
-          <td>391 sessions</td>
+          <td>391 traces</td>
           <td>Human, real usage</td>
           <td>Inference-infra workload characterization</td>
           <td>WEKA / AgentX nested conversation records with subagent traffic patterns and request shape — content is hashed away, because content was never the point</td>
@@ -347,7 +347,7 @@ table.cmp td.name .org{
           <td>23,608 requests</td>
           <td>Recorded serving traffic</td>
           <td>KV-cache reuse &amp; scheduling research</td>
-          <td>Mooncake timed request records sampled from one hour of a real serving system (Kimi) — timing, token counts, and prefix structure only</td>
+          <td>Mooncake captures the serving shape of agentic traffic, not its conversational structure. Timed request records sampled from one hour of a real serving system (Kimi) — timing, token counts, and prefix hashes only. Requests originate from conversation and tool-agent workloads but are published as independent records, with no session or dependency identifiers: shared prefixes stay visible across requests, so KV-cache reuse survives, but session and call-graph boundaries do not</td>
         </tr>
         <tr>
           <td class="name"><a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/benchmark-modes/trace-replay.md#large-baseten-parquet-traces" target="_blank" rel="noopener">Baseten Trace</a><span class="org">Baseten</span></td>
@@ -719,7 +719,7 @@ table.cmp td.name .org{
 
   <p>It comes down to what you're trying to learn. For <strong>KV-cache or prefix-reuse scheduling research</strong>, reach for <a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a>: it's purpose-built for exactly that, at production scale, and it's the only corpus here that treats the prefix/cache-hit signal as a first-class field.</p>
 
-  <p>For <strong>load-testing or benchmarking inference infrastructure under realistic agentic traffic</strong>, where you don't need the conversation content, <a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> and <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a> both answer that close-cousin question — infra load without content — at 391 sessions and 357K rounds respectively. WEKA's hashed content is deterministically replayable; TraceLab's subagent nesting is only heuristically recovered.</p>
+  <p>For <strong>load-testing or benchmarking inference infrastructure under realistic agentic traffic</strong>, where you don't need the conversation content, <a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> and <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a> both answer that close-cousin question — infra load without content — at 391 traces and 357K rounds respectively, so TraceLab is the one to reach for when volume is what you need. WEKA's hashed content is deterministically replayable; TraceLab's subagent nesting is only heuristically recovered.</p>
 
   <p>For <strong>full-content agent traces for training or behavior analysis</strong>, where real-user provenance isn't required, <a href="https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories" target="_blank" rel="noopener">SWE-smith</a> gives you 5,017 benchmark-generated traces with full conversations and the resulting patch — full content like Exgentic, but from a single agent (SWE-agent) rather than a matched cross-model/scaffold grid.</p>
 
