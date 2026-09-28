@@ -717,15 +717,7 @@ table.cmp td.name .org{
 
   <h2>So which combination do you actually want?</h2>
 
-  <p>It comes down to what you're trying to learn. For <strong>KV-cache or prefix-reuse scheduling research</strong>, reach for <a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a>: it's purpose-built for exactly that, at production scale, and it's the only corpus here that treats the prefix/cache-hit signal as a first-class field.</p>
-
-  <p>For <strong>load-testing or benchmarking inference infrastructure under realistic agentic traffic</strong>, where you don't need the conversation content, <a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a> and <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a> both answer that close-cousin question — infra load without content — at 391 traces and 357K rounds respectively, so TraceLab is the one to reach for when volume is what you need. WEKA's hashed content is deterministically replayable; TraceLab's subagent nesting is only heuristically recovered.</p>
-
-  <p>For <strong>full-content agent traces for training or behavior analysis</strong>, where real-user provenance isn't required, <a href="https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories" target="_blank" rel="noopener">SWE-smith</a> gives you 5,017 benchmark-generated traces with full conversations and the resulting patch — full content like Exgentic, but from a single agent (SWE-agent) rather than a matched cross-model/scaffold grid.</p>
-
-  <p>And for <strong>comparing models or scaffolds against each other, or debugging agent behavior from full message content</strong>, <a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">Exgentic Agent LLM Traces v2</a> runs the same task set across five models and five scaffolds with full request/response bodies — the only corpus here built for controlled cross-model/cross-scaffold comparison, and the only one that records tool definitions and request parameters.</p>
-
-  <p>None of these is a universal answer, and the gaps are specific: the infra-focused corpora don't keep content, the full-content ones don't record prefix/cache structure or standalone tool-call spans, and only one is built from matched runs. Pick on the question, not on record size.</p>
+  <p><em>[ for Maroon to complete ]</em></p>
 
   <h2>Where to get them</h2>
 
