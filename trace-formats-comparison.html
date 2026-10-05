@@ -717,7 +717,65 @@ table.cmp td.name .org{
 
   <h2>So which combination do you actually want?</h2>
 
-  <p><em>[ for Maroon to complete ]</em></p>
+  <p>It depends on the stage. A serving feature moves from a proof of concept on a few GPUs to sizing, a pre-production gate and production. Each stage asks a different question, so the trace and the replay mechanism change with it. The table pairs them the way we use them in llm-d and in our own disaggregated serving fleet for agent workloads.</p>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <colgroup>
+        <col style="width:16%;">
+        <col style="width:24%;">
+        <col style="width:28%;">
+        <col style="width:32%;">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>Question</th>
+          <th>What the trace must keep</th>
+          <th>Combination</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name">Proof of concept</td>
+          <td>Does the mechanism work, and by how much?</td>
+          <td>A controlled shape: input and output lengths, prefix sharing, concurrency.</td>
+          <td>Inference-Perf shared-prefix synthetic workloads; Mooncake hash-ID traces in vLLM bench serve or AIPerf; DynoSim before the hardware exists.</td>
+        </tr>
+        <tr>
+          <td class="name">Sizing</td>
+          <td>How much hardware, and where does throughput stop growing?</td>
+          <td>Session shape: prompts that grow turn by turn, subagent fan-out, gaps while tools run.</td>
+          <td>WEKA / AgentX through AIPerf or Inference-Perf, swept across concurrency.</td>
+        </tr>
+        <tr>
+          <td class="name">Pre-production</td>
+          <td>Does the full stack behave with real agent requests?</td>
+          <td>Content: messages, tool definitions, request parameters, and the dependency between calls.</td>
+          <td>Exgentic through Inference-Perf's dependency-graph replay; functional checks on the release images; live agents.</td>
+        </tr>
+        <tr>
+          <td class="name">Production</td>
+          <td>Is it still right, and what changed?</td>
+          <td>Live traffic, measured at the router and at the engines.</td>
+          <td>Production metrics and controlled load ramps through the same gateway.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tbl-caption">Each row names the pairing we reach for first at that stage.</p>
+
+  <p><strong>Proof of concept.</strong> The point is to change one thing and see what it does, so everything else stays fixed. llm-d's guides run through <a href="https://github.com/llm-d/llm-d-benchmark" target="_blank" rel="noopener">llm-d-benchmark</a>, which drives Inference-Perf, AIPerf, GuideLLM or vLLM bench serve. The prefix-routing guide uses an Inference-Perf shared-prefix synthetic workload, because routing only cares about which prefixes repeat. On our own rigs we fix the trace, seed and concurrency, and give every run a fresh prefix so it never reads another run's cache. That is how we measured a 28% decode speedup from one CUDA-graph setting.</p>
+
+  <p><strong>Sizing.</strong> How much hardware you need depends on how prompts grow over a session, how subagents fan out and how long tools run, so the trace needs real sessions. We replay WEKA / AgentX through AIPerf at rising concurrency, as llm-d's agentic-serving and P2P guides do. Each session waits for its own responses, so a slower system also carries more requests in flight. That is why we compare systems on throughput per GPU against speed per user. Our production agent workloads reuse 92% of prompt tokens, and <a href="https://github.com/kubernetes-sigs/inference-perf/tree/main/workload-catalog/agentic-trace-replay" target="_blank" rel="noopener">Inference-Perf's catalog</a> shows Exgentic in the same range.</p>
+
+  <p><strong>Pre-production.</strong> Now the request content matters. Tool definitions and settings like reasoning effort change how a request turns into tokens, and so whether it hits the cache. Synthetic prompts have neither. By looking at real requests we found rendering issues whose fixes raised prompt reuse from 59% to 96%. Exgentic is the only corpus here that keeps tool definitions and request parameters, and Inference-Perf replays it the way an agent runs, feeding each response into the next call.</p>
+
+  <p>We also ran 500 of our own agents for an hour next to interactive users, to check priority and fairness. Live agents behave like the real thing, but no two runs are the same. Exgentic sits in between: real agent runs on fixed tasks that can be replayed as often as needed.</p>
+
+  <p><strong>Production.</strong> Live traffic is the benchmark here, since no trace matches it. We watch latency and throughput per tenant, compare each release with the one before, and ramp up synthetic agent sessions through the same gateway to see how much headroom is left.</p>
+
+  <p>Put together, benchmarking moves from cheap, controlled shapes early on to real agent content close to release, and what production shows feeds the next round. Synthetic and hash-based traces keep the early stages fast and repeatable, and agent traces with full content, like Exgentic replayed through Inference-Perf, cover the last check before a change reaches users.</p>
 
   <h2>Where to get them</h2>
 
