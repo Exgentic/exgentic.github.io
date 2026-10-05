@@ -286,7 +286,7 @@ table.cmp td.name .org{
 
   <p class="kicker">Draft — for internal review before this goes anywhere public</p>
   <h1 class="title">From agent traces to replay</h1>
-  <p class="dek">Teams are starting to ask hard questions about their agentic systems — how they'll load a serving stack, what latency users will see, whether last week's model swap changed behavior. Answering any of them takes two things, not one: a trace dataset that recorded the right signal, and a mechanism that can replay it. This post surveys both, and how to pair them.</p>
+  <p class="dek">Teams are starting to ask hard questions about their agentic systems — how they'll load a serving stack, what latency users will see, whether last week's model swap changed behavior. Answering any of them takes two things, not one: a trace dataset that recorded the right signal, and a mechanism that can replay it. This post surveys both, and which combination to pick for the question you're asking.</p>
 
   <p>Say you run inference for an agentic product. Sooner or later you have to answer questions like: how will my serving stack hold up when thousands of agents are calling tools at once? What tail latency will a user hit across a long, multi-turn session? Would a different scheduler, a bigger KV cache, or another GPU move those numbers — before I commit to buying it? Did last week's model upgrade quietly change how the agent behaves? Each of these is answerable, but only against <em>real</em> agentic traffic — a synthetic prompt loop won't reproduce the tool calls, the multi-turn structure, or the load shape that make agents behave like agents.</p>
 
