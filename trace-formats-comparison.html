@@ -1,0 +1,830 @@
+<!--
+SPDX-License-Identifier: Apache-2.0
+Copyright (C) 2026, The Exgentic organization and its contributors.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From agent traces to replay</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --paper:#f7f5f0;
+  --paper-raised:#fbfaf6;
+  --ink:#1f2320;
+  --ink-soft:#3d423c;
+  --rule:#c9c3b4;
+  --rule-soft:#dcd8cc;
+  --muted:#6b6558;
+  --accent:#a8532e;
+  --accent-soft:#f1ded3;
+  --link:#8a4527;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1b1d1a;
+    --paper-raised:#22251f;
+    --ink:#eae6da;
+    --ink-soft:#c9c4b5;
+    --rule:#42453d;
+    --rule-soft:#33362f;
+    --muted:#9b9585;
+    --accent:#e08a5f;
+    --accent-soft:#3a2a20;
+    --link:#e6a274;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1b1d1a;
+  --paper-raised:#22251f;
+  --ink:#eae6da;
+  --ink-soft:#c9c4b5;
+  --rule:#42453d;
+  --rule-soft:#33362f;
+  --muted:#9b9585;
+  --accent:#e08a5f;
+  --accent-soft:#3a2a20;
+  --link:#e6a274;
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Serif', Georgia, serif;
+  font-size:17px;
+  line-height:1.64;
+}
+::selection{background:var(--accent-soft);}
+
+.wrap{max-width:760px; margin:0 auto; padding:60px 24px 120px; position:relative;}
+
+/* ---------- line-number gutter + toggle ---------- */
+.lnum-toggle{
+  position:fixed;
+  top:18px;
+  right:18px;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  color:var(--muted);
+  background:var(--paper-raised);
+  border:1px solid var(--rule-soft);
+  border-radius:20px;
+  padding:6px 12px;
+  cursor:pointer;
+  user-select:none;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+.lnum-toggle input{margin:0; cursor:pointer;}
+body:not(.show-linenums) .lnum{display:none;}
+.lnum{
+  position:absolute;
+  left:-38px;
+  width:30px;
+  text-align:right;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10.5px;
+  color:var(--muted);
+  opacity:.65;
+  line-height:inherit;
+  user-select:none;
+  pointer-events:none;
+}
+@media (max-width:900px){
+  .lnum{position:static; display:inline-block; float:left; margin:0 6px 0 -2px; left:auto;}
+}
+@media (max-width:560px){
+  .lnum-toggle{top:auto; bottom:14px; right:14px;}
+  .lnum{display:none !important;}
+}
+
+/* ---------- masthead ---------- */
+.kicker{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 14px;
+}
+h1.title{
+  font-family:'IBM Plex Sans', 'IBM Plex Serif', sans-serif;
+  font-weight:650;
+  font-size:clamp(32px, 6vw, 46px);
+  line-height:1.1;
+  letter-spacing:-0.01em;
+  margin:0 0 20px;
+  text-wrap:balance;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:26px;
+}
+.dek{
+  font-family:'IBM Plex Serif', serif;
+  font-style:italic;
+  font-size:19px;
+  color:var(--ink-soft);
+  margin:0 0 44px;
+  text-wrap:balance;
+}
+
+p{margin:0 0 20px;}
+h2{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-weight:600;
+  font-size:25px;
+  letter-spacing:-0.005em;
+  margin:56px 0 18px;
+  text-wrap:balance;
+}
+a{color:var(--link); text-decoration:none; border-bottom:1px dotted var(--link);}
+a:hover{border-bottom-style:solid;}
+a:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:1px;}
+code{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:.87em;
+  background:var(--paper-raised);
+  border:1px solid var(--rule-soft);
+  border-radius:3px;
+  padding:1px 5px;
+}
+
+/* ---------- static table ---------- */
+.tbl-wrap{overflow-x:auto; margin:28px 0 10px; border:1.5px solid var(--ink); border-radius:2px;}
+table.cmp{width:100%; border-collapse:collapse; font-size:14px;}
+table.cmp th, table.cmp td{padding:12px 15px; text-align:left; vertical-align:top; border-bottom:1px solid var(--rule-soft); border-right:1px solid var(--rule-soft);}
+table.cmp th:last-child, table.cmp td:last-child{border-right:none;}
+table.cmp thead th{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10.5px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:var(--paper-raised);
+  border-bottom:1.5px solid var(--ink);
+  font-weight:500;
+}
+table.cmp tbody tr:last-child td{border-bottom:none;}
+table.cmp td.name{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-weight:600;
+  font-size:15px;
+  color:var(--ink);
+}
+table.cmp td.name a{color:var(--ink); border-bottom:1px dotted var(--rule);}
+table.cmp td.name a:hover{color:var(--link); border-bottom-color:var(--link);}
+table.cmp td.name .org{
+  display:block;
+  font-family:'IBM Plex Mono', monospace;
+  font-weight:400;
+  font-size:11px;
+  color:var(--muted);
+  margin-top:3px;
+}
+.tbl-caption{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11.5px;
+  color:var(--muted);
+  margin:0 0 36px;
+  max-width:66ch;
+}
+
+/* ---------- schema section (dark, ported from Agentic-Traces-Public.html slide 3) ---------- */
+.schema-section{
+  margin:36px auto 44px;
+  border-radius:8px;
+  overflow:hidden;
+  border:1px solid #2a3040;
+  width:100%;
+  max-width:760px;
+}
+.schema-section{
+  --bg:#0f1115; --panel:#161a22; --border:#2a3040;
+  --text:#e6e9ef; --muted2:#9aa4b6; --accent2:#5b9dd9; --accentg:#4fc3a1;
+  /* Per-dataset dot colours live in the DS object in the script below — single source of truth. */
+  background:var(--bg);
+  color:var(--text);
+  font-family:'IBM Plex Sans', sans-serif;
+  padding:clamp(10px,1.4vw,14px) clamp(12px,2vw,18px);
+}
+.schema-section .shead{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--muted2);
+  margin-bottom:8px;
+}
+.schema-section .stitle{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-weight:600;
+  font-size:clamp(15px,1.8vw,18px);
+  margin-bottom:12px;
+  color:var(--text);
+  letter-spacing:-0.005em;
+}
+.ntree{display:flex; flex-direction:column; gap:4px;}
+.ngen{display:flex; gap:clamp(4px,.8vw,7px);}
+.nslot{flex:1 1 0; min-width:0; position:relative;}
+.nslot.wide{flex:1.6 1 0;}
+.nslot.spacer{flex:1 1 0; visibility:hidden;}
+.nbox{border:1.5px solid var(--border); border-radius:6px; background:var(--panel); padding:5px 7px; display:flex; flex-direction:column; min-height:0; height:100%; min-width:0; overflow:hidden;}
+.nbox .nhead{display:flex; align-items:baseline; gap:5px; flex-wrap:wrap;}
+.nbox .nname{font-weight:700; font-size:clamp(11.5px,1.3vw,13px);}
+.nbox.attr .nname{font-weight:600; font-size:clamp(10.5px,1.15vw,11.5px);}
+.nbox .ntag{font-family:'IBM Plex Mono', monospace; font-size:clamp(8.5px,.95vw,9.5px); color:var(--muted2);}
+.nbox .ndesc{font-family:'IBM Plex Mono', monospace; font-size:clamp(8.5px,.9vw,9.5px); color:var(--muted2); margin-top:2px; line-height:1.28;}
+.nbox .ndesc b{color:var(--accent2); font-weight:600;}
+.nbox .ndots{display:flex; flex-wrap:wrap; gap:3px; margin-top:auto; padding-top:4px;}
+.ndots .ddot{width:6px; height:6px; border-radius:50%; flex:0 0 auto; transition:opacity .15s, transform .15s;}
+.ntree.filtering .nbox{transition:opacity .15s, border-color .15s; opacity:.4;}
+.ntree.filtering .nbox.has-match{opacity:1; border-color:var(--accent2);}
+.ntree.filtering .ndots .ddot{opacity:.25; transform:scale(.85);}
+.ntree.filtering .ndots .ddot.match{opacity:1; transform:scale(1.35);}
+.nstack::before, .nstack::after{content:""; position:absolute; border:1.5px solid var(--border); border-radius:7px; background:var(--panel); z-index:0;}
+.nstack::before{inset:4px 4px -4px -4px; opacity:.32;}
+.nstack::after{inset:2px 2px -2px -2px; opacity:.5; z-index:1;}
+.nstack .nbox{position:relative; z-index:2;}
+.diaglegend{display:flex; gap:5px; flex-wrap:wrap; padding-top:10px; margin-top:10px; border-top:1px solid var(--border);}
+.diaglegend .litem{display:flex; align-items:center; gap:5px; font-size:clamp(10px,1.1vw,11px); color:var(--muted2); font-family:'IBM Plex Mono', monospace; padding:4px 8px; border:1px solid transparent; border-radius:20px; cursor:pointer; background:none; transition:background .15s, border-color .15s, color .15s;}
+.diaglegend .litem:hover{border-color:var(--border); color:var(--text);}
+.diaglegend .litem.active{background:rgba(255,255,255,.08); border-color:var(--accent2); color:var(--text);}
+.diaglegend .litem.hint{color:var(--muted2); font-style:italic; cursor:default;}
+.diaglegend .litem.hint:hover{border-color:transparent; color:var(--muted2);}
+.diaglegend .dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto;}
+.diaglegend .obadge{font-size:.75em; text-transform:uppercase; letter-spacing:.03em; padding:1px 6px; border-radius:100px; margin-left:2px; font-weight:700;}
+.diaglegend .obadge.human{color:var(--accent2); border:1px solid rgba(91,157,217,.4); background:rgba(91,157,217,.1);}
+.diaglegend .obadge.benchmark{color:#e0a94f; border:1px solid rgba(224,169,79,.4); background:rgba(224,169,79,.1);}
+.diaglegend .obadge.mixed{color:#e0685f; border:1px solid rgba(224,104,95,.4); background:rgba(224,104,95,.1);}
+.schema-section .snote{font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--muted2); margin-top:8px;}
+
+@media (max-width:640px){
+  .ngen{flex-wrap:wrap;}
+  .nslot{flex:1 1 100%;}
+}
+
+@media (max-width:560px){
+  .wrap{padding:44px 16px 100px;}
+  h1.title{font-size:30px;}
+}
+</style>
+</head>
+<body class="show-linenums">
+
+<label class="lnum-toggle">
+  <input type="checkbox" id="lnum-checkbox" checked>
+  <span>Line numbers</span>
+</label>
+
+<div class="wrap" id="content-wrap">
+
+  <p class="kicker">Draft — for internal review before this goes anywhere public</p>
+  <h1 class="title">From agent traces to replay</h1>
+  <p class="dek">Teams are starting to ask hard questions about their agentic systems — how they'll load a serving stack, what latency users will see, whether last week's model swap changed behavior. Answering any of them takes two things, not one: a trace dataset that recorded the right signal, and a mechanism that can replay it. This post surveys both, and which combination to pick for the question you're asking.</p>
+
+  <p>Say you run inference for an agentic product. Sooner or later you have to answer questions like: how will my serving stack hold up when thousands of agents are calling tools at once? What tail latency will a user hit across a long, multi-turn session? Would a different scheduler, a bigger KV cache, or another GPU move those numbers — before I commit to buying it? Did last week's model upgrade quietly change how the agent behaves? Each of these is answerable, but only against <em>real</em> agentic traffic — a synthetic prompt loop won't reproduce the tool calls, the multi-turn structure, or the load shape that make agents behave like agents.</p>
+
+  <p>That traffic has to come from somewhere, and the somewhere is a trace dataset: a recording of what real agents actually did, sessions you can play back instead of inventing. But a dataset is only half the answer. A trace is inert until something replays it, and the replay mechanism decides what you can do with what the dataset kept — turn it into live load, simulate it, or diff two runs. A rich trace no tool can replay the way you need is a dead end; a capable mechanism can't reconstruct detail the trace already threw away. So the real question is never "which dataset" — it's "which dataset <em>with</em> which mechanism" — a combination — and the right one depends on what you're trying to learn.</p>
+
+  <p>A dataset built to characterize <em>inference infrastructure load</em> looks nothing like one built to study <em>human-agent interaction</em>, which looks nothing like one built for a <em>replayable behavior record</em>. Few public corpora today are shaped anything like one another — pick one that "has agent traces" and you can still discover it can't answer your question, because it was never built to.</p>
+
+  <p>This post is a survey of that fragmented field — but a deliberately scoped one. It covers the trace corpora the inference-serving world actually consumes: the ones a replay mechanism (<a href="https://github.com/kubernetes-sigs/inference-perf" target="_blank" rel="noopener">Inference-Perf</a>, <a href="https://docs.nvidia.com/aiperf/latest/" target="_blank" rel="noopener">AIPerf</a>, <a href="https://github.com/vllm-project/guidellm/blob/main/docs/en/guides/trace_replay.md" target="_blank" rel="noopener">GuideLLM</a>, <a href="https://docs.vllm.ai/en/latest/cli/bench/serve/" target="_blank" rel="noopener">vLLM bench serve</a>, <a href="https://github.com/sgl-project/sglang/blob/main/docs/docs/developer_guide/bench_serving.mdx" target="_blank" rel="noopener">SGLang bench_serving</a>, <a href="https://github.com/ai-dynamo/dynamo/blob/main/docs/fern/pages/cli/operations/simulation-with-dynosim/dynosim-replay.mdx" target="_blank" rel="noopener">NVIDIA DynoSim</a>) can turn back into a live or simulated workload. For each, it asks what the dataset keeps, what it throws away, and which questions that leaves answerable. When you line them up, the differences turn out not to be cosmetic — the schema follows the goal, every time.</p>
+
+  <p>Concretely, the set below isn't hand-picked — it's derived. We went to each of the six replay mechanisms mentioned above and collected every agentic-trace format it can natively load and re-run; the union of those is exactly the list you see here.</p>
+
+  <p>Two terms are worth defining first, since they mean different things. A <strong>session</strong> is the actual run — a developer's coding session, or one benchmark task attempt. A <strong>trace</strong> is what a dataset captured and shipped of it. The gap is the whole story: the linked WEKA release ships 391 traces drawn from real sessions, but they hash the content away, so a rich session doesn't guarantee a rich trace. Each count below uses whichever unit that dataset counts in its own documentation — which is why Mooncake is counted in neither: it publishes no session or trace boundary at all, only individual requests.</p>
+
+  <h2>The datasets, side by side</h2>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <colgroup>
+        <col style="width:14%;">
+        <col style="width:10%;">
+        <col style="width:13%;">
+        <col style="width:18%;">
+        <col style="width:45%;">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <th>Scale</th>
+          <th>Origin</th>
+          <th>Built for</th>
+          <th>What's captured</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name"><a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a><span class="org">SemiAnalysis</span></td>
+          <td>391 traces</td>
+          <td>Human, real usage</td>
+          <td>Inference-infra workload characterization</td>
+          <td>WEKA / AgentX nested conversation records with subagent traffic patterns and request shape — content is hashed away, because content was never the point</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories" target="_blank" rel="noopener">SWE-smith</a><span class="org">SWE-bench</span></td>
+          <td>5,017 traces</td>
+          <td>Benchmark-generated</td>
+          <td>Training data for SWE agents (SFT)</td>
+          <td>SWE-agent trajectory records with full multi-turn conversations plus the resulting code patch. Structured tool calls appear in the <code>tool</code> split and are flattened to prose in the others, but there are no token counts or timing. Software-engineering tasks only.</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a><span class="org">University of Washington</span></td>
+          <td>4,265 sessions</td>
+          <td>Human, real usage</td>
+          <td>Agent-serving infra (batching, latency)</td>
+          <td>TraceLab session-and-round records for replayable requests and tool calls, built for serving-system analysis — content is stripped out, and tool calls and cache-prefix structure are heuristically reconstructed rather than captured directly</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a><span class="org">Moonshot AI &middot; FAST'25</span></td>
+          <td>23,608 requests</td>
+          <td>Recorded serving traffic</td>
+          <td>KV-cache reuse &amp; scheduling research</td>
+          <td>Mooncake captures the serving shape of agentic traffic, not its conversational structure. Timed request records sampled from one hour of a real serving system (Kimi) — timing, token counts, and prefix hashes only. Requests originate from conversation and tool-agent workloads but are published as independent records, with no session or dependency identifiers: shared prefixes stay visible across requests, so KV-cache reuse survives, but session and call-graph boundaries do not</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/benchmark-modes/trace-replay.md#large-baseten-parquet-traces" target="_blank" rel="noopener">Baseten Trace</a><span class="org">Baseten</span></td>
+          <td>Not publicly stated</td>
+          <td>Recorded serving traffic</td>
+          <td>Large-scale serving / infra benchmarking</td>
+          <td>Baseten Parquet request-row records grouped by session id — strongest here on KV-cache structure (block hashes and size) and timing, with nothing tool-shaped since they replay <code>/v1/completions</code>. Distributed as an AIPerf <a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/tutorials/baseten-trace.md" target="_blank" rel="noopener">loader format</a> rather than a published corpus; its replay schema is documented, but the underlying trace's provenance and scale aren't publicly stated.</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">Exgentic Agent LLM Traces v2</a><span class="org">IBM</span></td>
+          <td>10,057 traces</td>
+          <td>Benchmark-generated</td>
+          <td>Cross-model / cross-scaffold agent comparison</td>
+          <td>OpenTelemetry spans following the GenAI semantic conventions, containing full model request and response bodies, tool definitions, and request parameters — no prefix/cache signal, and tool calls live inside message content rather than in their own span. Covers many task domains — software engineering, web, customer care, and deep research — not just one</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Disclosure: we build one of the datasets compared here — Exgentic's Agent LLM Traces, introduced in <a href="https://huggingface.co/blog/michalshmu/exgentic-agent-llm-traces-v2" target="_blank" rel="noopener">What Agents Do: A Large-Scale Public Dataset of Agent Runs</a>.</p>
+
+  <p>None of these are wrong on their own terms. WEKA and TraceLab hash content away because their question is "what request pattern hits the server." Mooncake keeps timing and prefix shape because KV-cache reuse is a scheduling problem, not a semantics one. Exgentic fixes the task set because its question is "model or scaffold," which needs uniformity more than realism.</p>
+
+  <p><strong>Origin</strong> carries more weight than a skim gives it, and it's also the privacy story. You can't read provenance out of the records themselves — you have to know it going in. WEKA/AgentX, TraceLab, and Baseten are human-sourced, and the first two hash content away by design, so there's nothing session-identifying to leak; Mooncake's production traffic is handled at the infrastructure level rather than published with message content attached. Exgentic and SWE-smith sit at the other pole, entirely benchmark-generated — replayable by construction, no real person's data to protect, but no record of how anyone actually works either.</p>
+
+  <p>Where the datasets genuinely divide is on <strong>content</strong>. Exgentic and SWE-smith keep full request and response bodies; WEKA, TraceLab, and Mooncake keep token counts, timing, and prefix shape but discard the text. That asymmetry runs one way only: you can always throw content away to get the lightweight view, but you can never reconstruct content you didn't keep. For the infra questions those three were built for, dropping it is the right call. But it forecloses a whole class of questions permanently — why an agent went down a bad path, whether a prompt change helped. A token-count-only trace tells you a session was expensive, never why.</p>
+
+  <p>Two narrower differences are worth naming. <strong>Controlled comparability</strong>: Exgentic's fixed task set is what lets you ask whether a behavior came from the model, the scaffold, or the task — human-sourced corpora can't answer that, because real sessions aren't matched pairs. The grid isn't fully crossed in practice: failed runs left some cells thinner than others, one with 300 traces against 2,000+ elsewhere — so it supports that comparison without guaranteeing balanced cells.</p>
+
+  <p>And two fields only Exgentic records: <strong>tool definitions</strong> (every tool the model could have called, not just the one it picked) and <strong>request parameters</strong> (temperature, max_tokens, as sent). Most datasets tell you what happened; those tell you what could have happened — what counterfactual and tool-selection work needs.</p>
+
+  <h2>What each dataset actually keeps</h2>
+
+  <p>The table above is the summary. Underneath it, every dataset is a specific set of fields — and the fields are the real story, because they're what determines whether a question is answerable at all. Click a dataset below to isolate what it actually supports.</p>
+
+  <div class="schema-section">
+    <div class="shead">Comparing schemas</div>
+    <div class="stitle">What the other efforts actually support</div>
+    <div class="ntree" id="diagram2">
+      <div class="ngen gen-turn">
+        <div class="nslot">
+          <div class="nbox">
+            <div class="nhead"><span class="nname">Turn</span><span class="ntag">claude_code.interaction</span></div>
+            <div class="ndesc">one per <b>user message</b> sent — turn <b>#1, #2, #3…</b> in the session, plus its text</div>
+            <div class="ndots" data-support="swes-partial,bt-partial,exg-partial,tl-partial"></div>
+          </div>
+        </div>
+      </div>
+      <div class="ngen gen-mid">
+        <div class="nslot" style="flex:.7 1 0;">
+          <div class="nbox attr">
+            <div class="nhead"><span class="nname">Who &amp; Where</span></div>
+            <div class="ndesc">which user, which session, <b>terminal type</b> (e.g. VS Code) — on every span</div>
+            <div class="ndots"><span class="ntag" style="opacity:.6;">none capture this</span></div>
+          </div>
+        </div>
+        <div class="nslot nstack" style="flex:1.45 1 0;">
+          <div class="nbox">
+            <div class="nhead"><span class="nname">Request</span><span class="ntag">chat &lt;model&gt;</span></div>
+            <div class="ndesc">one per <b>call to the model</b> — what we sent it + what it replied</div>
+            <div class="ndots" data-support="moon,tl,weka,exg,swes-partial,bt-partial"></div>
+          </div>
+        </div>
+        <div class="nslot wide nstack">
+          <div class="nbox">
+            <div class="nhead"><span class="nname">Tool Call</span><span class="ntag">claude_code.tool</span></div>
+            <div class="ndesc">tool <b>name + args</b>, nested execution</div>
+            <div class="ndots" data-support="swes,tl-partial,exg-partial"></div>
+          </div>
+        </div>
+      </div>
+      <div class="ngen gen-attr">
+        <div class="nslot spacer" style="flex:.7 1 0;"></div>
+        <div class="nslot" style="flex:1.45 1 0; display:flex; flex-wrap:wrap; gap:8px;">
+          <div class="nbox attr" style="flex:1 1 0; min-width:0;">
+            <div class="nhead"><span class="nname">Token Accounting</span></div>
+            <div class="ndesc"><b>input/output token counts</b> per call</div>
+            <div class="ndots" data-support="moon,tl,weka,exg,bt"></div>
+          </div>
+          <div class="nbox attr" style="flex:1 1 0; min-width:0;">
+            <div class="nhead"><span class="nname">Full Message Body</span></div>
+            <div class="ndesc">the actual prompt sent &amp; the <b>model's reply</b>, verbatim; redacted at save time</div>
+            <div class="ndots" data-support="exg,swes-partial,bt-partial"></div>
+          </div>
+          <div class="nbox attr" style="flex:1 1 0; min-width:0;">
+            <div class="nhead"><span class="nname">Request Params</span></div>
+            <div class="ndesc"><b>temperature</b>, max_tokens as sent to the model per call</div>
+            <div class="ndots" data-support="exg"></div>
+          </div>
+          <div class="nbox attr" style="flex:1 1 0; min-width:0;">
+            <div class="nhead"><span class="nname">Prefix / Cache Structure</span></div>
+            <div class="ndesc">shared-prefix or <b>cache-hit</b> signal across requests</div>
+            <div class="ndots" data-support="weka,moon,tl,bt,swes-partial"></div>
+          </div>
+        </div>
+        <div class="nslot wide" style="display:flex; flex-wrap:wrap; gap:8px;">
+          <div class="nbox attr" style="flex:1 1 0;">
+            <div class="nhead"><span class="nname">Timing &amp; Nesting</span></div>
+            <div class="ndesc">span start/end, <b>parent_span_id</b>; subagents nest under caller</div>
+            <div class="ndots" data-support="exg,weka,bt-partial,tl-partial"></div>
+          </div>
+          <div class="nbox" style="flex:1 1 0;">
+            <div class="nhead"><span class="nname">Tool Execution</span><span class="ntag">claude_code.tool.execution</span></div>
+            <div class="ndesc">the tool actually ran — <b>success</b> / <b>error</b></div>
+            <div class="ndots" data-support="tl,swes-partial"></div>
+          </div>
+          <div class="nbox attr" style="flex:1 1 0;">
+            <div class="nhead"><span class="nname">User Gated Decision</span><span class="ntag">tool.blocked_on_user</span></div>
+            <div class="ndesc">permission/clarification prompt + the user's <b>decision</b></div>
+            <div class="ndots"><span class="ntag" style="opacity:.6;">none capture this</span></div>
+          </div>
+          <div class="nbox attr" style="flex:1 1 0;">
+            <div class="nhead"><span class="nname">Tool Definitions</span></div>
+            <div class="ndesc">the full set of tools <b>available</b> to the model on a call, not just which ran</div>
+            <div class="ndots" data-support="exg"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="diaglegend" id="legend2"></div>
+    <div class="snote">"None capture this" — no dataset in this comparison records that field today. A faded dot means partial support. Two entries need a caveat: Baseten's tool-related gaps are inapplicable rather than omitted — it replays <code>/v1/completions</code>, an endpoint with no tool-calling surface to record — and SWE-smith's answers describe its richest <code>tool</code> split, since its <code>xml</code> and <code>ticks</code> splits flatten tool calls into prose. Click a dataset to isolate which boxes it fills; click again to clear.</div>
+  </div>
+
+  <script>
+  (function(){
+    // Order matches the comparison table above: WEKA, SWE-smith, TraceLab, Mooncake, Baseten, Exgentic.
+    var DS = {
+      weka:{label:'WEKA/AgentX', color:'#5b9dd9', origin:'human'},
+      swes:{label:'SWE-smith', color:'#e0a94f', origin:'benchmark'},
+      tl:{label:'TraceLab', color:'#9aa4b6', origin:'human'},
+      moon:{label:'Mooncake', color:'#e0685f', origin:'human'},
+      bt:{label:'Baseten', color:'#6ed0a8', origin:'human'},
+      exg:{label:'Exgentic', color:'#d98fd0', origin:'benchmark'},
+    };
+
+    function renderDots(root){
+      root.querySelectorAll('.ndots').forEach(function(el){
+        var raw = el.getAttribute('data-support');
+        if (!raw) return;
+        el.innerHTML = '';
+        raw.split(',').forEach(function(tok){
+          var isPartial = tok.endsWith('-partial');
+          var key = tok.replace('-partial','');
+          var d = DS[key];
+          if (!d) return;
+          var dot = document.createElement('span');
+          dot.setAttribute('data-key', key);
+          dot.className = 'ddot';
+          dot.style.background = d.color;
+          dot.style.opacity = isPartial ? '0.5' : '1';
+          dot.title = d.label + (isPartial ? ' (partial)' : '');
+          el.appendChild(dot);
+        });
+      });
+    }
+
+    function buildLegend(el){
+      if (!el) return;
+      el.innerHTML = '';
+      var tree = el.previousElementSibling;
+      var activeKey = null;
+
+      function applyFilter(){
+        el.querySelectorAll('.litem').forEach(function(li){ li.classList.toggle('active', li.dataset.key === activeKey); });
+        if (!tree) return;
+        if (!activeKey){
+          tree.classList.remove('filtering');
+          tree.querySelectorAll('.nbox.has-match').forEach(function(b){ b.classList.remove('has-match'); });
+          tree.querySelectorAll('.ddot.match').forEach(function(d){ d.classList.remove('match'); });
+          return;
+        }
+        tree.classList.add('filtering');
+        tree.querySelectorAll('.nbox').forEach(function(box){
+          var hit = box.querySelector('.ddot[data-key="' + activeKey + '"]');
+          box.classList.toggle('has-match', !!hit);
+        });
+        tree.querySelectorAll('.ddot').forEach(function(d){ d.classList.toggle('match', d.getAttribute('data-key') === activeKey); });
+      }
+
+      function makeItem(key, label, dotColor, origin){
+        var item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'litem';
+        item.dataset.key = key;
+        var dot = document.createElement('span');
+        dot.className = 'dot';
+        dot.style.background = dotColor;
+        item.appendChild(dot);
+        item.appendChild(document.createTextNode(label));
+        if (origin){
+          var badge = document.createElement('span');
+          badge.className = 'obadge ' + origin;
+          badge.textContent = origin;
+          item.appendChild(badge);
+        }
+        item.addEventListener('click', function(){
+          activeKey = (activeKey === key) ? null : key;
+          applyFilter();
+        });
+        el.appendChild(item);
+      }
+
+      Object.keys(DS).forEach(function(key){ makeItem(key, DS[key].label, DS[key].color, DS[key].origin); });
+
+      var hint = document.createElement('span');
+      hint.className = 'litem hint';
+      hint.textContent = 'click a dataset to isolate it';
+      el.appendChild(hint);
+    }
+
+    renderDots(document.getElementById('diagram2'));
+    buildLegend(document.getElementById('legend2'));
+  })();
+  </script>
+
+  <h2>From a trace file to a running workload: the replay mechanisms</h2>
+
+  <p>A trace format is only half of the practical story. To benchmark a serving stack, something has to turn the recording back into requests. Here, <em>replay</em> does not always mean resending the original bytes. Some replay paths preserve a session's dependency graph and feed each live model response into the next turn; others preserve only arrival times, input and output lengths, or prefix-sharing relationships and generate substitute payloads with the same serving shape. Those are both useful experiments, but they answer different questions.</p>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th>Mechanism</th>
+          <th>Execution model</th>
+          <th>Scheduling</th>
+          <th>Payload construction</th>
+          <th>Target</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name"><a href="https://github.com/kubernetes-sigs/inference-perf" target="_blank" rel="noopener">Inference-Perf</a></td>
+          <td>Builds a dependency graph for each session and releases calls as their predecessors complete</td>
+          <td>Controls session concurrency or start rate; dependency-relative waits can be capped</td>
+          <td>Uses recorded or reconstructed inputs and, where supported, substitutes live predecessor outputs. OTel replay can duplicate sessions and add cache-isolating markers.</td>
+          <td>A live inference endpoint through its chat API</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://docs.nvidia.com/aiperf/latest/" target="_blank" rel="noopener">AIPerf</a></td>
+          <td>Converts each dataset through a format-specific adapter into conversations or independent requests</td>
+          <td>Supports recorded fixed schedules or closed-loop conversations, plus delay caps and concurrency controls</td>
+          <td>Uses recorded messages when present; otherwise synthesizes prompts from token lengths and cache-prefix information. Supports filtering, model rewriting, and cache isolation.</td>
+          <td>A live OpenAI-compatible inference endpoint</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/vllm-project/guidellm/blob/main/docs/en/guides/trace_replay.md" target="_blank" rel="noopener">GuideLLM</a></td>
+          <td>Converts trace rows into independent requests or multi-turn conversations through a format-specific loader</td>
+          <td>Uses trace timestamps and conversation dependencies; supports time scaling, wait caps, and minimum session concurrency</td>
+          <td>Generates prompts from token lengths and hash IDs. Where supported, it models subagents and tool calls with supplied or built-in schemas and placeholder results.</td>
+          <td>A live OpenAI-compatible inference endpoint</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://docs.vllm.ai/en/latest/cli/bench/serve/" target="_blank" rel="noopener">vLLM bench serve</a></td>
+          <td>Treats each timed-trace row as an independent request</td>
+          <td>Schedules requests from their timestamps; timestamp units are configurable</td>
+          <td>Deterministically expands hash IDs into shared token blocks up to the recorded input length; field names and block size are configurable</td>
+          <td>A live online-serving endpoint, commonly vLLM</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/sgl-project/sglang/blob/main/docs/docs/developer_guide/bench_serving.mdx" target="_blank" rel="noopener">SGLang bench_serving</a></td>
+          <td>Treats each trace row as the start of a synthetic multi-round session</td>
+          <td>Can use trace timestamps, adjusted by a slowdown factor; the configured rounds within a session are emitted as a burst</td>
+          <td>Builds prompts from hash IDs, adds synthetic user turns and placeholder assistant responses, and uses a configurable output length</td>
+          <td>A supported live serving endpoint, including SGLang and OpenAI-compatible backends</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://github.com/ai-dynamo/dynamo/blob/main/docs/fern/pages/cli/operations/simulation-with-dynosim/dynosim-replay.mdx" target="_blank" rel="noopener">NVIDIA DynoSim</a></td>
+          <td>Runs trace events through simulated engine cores in virtual time</td>
+          <td>Uses trace timestamps with a configurable speedup and stopping horizon</td>
+          <td>Maps token lengths and prefix hashes into a configurable model of workers, scheduling, KV capacity, routing, and aggregated or disaggregated serving</td>
+          <td>Simulated Dynamo engine cores, without HTTP or live workers</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tbl-caption">Inference-Perf, AIPerf, GuideLLM, vLLM bench serve, and SGLang bench_serving drive live inference endpoints, but their format-specific loaders do not necessarily preserve the same parts of a trace. DynoSim instead evaluates a simulated serving topology. Compare results only where the replay target, preserved trace properties, and reported metric align.</p>
+
+  <p>That boundary matters when reading benchmark results. Request-level throughput from two endpoint load generators can be compared if model, hardware, concurrency, timing policy, and payload construction are aligned. It is not directly comparable to end-to-end session latency from a causal graph replay, which includes dependency and branch effects. Nor is either number directly comparable to a DynoSim prediction, where no model is decoding tokens. The mechanisms can share a source trace without measuring the same system.</p>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th>Trace dataset</th>
+          <th>Replay mechanism</th>
+          <th>Dataset-specific replay</th>
+          <th>Documentation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name" rowspan="3">WEKA / AgentX</td>
+          <td>Inference-Perf</td>
+          <td>Reconstructs WEKA's parent-child turns, subagent branches, live-output flow, and recorded think-time gaps, subject to a configurable cap.</td>
+          <td><a href="https://github.com/kubernetes-sigs/inference-perf/blob/main/docs/weka_trace_replay.md" target="_blank" rel="noopener">Weka Trace Replay</a></td>
+        </tr>
+        <tr>
+          <td>AIPerf</td>
+          <td>Reconstructs WEKA's parent/subagent graph, infers flattened branches from hash-prefix and timing evidence, synthesizes cache-equivalent prompts, and follows recorded timing.</td>
+          <td><a href="https://docs.nvidia.com/aiperf/latest/tutorials/datasets-inputs/replay-weka-agentic-coding-traces" target="_blank" rel="noopener">Replay WEKA Agentic Coding Traces</a></td>
+        </tr>
+        <tr>
+          <td>GuideLLM</td>
+          <td>Preserves WEKA conversations and subagent spawn/join topology; tool-call turns use supplied or synthetic tool definitions and placeholder results.</td>
+          <td><a href="https://github.com/vllm-project/guidellm/blob/main/docs/en/guides/trace_replay.md#weka" target="_blank" rel="noopener">Trace Replay: WEKA</a></td>
+        </tr>
+        <tr>
+          <td class="name">TraceLab</td>
+          <td>AIPerf</td>
+          <td>Groups rounds into conversations, synthesizes prompts and prefix-block IDs from token counts, and heuristically attaches subagents by timing containment.</td>
+          <td><a href="https://docs.nvidia.com/aiperf/dev/tutorials/datasets-inputs/replay-trace-lab-agentic-coding-traces" target="_blank" rel="noopener">Replay TraceLab Agentic Coding Traces</a></td>
+        </tr>
+        <tr>
+          <td class="name" rowspan="5">Mooncake</td>
+          <td>AIPerf</td>
+          <td>Replays timestamps, token lengths, and optional hash IDs; it can instead send exact preformatted messages and tool definitions when a trace provides them.</td>
+          <td><a href="https://docs.nvidia.com/aiperf/latest/benchmark-modes/trace-replay-with-mooncake-traces" target="_blank" rel="noopener">Trace Replay with Mooncake Traces</a></td>
+        </tr>
+        <tr>
+          <td>GuideLLM</td>
+          <td>Replays each Mooncake row independently, preserving timestamp offsets, token lengths, and shared hash-ID prefixes with generated prompts.</td>
+          <td><a href="https://github.com/vllm-project/guidellm/blob/main/docs/en/guides/trace_replay.md#mooncake" target="_blank" rel="noopener">Trace Replay: Mooncake</a></td>
+        </tr>
+        <tr>
+          <td>vLLM bench serve</td>
+          <td>Schedules independent rows by timestamp and deterministically expands hash IDs into shared token blocks of the recorded input length.</td>
+          <td><a href="https://docs.vllm.ai/en/latest/benchmarking/cli/#running-moonshotai-traces" target="_blank" rel="noopener">Replay Timed Traces: Running MoonshotAI traces</a></td>
+        </tr>
+        <tr>
+          <td>SGLang bench_serving</td>
+          <td>Starts each record at its trace timestamp, builds a hash-derived prompt, and emits the configured number of synthetic conversation rounds as a burst.</td>
+          <td><a href="https://github.com/sgl-project/sglang/blob/main/docs/docs/developer_guide/bench_serving.mdx#9-evaluating-large-scale-kvcache-sharing-with-mooncake-trace-sglang-only" target="_blank" rel="noopener">Bench Serving: Mooncake</a>; <a href="https://github.com/sgl-project/sglang/blob/main/python/sglang/benchmark/datasets/mooncake.py" target="_blank" rel="noopener">Mooncake loader</a></td>
+        </tr>
+        <tr>
+          <td>NVIDIA DynoSim</td>
+          <td>Runs a Mooncake-format trace's timestamps and hash-block demand through simulated Dynamo engine cores to predict routing, scheduling, latency, and prefix-cache reuse.</td>
+          <td><a href="https://github.com/ai-dynamo/dynamo/blob/main/docs/fern/pages/cli/operations/simulation-with-dynosim/dynosim-replay.mdx#replay-a-saved-trace" target="_blank" rel="noopener">Run a DynoSim Simulation</a></td>
+        </tr>
+        <tr>
+          <td class="name">SWE-smith</td>
+          <td>SGLang bench_serving</td>
+          <td>Replays pre-built multi-turn agentic traces round by round via the <code>agentic-trace</code> dataset, feeding the server's live reply back into the next round's history. SWE-smith / OpenHands trajectories are the documented example; the trace JSON is supplied by the user.</td>
+          <td><a href="https://github.com/sgl-project/sglang/blob/main/docs/docs/developer_guide/bench_serving.mdx" target="_blank" rel="noopener">Bench Serving: agentic-trace</a></td>
+        </tr>
+        <tr>
+          <td class="name">Baseten Trace</td>
+          <td>AIPerf</td>
+          <td>Streams large Baseten Parquet traces in bounded batches via the <code>baseten_trace</code> loader, projecting only the columns each replay option needs and replaying recorded prompts without regenerating them.</td>
+          <td><a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/benchmark-modes/trace-replay.md#large-baseten-parquet-traces" target="_blank" rel="noopener">Trace Replay: Baseten</a>, <a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/tutorials/baseten-trace.md" target="_blank" rel="noopener">Baseten trace tutorial</a></td>
+        </tr>
+        <tr>
+          <td class="name" rowspan="2">Exgentic</td>
+          <td>Inference-Perf</td>
+          <td>Reconstructs Exgentic's OTel dependency graph and, by default, substitutes each live model response into downstream requests. It preserves shared-prefix and tool-call structure, using recorded tool-result messages rather than executing tools, and can duplicate sessions with cache-isolating markers.</td>
+          <td><a href="https://github.com/kubernetes-sigs/inference-perf/tree/main/workload-catalog/agentic-trace-replay" target="_blank" rel="noopener">Exgentic workload</a>; <a href="https://github.com/kubernetes-sigs/inference-perf/blob/main/docs/otel_trace_replay.md" target="_blank" rel="noopener">OTel Trace Replay</a></td>
+        </tr>
+        <tr>
+          <td>AIPerf</td>
+          <td>Sends self-contained recorded call snapshots, preserving messages, tool definitions, output limits, request controls, and start times. Fixed-schedule mode follows recorded offsets; closed-loop mode waits between calls, but neither mode feeds live responses into later requests. Recorded tool interactions are not executed.</td>
+          <td><a href="https://docs.nvidia.com/aiperf/latest/reference/benchmark-datasets#exgentic-agent-trace-replay" target="_blank" rel="noopener">Exgentic Agent Trace Replay</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tbl-caption">Native loaders only; generic JSON/CSV conversion paths are excluded. These entries describe dataset-specific behavior, while the mechanism table above identifies each system under test.</p>
+
+  <h2>So which combination do you actually want?</h2>
+
+  <p>It depends on the stage. A serving feature moves from a proof of concept on a few GPUs to sizing, a pre-production gate and production. Each stage asks a different question, so the trace and the replay mechanism change with it. The table pairs them the way we use them in llm-d and in our own disaggregated serving fleet for agent workloads.</p>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <colgroup>
+        <col style="width:14%;">
+        <col style="width:20%;">
+        <col style="width:24%;">
+        <col style="width:18%;">
+        <col style="width:24%;">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>Question</th>
+          <th>What the trace must keep</th>
+          <th>Trace</th>
+          <th>Replay</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name">Proof of concept</td>
+          <td>Does the mechanism work, and by how much?</td>
+          <td>A controlled shape: input and output lengths, prefix sharing, concurrency.</td>
+          <td>Shared-prefix synthetic shapes; Mooncake hash-ID traces.</td>
+          <td>Inference-Perf for synthetic shapes; vLLM bench serve or AIPerf for Mooncake; DynoSim before the hardware exists.</td>
+        </tr>
+        <tr>
+          <td class="name">Sizing</td>
+          <td>How much hardware, and where does throughput stop growing?</td>
+          <td>Session shape: prompts that grow turn by turn, subagent fan-out, gaps while tools run.</td>
+          <td>WEKA / AgentX.</td>
+          <td>AIPerf or Inference-Perf, swept across concurrency.</td>
+        </tr>
+        <tr>
+          <td class="name">Pre-production</td>
+          <td>Does the full stack behave with real agent requests?</td>
+          <td>Content: messages, tool definitions, request parameters, and the dependency between calls.</td>
+          <td>Exgentic.</td>
+          <td>Inference-Perf's dependency-graph replay; functional checks on the release images; live agents.</td>
+        </tr>
+        <tr>
+          <td class="name">Production</td>
+          <td>Is it still right, and what changed?</td>
+          <td>Live traffic, measured at the router and at the engines.</td>
+          <td>Live traffic (no trace).</td>
+          <td>Controlled load ramps through the same gateway, read against production metrics.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tbl-caption">Each row names the pairing we reach for first at that stage.</p>
+
+  <p><strong>Proof of concept.</strong> The point is to change one thing and see what it does, so everything else stays fixed. llm-d's guides run through <a href="https://github.com/llm-d/llm-d-benchmark" target="_blank" rel="noopener">llm-d-benchmark</a>, which drives Inference-Perf, AIPerf, GuideLLM or vLLM bench serve. The <a href="https://github.com/llm-d/llm-d/tree/main/guides/precise-prefix-cache-routing" target="_blank" rel="noopener">prefix-routing guide</a> uses an Inference-Perf shared-prefix synthetic workload, because routing only cares about which prefixes repeat. On our own rigs we fix the trace, seed and concurrency, and give every run a fresh prefix so it never reads another run's cache. That is how we measured a 28% decode speedup from one CUDA-graph setting.</p>
+
+  <p><strong>Sizing.</strong> How much hardware you need depends on how prompts grow over a session, how subagents fan out and how long tools run, so the trace needs real sessions. We replay WEKA / AgentX through AIPerf at rising concurrency, as llm-d's <a href="https://github.com/llm-d/llm-d/blob/main/guides/agentic-serving/glm-5-2-h200.md" target="_blank" rel="noopener">agentic-serving</a> and <a href="https://github.com/llm-d/llm-d/tree/main/guides/p2p-kv-cache-sharing/benchmarking" target="_blank" rel="noopener">P2P</a> guides do. Each session waits for its own responses, so at a given concurrency a slower system finishes fewer requests per second, and raising concurrency to recover throughput costs each user speed. That is why we compare systems on throughput per GPU against speed per user. Our production agent workloads reuse 92% of prompt tokens, and <a href="https://github.com/kubernetes-sigs/inference-perf/tree/main/workload-catalog/agentic-trace-replay" target="_blank" rel="noopener">Inference-Perf's catalog</a> measures Exgentic at about 91% (92% of its calls share a prefix with an earlier one).</p>
+
+  <p><strong>Pre-production.</strong> Now the request content matters. Tool definitions and settings like reasoning effort change how a request turns into tokens, and so whether it hits the cache. Synthetic prompts have neither. By looking at real requests we found rendering issues whose fixes raised prompt reuse from 59% to 96%. Exgentic is the only corpus here that keeps tool definitions and request parameters, and Inference-Perf replays it the way an agent runs, feeding each response into the next call and <a href="https://github.com/kubernetes-sigs/inference-perf/blob/main/docs/otel_trace_replay.md" target="_blank" rel="noopener">keeping the recorded gaps between calls</a>, capped at 15 s by default.</p>
+
+  <p>We also ran 500 of our own agents for an hour next to interactive users, to check priority and fairness. Live agents behave like the real thing, but no two runs are the same. Exgentic sits in between: real agent runs on fixed tasks that can be replayed as often as needed.</p>
+
+  <p><strong>Production.</strong> Live traffic is the benchmark here, since no trace matches it. We watch latency and throughput per tenant, compare each release with the one before, and ramp up synthetic agent sessions through the same gateway to see how much headroom is left.</p>
+
+  <p>Put together, benchmarking moves from cheap, controlled shapes early on to real agent content close to release, and what production shows feeds the next round. Synthetic and hash-based traces keep the early stages fast and repeatable, and agent traces with full content, like Exgentic replayed through Inference-Perf, cover the last check before a change reaches users.</p>
+
+  <h2>Where to get them</h2>
+
+  <p>Most are public today: <a href="https://huggingface.co/datasets/Exgentic/agent-llm-traces-v2" target="_blank" rel="noopener">Exgentic Agent LLM Traces v2</a>, <a href="https://huggingface.co/datasets/semianalysisai/cc-traces-weka-with-subagents-060826" target="_blank" rel="noopener">WEKA / AgentX</a>, and <a href="https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories" target="_blank" rel="noopener">SWE-smith</a> on HuggingFace, and <a href="https://github.com/uw-syfi/TraceLab" target="_blank" rel="noopener">TraceLab</a> and <a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener">Mooncake</a> on GitHub. Baseten Trace ships as an <a href="https://github.com/ai-dynamo/aiperf/blob/main/docs/benchmark-modes/trace-replay.md#large-baseten-parquet-traces" target="_blank" rel="noopener">AIPerf loader format</a> rather than a published corpus.</p>
+
+  <p>This post has been about what each corpus actually lets you learn — which questions it can and can't answer, given what it keeps. There's a separate question we haven't touched at all: <em>how</em> the underlying sessions came to exist in the first place — benchmark-generated like Exgentic and SWE-smith, or recorded from real usage like WEKA/AgentX, TraceLab, and Mooncake. That distinction changes what a dataset can honestly claim about the behavior its traces record, independent of how much any single trace captures. It's worth its own post — coming next.</p>
+
+</div>
+
+<script>
+(function(){
+  var wrap = document.getElementById('content-wrap');
+  var checkbox = document.getElementById('lnum-checkbox');
+
+  // number direct block-level children of .wrap for review reference
+  var n = 0;
+  Array.prototype.forEach.call(wrap.children, function(el){
+    if (el.classList.contains('schema-section')) return; // interactive widget isn't line-referenced
+    n++;
+    var span = document.createElement('span');
+    span.className = 'lnum';
+    span.setAttribute('aria-hidden', 'true');
+    span.textContent = n;
+    el.style.position = el.style.position || 'relative';
+    el.insertBefore(span, el.firstChild);
+  });
+
+  function applyState(on){
+    document.body.classList.toggle('show-linenums', on);
+  }
+
+  var saved = null;
+  try { saved = localStorage.getItem('lnum-visible'); } catch (e) {}
+  if (saved !== null){
+    checkbox.checked = (saved === '1');
+  }
+  applyState(checkbox.checked);
+
+  checkbox.addEventListener('change', function(){
+    applyState(checkbox.checked);
+    try { localStorage.setItem('lnum-visible', checkbox.checked ? '1' : '0'); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
