@@ -1,0 +1,180 @@
+<title>Evaluation Pipeline Diagram</title>
+<style>
+/* Layout: left-to-right block diagram of the system's lifecycle to deployment
+   (PoC → Workload capture → Sizing → Pre-production → Production). Each block states its
+   purpose (the question) first, then the evaluation. Dashed arcs above = pre-production gate
+   failures that loop back (quality gap → configuration; capacity gap → sizing). Dashed path
+   below = production traffic returning as new traces. Blue = our Inference-Perf contribution,
+   neutral = existing tooling, green = live/production, orange = failure loop. */
+:root{
+  --bg:#f4f6f9; --surface:#ffffff; --surface-2:#eef1f6;
+  --fg:#1b2535; --muted:#5c6878; --line:#c9d2df;
+  --accent:#2563eb; --ok:#1f7a44; --warn:#c2410c;
+  --font-sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d131f; --surface:#161f2e; --surface-2:#1b2435;
+    --fg:#e6ebf3; --muted:#9aa6b7; --line:#33405488;
+    --accent:#6b9bff; --ok:#56c684; --warn:#fb923c;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d131f; --surface:#161f2e; --surface-2:#1b2435;
+  --fg:#e6ebf3; --muted:#9aa6b7; --line:#33405488;
+  --accent:#6b9bff; --ok:#56c684; --warn:#fb923c;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-sans);line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding-block:38px 48px;padding-inline:20px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0}
+h1{font-size:clamp(24px,4.4vw,33px);line-height:1.1;font-weight:700;text-wrap:balance;margin:.35em 0 0}
+.lede{color:var(--muted);font-size:15.5px;max-width:70ch;margin:12px 0 0}
+.legend{display:flex;flex-wrap:wrap;gap:9px 18px;margin-top:18px;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.legend .k{display:inline-flex;align-items:center;gap:8px}
+.sw{width:12px;height:12px;border-radius:3px;border:1.8px solid;flex:0 0 auto}
+
+figure{margin:22px 0 0}
+.figwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:16px}
+svg.diagram{display:block;width:100%;min-width:1120px;height:auto}
+svg.diagram text{fill:var(--fg);font-family:var(--font-sans)}
+
+.b-neutral{--hue:var(--muted)} .b-blue{--hue:var(--accent)} .b-ok{--hue:var(--ok)}
+.blk{fill:var(--surface);stroke:var(--hue);stroke-width:1.8}
+.blk.n{stroke:var(--line)}
+.t-stage{font-family:var(--font-mono);font-size:11.5px;font-weight:600;letter-spacing:.06em;fill:var(--hue)}
+.t-micro{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;fill:var(--muted)}
+.t-q{font-size:13.5px;font-weight:600;fill:var(--fg)}
+.t-eval{font-size:12px;fill:var(--fg)}
+.t-meta{font-family:var(--font-mono);font-size:9.5px;fill:var(--muted)}
+.divider{stroke:var(--line);stroke-width:1}
+.flow{stroke:var(--muted);stroke-width:1.8;fill:none}
+.fail{stroke:var(--warn);stroke-width:1.6;fill:none;stroke-dasharray:6 5}
+.data{stroke:var(--muted);stroke-width:1.5;fill:none;stroke-dasharray:6 5}
+.t-fail{font-family:var(--font-mono);font-size:10.5px;fill:var(--warn)}
+.t-data{font-family:var(--font-mono);font-size:10.5px;fill:var(--muted)}
+.t-deploy{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.05em;fill:var(--ok)}
+.mk{fill:var(--muted)} .mk-w{fill:var(--warn)}
+
+figcaption{color:var(--muted);font-size:13px;margin-top:16px;max-width:84ch;line-height:1.6}
+figcaption b{color:var(--fg);font-weight:600}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Agentic inference-serving platform</p>
+  <h1>Evaluation across the path to deployment</h1>
+  <p class="lede">The system moves through five lifecycle stages. Each block states its purpose first — the question about the system — then the evaluation that answers it. Pre-production is the acceptance gate: a capacity gap loops back to sizing. Gross quality problems surface earlier, in the live benchmarking at workload capture. Once deployed, production traffic feeds back as new traces.</p>
+
+  <div class="legend">
+    <span class="k"><span class="sw" style="border-color:var(--accent)"></span>Our Inference-Perf contribution</span>
+    <span class="k"><span class="sw" style="border-color:var(--line)"></span>Existing tooling</span>
+    <span class="k"><span class="sw" style="border-color:var(--ok)"></span>Post-deployment</span>
+    <span class="k"><span class="sw" style="border-color:var(--warn)"></span>Gate failure (loops back)</span>
+  </div>
+
+  <figure>
+    <div class="figwrap">
+      <svg class="diagram" viewBox="0 0 1274 366" role="img"
+           aria-label="Block diagram of five lifecycle stages — proof of concept, workload capture, sizing, pre-production, production — each with its guiding question and evaluation. Pre-production gate failures loop back to configuration (quality gap) or sizing (capacity gap); production traffic feeds back as new traces.">
+        <defs>
+          <marker id="ah" markerWidth="10" markerHeight="10" refX="7.5" refY="3.5" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M0,0 L8,3.5 L0,7 Z" class="mk"/></marker>
+          <marker id="ahw" markerWidth="10" markerHeight="10" refX="7.5" refY="3.5" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M0,0 L8,3.5 L0,7 Z" class="mk-w"/></marker>
+        </defs>
+
+        <!-- Gate-failure arcs (above): Pre-production -> Sizing (capacity), Pre-production -> PoC (quality) -->
+        <path class="fail" d="M860,90 C810,46 690,46 637,90" marker-end="url(#ahw)"/>
+        <text class="t-fail" x="748" y="41" text-anchor="middle">capacity gap &#8594; re-size</text>
+
+        <!-- PoC -->
+        <g class="b-neutral">
+          <rect class="blk n" x="20" y="90" width="218" height="220" rx="12"/>
+          <text class="t-stage" x="35" y="115">PROOF OF CONCEPT</text>
+          <text class="t-micro" x="35" y="138">PURPOSE</text>
+          <text class="t-q" x="35" y="156">Does the change work,</text>
+          <text class="t-q" x="35" y="172">and by how much?</text>
+          <line class="divider" x1="35" y1="194" x2="223" y2="194"/>
+          <text class="t-micro" x="35" y="212">EVALUATION</text>
+          <text class="t-eval" x="35" y="230">Controlled micro-benchmark</text>
+          <text class="t-eval" x="35" y="246">on a synthetic workload.</text>
+          <text class="t-meta" x="35" y="286">synthetic workloads &#183; DynoSim</text>
+        </g>
+
+        <!-- Workload capture -->
+        <g class="b-blue">
+          <rect class="blk" x="274" y="90" width="218" height="220" rx="12"/>
+          <text class="t-stage" x="289" y="115">WORKLOAD CAPTURE</text>
+          <text class="t-micro" x="289" y="138">PURPOSE</text>
+          <text class="t-q" x="289" y="156">What will the platform</text>
+          <text class="t-q" x="289" y="172">be asked to serve?</text>
+          <line class="divider" x1="289" y1="194" x2="477" y2="194"/>
+          <text class="t-micro" x="289" y="212">EVALUATION</text>
+          <text class="t-eval" x="289" y="230">Live-benchmark the intended</text>
+          <text class="t-eval" x="289" y="246">use-cases to generate traces.</text>
+          <text class="t-meta" x="289" y="286">given model &#183; use-cases &#8594; traces</text>
+        </g>
+
+        <!-- Sizing -->
+        <g class="b-blue">
+          <rect class="blk" x="528" y="90" width="218" height="220" rx="12"/>
+          <text class="t-stage" x="543" y="115">SIZING</text>
+          <text class="t-micro" x="543" y="138">PURPOSE</text>
+          <text class="t-q" x="543" y="156">How much hardware &#8212; where</text>
+          <text class="t-q" x="543" y="172">does throughput plateau?</text>
+          <line class="divider" x1="543" y1="194" x2="731" y2="194"/>
+          <text class="t-micro" x="543" y="212">EVALUATION</text>
+          <text class="t-eval" x="543" y="230">Replay the captured traces</text>
+          <text class="t-eval" x="543" y="246">at rising concurrency.</text>
+          <text class="t-meta" x="543" y="286">captured agent traces</text>
+        </g>
+
+        <!-- Pre-production -->
+        <g class="b-blue">
+          <rect class="blk" x="782" y="90" width="218" height="220" rx="12"/>
+          <text class="t-stage" x="797" y="115">PRE-PRODUCTION</text>
+          <text class="t-micro" x="797" y="138">PURPOSE</text>
+          <text class="t-q" x="797" y="156">Does it serve real agents,</text>
+          <text class="t-q" x="797" y="172">on par with external?</text>
+          <line class="divider" x1="797" y1="194" x2="985" y2="194"/>
+          <text class="t-micro" x="797" y="212">EVALUATION</text>
+          <text class="t-eval" x="797" y="230">Live-benchmark on the real</text>
+          <text class="t-eval" x="797" y="246">stack; compare to external.</text>
+          <text class="t-meta" x="797" y="286">live agents &#183; external baselines</text>
+        </g>
+
+        <!-- Production -->
+        <g class="b-ok">
+          <rect class="blk" x="1036" y="90" width="218" height="220" rx="12"/>
+          <text class="t-stage" x="1051" y="115">PRODUCTION</text>
+          <text class="t-micro" x="1051" y="138">PURPOSE</text>
+          <text class="t-q" x="1051" y="156">Is it still right &#8212;</text>
+          <text class="t-q" x="1051" y="172">what changed?</text>
+          <line class="divider" x1="1051" y1="194" x2="1239" y2="194"/>
+          <text class="t-micro" x="1051" y="212">EVALUATION</text>
+          <text class="t-eval" x="1051" y="230">Monitor live traffic;</text>
+          <text class="t-eval" x="1051" y="246">capture it as new traces.</text>
+          <text class="t-meta" x="1051" y="286">gateway metrics &#183; per release</text>
+        </g>
+
+        <!-- Forward arrows (y 200) -->
+        <line class="flow" x1="238" y1="200" x2="272" y2="200" marker-end="url(#ah)"/>
+        <line class="flow" x1="492" y1="200" x2="526" y2="200" marker-end="url(#ah)"/>
+        <line class="flow" x1="746" y1="200" x2="780" y2="200" marker-end="url(#ah)"/>
+        <line class="flow" x1="1000" y1="200" x2="1034" y2="200" marker-end="url(#ah)"/>
+        <text class="t-deploy" x="1017" y="190" text-anchor="middle">deploy</text>
+
+        <!-- Production data feedback (below): Production -> Workload capture -->
+        <path class="data" d="M1145,310 L1145,345 L383,345 L383,310" marker-end="url(#ah)"/>
+        <text class="t-data" x="764" y="338" text-anchor="middle">production traffic &#8594; new traces</text>
+      </svg>
+    </div>
+    <figcaption>
+      <b>Evaluation across the path to deployment.</b> Five lifecycle stages, left to right; each block gives its purpose (the question about the system) then the evaluation that answers it.
+      <b>Workload capture</b> live-benchmarks the intended use-cases on the given model to create representative traces, which <b>sizing</b> replays.
+      <b>Pre-production</b> is the acceptance gate: a <b>capacity gap</b> loops back to sizing (orange); gross quality issues are caught earlier, at workload capture.
+      After <b>deploy</b>, production traffic returns as new traces (bottom path). Blue stages are powered by our agentic trace-replay and live-benchmarking contribution to Inference-Perf.
+    </figcaption>
+  </figure>
+</div>
